@@ -1,0 +1,16 @@
+# Use an official lightweight base image, e.g., Alpine Linux
+FROM alpine:latest
+
+# Set the working directory in the container
+WORKDIR /app
+
+# Copy the shell script into the container
+COPY hello.sh .
+
+VOLUME /path/to/directory
+
+# Give execution permissions to the script
+RUN chmod +x hello.sh
+
+# Specify the command to run the script
+CMD ["./hello.sh"]
