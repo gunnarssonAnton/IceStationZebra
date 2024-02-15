@@ -118,7 +118,7 @@ public class CompilationView extends JPanel {
     private java.util.List<String> extractDataFromFile(String fileName){
         List<String> stringList = new ArrayList<>();
         try {
-            File file = new File(String.format("src/main/java/org/example/files/%s", fileName));
+            File file = new File(String.format("src/main/resources/%s", fileName));
             Scanner scanner = new Scanner(file);
             String line;
 
@@ -142,7 +142,7 @@ public class CompilationView extends JPanel {
         System.out.println(str);
 
         try {
-            BufferedWriter writer = new BufferedWriter(new FileWriter(String.format("src/main/java/org/example/files/%s", fileName)));
+            BufferedWriter writer = new BufferedWriter(new FileWriter(String.format("src/main/resources/%s", fileName)));
             writer.write(str);
             writer.close();
 
