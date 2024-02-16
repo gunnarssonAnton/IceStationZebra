@@ -4,7 +4,7 @@ compile_commands
 codebase/
 output/
 settings/
-
+.DS_Store
 .idea/
 target/
 pom.xml.tag
