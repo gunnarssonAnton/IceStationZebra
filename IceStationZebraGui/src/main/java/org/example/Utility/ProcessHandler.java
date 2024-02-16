@@ -12,6 +12,7 @@ public class ProcessHandler {
             ProcessBuilder builder = new ProcessBuilder();
             builder.command(cmd);
             builder.redirectErrorStream(true);
+
             Process process = builder.start();
             BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
             String line;

@@ -20,8 +20,8 @@ public class Main {
         dockerfile.addENV("COMPILER_WHATEVER","");
         dockerfile.addVolume("/installs");
         dockerfile.addVolume("/output");
-        dockerfile.addRUN("ls | echo");
-        dockerfile.addCMD("ls | echo");
+        dockerfile.addRUN("echo \"$(ls)\"\n");
+        dockerfile.addCMD("echo \"$(ls)\"\n");
         FileIO file = new FileIO(FileIO.getApplicationRootPath(),"Dockerfile");
         file.write(dockerfile.toString());
         dockerfile.build(file.getPath().toString()).subscribe(System.out::println);
@@ -29,15 +29,16 @@ public class Main {
         DockerContainer container = new DockerContainer("testcontainer",dockerfile);
         container.setVolume("./scripts", "/installs");
         container.setVolume("./installs", "/installs");
-        container.setVolume("./compile_commands", "/compile_commands");
+        container.setVolume("./compilecommands", "/compilecommands");
         container.setVolume("./codebase", "/codebase");
         container.setVolume("./output", "/output");
 
         container.setEnv("COMPILER_NAME","nazi penis");
         container.setEnv("COMPILER_WHATEVER","nazi anus");
-        container.up().subscribe(System.out::println);
+        container.run(new String[0]).subscribe(System.out::println,System.out::println);
 
-
+        container.stop();
+        container.remove();
         //
         Thread.sleep(3000);
         System.out.println("Removing...");
