@@ -75,6 +75,19 @@ public class Dockerfile {
         content.append("ENTRYPOINT ").append(this.entryPoint);
         return content.toString();
     }
+    public static Dockerfile getBasic(String image, String name){
+        Dockerfile dockerfile = new Dockerfile(image, name);
+        dockerfile.addVolume("/scripts");
+        dockerfile.addVolume("/installs");
+        dockerfile.addVolume("/compile_commands");
+        dockerfile.addVolume("/codebase");
+        dockerfile.addVolume("/output");
+
+        dockerfile.addENV("COMPILER_NAME","");
+
+        dockerfile.setEntrypoint("");
+        return dockerfile;
+    }
 }
 
 /*
