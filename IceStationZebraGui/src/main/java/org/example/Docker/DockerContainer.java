@@ -65,8 +65,8 @@ public class DockerContainer{
         container.setVolume("./codebase", "/codebase");
         container.setVolume("./output", "/output");
 
-        container.setEnv("COMPILER_NAME","nazi penis");
-        container.setEnv("COMPILER_WHATEVER","nazi anus");
+        container.setEnv("COMPILER_NAME","nazi_penis");
+        container.setEnv("COMPILER_WHATEVER","nazianus");
         return container;
     }
 }
