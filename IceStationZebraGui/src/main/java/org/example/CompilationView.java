@@ -1,5 +1,7 @@
 package org.example;
 
+import org.example.files.FileIO;
+
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
@@ -15,7 +17,7 @@ public class CompilationView extends JPanel {
     JButton runAllCompilersBtn = new JButton();
     CompilationView(){
         compilerNamesArray = extractDataFromFile("compiler_names.txt");
-        codeBases = extractDataFromFile("code_bases.txt");
+        codeBases = new ArrayList<>();
 
 
         this.setLayout(new FlowLayout(FlowLayout.RIGHT));
@@ -109,24 +111,9 @@ public class CompilationView extends JPanel {
         this.runAllCompilersBtn.addActionListener(l);
     }
 
-    private java.util.List<String> extractDataFromFile(String filename){
-        List<String> stringList = new ArrayList<>();
-        try
-
-            (InputStreamReader isreader = new InputStreamReader(this.getFileAsInputStream(filename));
-             BufferedReader bufferedReader = new BufferedReader(isreader)){
-
-
-            String line;
-
-            while ((line= bufferedReader.readLine()) != null){
-                stringList.add(line);
-            }
-            isreader.close();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        return stringList;
+    private List<String> extractDataFromFile(String filename){
+        FileIO fileIO = new FileIO(FileIO.getApplicationRootPath("settings"),filename);
+        return List.of(fileIO.read().split("\n"));
     }
 
     private void removeFromFile(String filename){
