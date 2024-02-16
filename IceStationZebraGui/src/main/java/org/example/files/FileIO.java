@@ -68,6 +68,7 @@ public class FileIO {
         } else {
             System.err.println("Resource not found: " + resource);
         }
+        return "";
     }
     public static String getApplicationRootPath(){return getApplicationRootPath("");}
     public static String getApplicationRootPath(String uri) {
