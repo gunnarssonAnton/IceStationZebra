@@ -16,7 +16,7 @@ public class Dockerfile {
     private List<String> cmds = new ArrayList<>();
     private String name;
     private String image;
-    private String entryPoint = "BASH";
+    private String entryPoint = "/bin/bash";
 
     public Dockerfile(String image, String name){
         this.image = image;
