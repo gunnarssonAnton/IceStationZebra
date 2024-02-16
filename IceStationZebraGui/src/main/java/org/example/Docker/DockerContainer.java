@@ -5,13 +5,24 @@ import org.example.Utility.ProcessHandler;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.util.Hashtable;
+import java.util.Map;
 
 public class DockerContainer{
     private final String name;
     private final Dockerfile dockerFile;
+    private Map<String,String> volumes = new Hashtable<>();
+    private Map<String,String> envs = new Hashtable<>();
     public DockerContainer(String name, Dockerfile dockerFile){
         this.name = name.toLowerCase();
         this.dockerFile = dockerFile;
+    }
+    public void setEnv(String key, String value){
+        this.envs.put(key,value);
+    }
+    public void setVolume(String key, String value){
+        this.volumes.put(key,value);
+
     }
     public Observable<String> up(){
         //docker run -d --name container_name image_name
