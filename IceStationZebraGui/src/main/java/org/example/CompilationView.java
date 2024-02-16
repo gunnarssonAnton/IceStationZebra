@@ -7,18 +7,20 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ActionListener;
 import java.io.*;
-import java.util.ArrayList;
+import java.util.*;
 import java.util.List;
 
 public class CompilationView extends JPanel {
 
-    List<String> codeBases;
-    List<String> compilerNamesArray;
-    JButton runAllCompilersBtn = new JButton();
-    CompilationView(){
-        compilerNamesArray = extractDataFromFile("compiler_names.txt");
-        codeBases = new ArrayList<>();
+    private Set<String> codeBases;
+    private Set<String> compilerNamesSet;
+    private final JButton runAllCompilersBtn = new JButton();
+    private final FileIO compilerNameFile;
 
+    CompilationView(){
+        compilerNameFile = new FileIO(FileIO.getApplicationRootPath("settings"),"compiler_names.txt");
+        compilerNamesSet = extractDataFromFile(compilerNameFile);
+        codeBases = new HashSet<>();
 
         this.setLayout(new FlowLayout(FlowLayout.RIGHT));
         this.add(this.listContainer(),BorderLayout.NORTH);
@@ -27,18 +29,21 @@ public class CompilationView extends JPanel {
 
     private JPanel compilerNamesPanel(){
         JPanel compilerNamesPanel = new JPanel();
-        JList compilerNamesJlist = new JList(this.compilerNamesArray.toArray());
+        JList compilerNamesJlist = new JList(this.compilerNamesSet.toArray());
         JButton addNameBtn = new JButton("Add");
         JButton removeNameBtn = new JButton("Remove");
 
-        addNameBtn.addActionListener(e -> System.out.println("Add"));
+        addNameBtn.addActionListener(e -> {
+            this.showCompilerInput();
+            compilerNamesJlist.setListData(this.compilerNamesSet.toArray());
+            compilerNamesJlist.updateUI();
+        });
         removeNameBtn.addActionListener(e -> {
-            var selectedIndex = compilerNamesJlist.getSelectedIndex();
-            this.compilerNamesArray.remove(this.compilerNamesArray.get(selectedIndex));
-            this.removeFromFile("compiler_names.txt");
+            var selectedValue = compilerNamesJlist.getSelectedValue().toString();
+            System.out.println(selectedValue);
+            this.removeCompiler(selectedValue);
 
-
-            compilerNamesJlist.setListData(this.compilerNamesArray.toArray());
+            compilerNamesJlist.setListData(this.compilerNamesSet.toArray());
             compilerNamesJlist.updateUI();
             compilerNamesJlist.revalidate();
             compilerNamesJlist.repaint();
@@ -111,18 +116,21 @@ public class CompilationView extends JPanel {
         this.runAllCompilersBtn.addActionListener(l);
     }
 
-    private List<String> extractDataFromFile(String filename){
-        FileIO fileIO = new FileIO(FileIO.getApplicationRootPath("settings"),filename);
-        return List.of(fileIO.read().split("\n"));
+    private Set<String> extractDataFromFile(FileIO fileIO){
+        return new HashSet<>(Arrays.asList(fileIO.read().split("\\r?\\n")));
     }
 
-    private void removeFromFile(String filename){
+    private void updateList(){
         String str = "";
-        for (String compilerName : compilerNamesArray) {
+        for (String compilerName : this.compilerNamesSet) {
+//            System.out.println(str);
             str += compilerName+"\n";
         }
-        writeToOutputStream(filename, str);
-        System.out.printf("Item: has been removed from %s%n", filename);
+        System.out.println("LEN: "+ this.compilerNamesSet.size());
+        System.out.println(str);
+        compilerNameFile.write("");
+        compilerNameFile.write(str);
+        System.out.printf("Item: has been removed from %s%n", compilerNameFile.toString());
     }
     private InputStream getFileAsInputStream(String filename){
         InputStream ioStream = this.getClass()
@@ -148,6 +156,22 @@ public class CompilationView extends JPanel {
 
     }
 
+    private void addCompiler(String name){
+        System.out.println("ADD: "+ name);
 
+        this.compilerNamesSet.add(name);
+        this.updateList();
+    }
+    private void removeCompiler(String name){
+        System.out.println("REMOVE: "+name);
+        this.compilerNamesSet.remove(name);
+        this.updateList();
+    }
+
+    private void showCompilerInput(){
+
+         String input = JOptionPane.showInputDialog(this,"Enter Compiler name:", "Ice Station Zebra",JOptionPane.PLAIN_MESSAGE);
+         this.addCompiler(input);
+    }
 
 }

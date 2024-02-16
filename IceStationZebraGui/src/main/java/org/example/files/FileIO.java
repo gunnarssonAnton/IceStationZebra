@@ -30,7 +30,7 @@ public class FileIO {
     }
     public void write(String data){
         try {
-            Files.writeString(path, data, StandardOpenOption.CREATE);
+            Files.writeString(path, data, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -42,16 +42,10 @@ public class Gui extends JFrame {
 
     private TextArea outPutField(){
         TextArea textArea = new TextArea();
-        textArea.setBackground(Color.BLACK);
         textArea.setText("BIBLE WHORE");
         textArea.setEditable(false);
         return textArea;
     }
-
-
-
-
-
 
 
 }
