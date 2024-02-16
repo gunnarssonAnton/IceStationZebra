@@ -2,6 +2,7 @@ package org.example.Docker;
 
 import io.reactivex.rxjava3.core.Observable;
 import org.example.Utility.ProcessHandler;
+import org.example.files.FileIO;
 
 import java.io.File;
 import java.io.IOException;
@@ -76,30 +77,17 @@ public class Dockerfile {
         return content.toString();
     }
     public static Dockerfile getBasic(String image, String name){
-        Dockerfile dockerfile = new Dockerfile(image, name);
+        Dockerfile dockerfile = new Dockerfile("openjdk:11","testImage");
+        dockerfile.addENV("COMPILER_NAME","");
+        dockerfile.addENV("COMPILER_WHATEVER","");
         dockerfile.addVolume("/scripts");
         dockerfile.addVolume("/installs");
         dockerfile.addVolume("/compile_commands");
         dockerfile.addVolume("/codebase");
         dockerfile.addVolume("/output");
+        dockerfile.addRUN("echo \"$(ls)\"\n");
+        dockerfile.addCMD("echo \"$(ls)\"\n");
 
-        dockerfile.addENV("COMPILER_NAME","");
-
-        dockerfile.setEntrypoint("");
         return dockerfile;
     }
 }
-
-/*
-Dockerfile dockerfile = new Dockerfile("java8","testImage");
-        dockerfile.addENV("COMPILER_NAME");
-        dockerfile.addENV("COMPILER_WHATEVER");
-        dockerfile.addVolume("/installs");
-        dockerfile.addVolume("/output");
-        dockerfile.addRUN("ssdsd");
-        dockerfile.addCMD("sdsd,sdsd,sdsd,sd");
-        dockerfile.addCMD("sdsd,spo,eta,ssssss");
-        dockerfile.setEntrypoint("bajs.sh");
-        FileIO file = new FileIO("./",".Dockerfile");
-        file.write(dockerfile.toString());
- */
