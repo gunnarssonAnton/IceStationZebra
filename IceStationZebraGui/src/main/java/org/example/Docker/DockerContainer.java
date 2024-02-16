@@ -57,22 +57,16 @@ public class DockerContainer{
         String[] cmd = new String[]{"docker", "rm", this.name};
         return ProcessHandler.getOutput(cmd);
     }
+    public static DockerContainer getBasic(String name, Dockerfile dockerFile){
+        DockerContainer container = new DockerContainer(name,dockerFile);
+        container.setVolume("./scripts", "/scripts");
+        container.setVolume("./installs", "/installs");
+        container.setVolume("./compile_commands", "/compile_commands");
+        container.setVolume("./codebase", "/codebase");
+        container.setVolume("./output", "/output");
+
+        container.setEnv("COMPILER_NAME","nazi penis");
+        container.setEnv("COMPILER_WHATEVER","nazi anus");
+        return container;
+    }
 }
-/*
-Dockerfile dockerfile = new Dockerfile("openjdk:11","testImage");
-        dockerfile.addENV("COMPILER_NAME","");
-        dockerfile.addENV("COMPILER_WHATEVER","");
-        dockerfile.addVolume("/installs");
-        dockerfile.addVolume("/output");
-        dockerfile.addRUN("ls | echo");
-        dockerfile.addCMD("ls | echo");
-        FileIO file = new FileIO(FileIO.getApplicationRootPath(),"Dockerfile");
-        file.write(dockerfile.toString());
-        dockerfile.build(file.getPath().toString()).subscribe(System.out::println);
-
-        Thread.sleep(3000);
-        System.out.println("Removing...");
-        Thread.sleep(3000);
-        dockerfile.remove().subscribe(System.out::println);
-
- */
