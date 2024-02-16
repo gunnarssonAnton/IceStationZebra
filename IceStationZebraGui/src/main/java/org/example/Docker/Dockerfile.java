@@ -1,24 +1,32 @@
 package org.example.Docker;
 
+import io.reactivex.rxjava3.core.Observable;
+import org.example.Utility.ProcessHandler;
+
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 public class Dockerfile {
     private List<String> volumes = new ArrayList<>();
-    private List<String> envs = new ArrayList<>();;
-    private List<String> runs = new ArrayList<>();;
-    private List<String> cmds = new ArrayList<>();;
+    private List<String> envs = new ArrayList<>();
+    private List<String> runs = new ArrayList<>();
+    private List<String> cmds = new ArrayList<>();
     private String name;
     private String image;
     private String entryPoint = "BASH";
 
     public Dockerfile(String image, String name){
         this.image = image;
-        this.name = name;
+        this.name = name.toLowerCase();
     }
-    public void addENV(String env){
-        this.envs.add(env);
+    public String getName(){
+        return this.name;
+    }
+    public void addENV(String key,String value){
+        this.envs.add(key + "=" + value);
     }
     public void addVolume(String volume){
         this.volumes.add(volume);
@@ -32,11 +40,15 @@ public class Dockerfile {
     public void setEntrypoint(String entryPoint){
         this.entryPoint = entryPoint;
     }
-    public void build(){
-
+    public Observable<String> build(String path){
+        if (path == null)
+            path = ".";
+        String[] cmd = new String[]{"docker", "build", "-t", this.name, "-f",path,"."};
+        return ProcessHandler.getOutput(cmd);
     }
-    public void remove(){
-
+    public Observable<String> remove(){
+        String[] cmd = new String[]{"docker","rmi",this.name};
+        return ProcessHandler.getOutput(cmd);
     }
     @Override
     public String toString(){
@@ -48,7 +60,7 @@ public class Dockerfile {
         content.append("\n");
 
         //
-        this.envs.forEach(env -> content.append("ENV ").append(env).append("\n"));
+        this.envs.forEach(env -> content.append("ENV ").append(env).append("=Dolk").append("\n"));
         content.append("\n");
 
         //
