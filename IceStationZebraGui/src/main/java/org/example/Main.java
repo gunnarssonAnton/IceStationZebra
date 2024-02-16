@@ -18,7 +18,10 @@ public class Main {
         Dockerfile dockerfile = new Dockerfile("openjdk:11","testImage");
         dockerfile.addENV("COMPILER_NAME","");
         dockerfile.addENV("COMPILER_WHATEVER","");
+        dockerfile.addVolume("/scripts");
         dockerfile.addVolume("/installs");
+        dockerfile.addVolume("/compile_commands");
+        dockerfile.addVolume("/codebase");
         dockerfile.addVolume("/output");
         dockerfile.addRUN("echo \"$(ls)\"\n");
         dockerfile.addCMD("echo \"$(ls)\"\n");
@@ -27,9 +30,9 @@ public class Main {
         dockerfile.build(file.getPath().toString()).subscribe(System.out::println);
         //
         DockerContainer container = new DockerContainer("testcontainer",dockerfile);
-        container.setVolume("./scripts", "/installs");
+        container.setVolume("./scripts", "/scripts");
         container.setVolume("./installs", "/installs");
-        container.setVolume("./compilecommands", "/compilecommands");
+        container.setVolume("./compile_commands", "/compile_commands");
         container.setVolume("./codebase", "/codebase");
         container.setVolume("./output", "/output");
 
