@@ -4,14 +4,9 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ActionListener;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Scanner;
 
 public class CompilationView extends JPanel {
 
@@ -19,7 +14,7 @@ public class CompilationView extends JPanel {
     List<String> compilerNamesArray;
     JButton runAllCompilersBtn = new JButton();
     CompilationView(){
-        compilerNamesArray = extractDataFromFile("compiler_Names.txt");
+        compilerNamesArray = extractDataFromFile("compiler_names.txt");
         codeBases = extractDataFromFile("code_bases.txt");
 
 
@@ -29,7 +24,6 @@ public class CompilationView extends JPanel {
     }
 
     private JPanel compilerNamesPanel(){
-//        List<String> compilerNamesArray = new ArrayList<>(List.of("oracle", "open", "eclipse"));
         JPanel compilerNamesPanel = new JPanel();
         JList compilerNamesJlist = new JList(this.compilerNamesArray.toArray());
         JButton addNameBtn = new JButton("Add");
@@ -39,8 +33,7 @@ public class CompilationView extends JPanel {
         removeNameBtn.addActionListener(e -> {
             var selectedIndex = compilerNamesJlist.getSelectedIndex();
             this.compilerNamesArray.remove(this.compilerNamesArray.get(selectedIndex));
-            System.out.println(Arrays.toString(this.compilerNamesArray.toArray()));
-            this.removeFromFile("compiler_Names.txt");
+            this.removeFromFile("compiler_names.txt");
 
 
             compilerNamesJlist.setListData(this.compilerNamesArray.toArray());
@@ -53,6 +46,7 @@ public class CompilationView extends JPanel {
 
         compilerNamesJlist.setPreferredSize(new Dimension(300,250));
         compilerNamesPanel.setPreferredSize(new Dimension(300,300));
+        compilerNamesPanel.setBackground(Color.white);
         compilerNamesPanel.add(compilerNamesJlist);
         compilerNamesPanel.add(addNameBtn);
         compilerNamesPanel.add(removeNameBtn);
@@ -68,13 +62,10 @@ public class CompilationView extends JPanel {
         JList codeBase = new JList(this.codeBases.toArray());
         TextArea output = new TextArea();
 
-
-        container.setBackground(Color.yellow);
-
+        container.setBackground(Color.lightGray);
 
         codeBase.setPreferredSize(new Dimension(300,300));
         output.setPreferredSize(new Dimension(300,300));
-
 
         output.setText("Output");
 
@@ -97,7 +88,10 @@ public class CompilationView extends JPanel {
         container.setBorder(new EmptyBorder(50,50,50,50));
         container.setSize(50,50);
 
-        container.setBackground(Color.blue);
+        runAllCompilersBtn.setPreferredSize(new Dimension(150,80));
+        runCompilerBtn.setPreferredSize(new Dimension(150,80));
+
+
         runCompilerBtn.setText("Run Current");
         runAllCompilersBtn.setText("Run All");
 
@@ -115,41 +109,58 @@ public class CompilationView extends JPanel {
         this.runAllCompilersBtn.addActionListener(l);
     }
 
-    private java.util.List<String> extractDataFromFile(String fileName){
+    private java.util.List<String> extractDataFromFile(String filename){
         List<String> stringList = new ArrayList<>();
-        try {
-            File file = new File(String.format("src/main/resources/%s", fileName));
-            Scanner scanner = new Scanner(file);
+        try
+
+            (InputStreamReader isreader = new InputStreamReader(this.getFileAsInputStream(filename));
+             BufferedReader bufferedReader = new BufferedReader(isreader)){
+
+
             String line;
 
-            while (scanner.hasNextLine()){
-                line = scanner.nextLine();
-                System.out.println(line);
+            while ((line= bufferedReader.readLine()) != null){
                 stringList.add(line);
             }
-            scanner.close();
+            isreader.close();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
         return stringList;
     }
 
-    private void removeFromFile(String fileName){
+    private void removeFromFile(String filename){
         String str = "";
         for (String compilerName : compilerNamesArray) {
             str += compilerName+"\n";
         }
-        System.out.println(str);
+        writeToOutputStream(filename, str);
+        System.out.printf("Item: has been removed from %s%n", filename);
+    }
+    private InputStream getFileAsInputStream(String filename){
+        InputStream ioStream = this.getClass()
+                .getClassLoader()
+                .getResourceAsStream(filename);
 
+        if (ioStream == null){
+            throw  new IllegalArgumentException(filename+ " is not found");
+        }
+        return ioStream;
+    }
+
+    void writeToOutputStream(String filename, String value){
         try {
-            BufferedWriter writer = new BufferedWriter(new FileWriter(String.format("src/main/resources/%s", fileName)));
-            writer.write(str);
-            writer.close();
 
-            System.out.println("ALL good in the hood");
+            OutputStream fileOutputStream = new FileOutputStream(filename);
+            fileOutputStream.write(value.getBytes());
+            fileOutputStream.close();
+
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+
     }
+
+
 
 }
