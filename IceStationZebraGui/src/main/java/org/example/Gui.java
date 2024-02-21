@@ -28,7 +28,7 @@ public class Gui extends JFrame {
         this.setLayout(new BorderLayout());
         this.setResizable(false);
         this.setLocationRelativeTo(null);
-
+        this.setLocation(-80,-1200);
 
 
         this.cards.add(this.compilationViewController.getView());

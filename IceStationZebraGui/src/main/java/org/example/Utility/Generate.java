@@ -6,8 +6,17 @@ import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Random;
 
 public class Generate {
+    public static String generateRandomString(int len){
+        String chars = "abcdefghijklmnopqrstuvwxyz";
+        StringBuilder result = new StringBuilder();
+        for (int i = 0; i < len; i++) {
+            result.append(chars.charAt(new Random().nextInt(chars.length())));
+        }
+        return result.toString();
+    }
     public static void generateDependancies(){
         generateFolders();
         generateScripts();

@@ -14,19 +14,14 @@ public class TerminalView extends JPanel {
         this.setLayout(new BorderLayout());
         this.add(this.outPutField(subject),BorderLayout.CENTER);
         this.setPreferredSize(new Dimension(900,500));
+
     }
 
     private TextArea outPutField(PublishSubject<String> subject){
         TextArea textArea = new TextArea();
         textArea.setEditable(false);
-//        Disposable disposable = subject.subscribe(str -> SwingUtilities.invokeLater(() -> {
-//            textArea.append("isz › " + str + "\n");
-//
-//        }),throwable -> {
-//
-//        },() -> {
-//
-//        });
+        textArea.setBackground(Color.darkGray);
+        textArea.setForeground(Color.orange);
         Disposable disposable = subject.subscribe(str -> {
             textArea.append("isz › " + str + "\n");
         });
