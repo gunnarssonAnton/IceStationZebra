@@ -33,17 +33,17 @@ public class CompilationViewController {
         Disposable stdoutDisposable = handler.getStdout().subscribeOn(Schedulers.io()).subscribe(out -> {
             this.subject.onNext(Colorize.printInfo(out));
         }, Throwable::printStackTrace
-        , () -> System.out.println("Container stdoutcomplete"));
+        , () -> System.out.println("Image stdout complete"));
         Disposable stderrDisposable = handler.getStderr().subscribeOn(Schedulers.io()).subscribe(err -> {
             this.subject.onNext(Colorize.printAlert(err));
         }, Throwable::printStackTrace
-                , () -> System.out.println("Container stderr complete"));
+                , () -> System.out.println("Image stderr complete"));
         Disposable completionDisposable = handler.getCompletion().subscribe(
                 () -> {
-                    System.out.println("Container Process completed successfully");
+                    System.out.println("Image Process completed successfully");
                     runContainer(dockerfile);
                 },
-                throwable -> System.out.println("Container Process failed: " + throwable.getMessage())
+                throwable -> System.out.println("Image Process failed: " + throwable.getMessage())
         );
 
     }
