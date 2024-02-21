@@ -14,6 +14,7 @@ public class Dockerfile {
     private List<String> volumes = new ArrayList<>();
     private List<String> envs = new ArrayList<>();
     private List<String> runs = new ArrayList<>();
+    private List<String> copys = new ArrayList<>();
     private List<String> cmds = new ArrayList<>();
     private String name;
     private String image;
@@ -34,6 +35,9 @@ public class Dockerfile {
     }
     public void addRUN(String run){
         this.runs.add(run);
+    }
+    public void addCOPY(String from, String to){
+        this.copys.add(from + " " + to);
     }
     public void addCMD(String cmd){
         this.cmds.add(cmd);
@@ -63,7 +67,9 @@ public class Dockerfile {
         //
         this.envs.forEach(env -> content.append("ENV ").append(env).append("=Dolk").append("\n"));
         content.append("\n");
-
+        //
+        this.copys.forEach(cpy -> content.append("COPY ").append(cpy));
+        content.append("\n");
         //
         this.runs.forEach(run -> content.append("RUN ").append(run).append("\n"));
         content.append("\n");
@@ -87,7 +93,10 @@ public class Dockerfile {
         dockerfile.addVolume("/compile_commands");
         dockerfile.addVolume("/codebase");
         dockerfile.addVolume("/output");
-        dockerfile.addRUN("echo \"$(ls)\"\n");
+        dockerfile.addCOPY("/scripts/compilation_entrypoint.sh","/compilation_entrypoint.sh");
+        dockerfile.addRUN("chmod +x /compilation_entrypoint.sh");
+//        dockerfile.addCOPY("/scripts/execution_entrypoint.sh","/execution_entrypoint.sh");
+//        dockerfile.addRUN("chmod +x /execution_entrypoint.sh");
         dockerfile.addCMD("echo \"$(ls)\"\n");
 
         return dockerfile;
