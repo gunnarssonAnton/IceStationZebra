@@ -18,79 +18,63 @@ public class ProcessHandler {
         this.stderr = stderr;
         this.completion = completion;
     }
-
     public static ProcessHandler construct(String[] cmd) {
-        Observable<String> stdout = Observable.<String>create(emitter -> {
-            try {
-                ProcessBuilder builder = new ProcessBuilder(cmd);
-                Process process = builder.start();
+        final Process process;
+        try {
+            process = new ProcessBuilder(cmd).start();
+        } catch (IOException e) {
+            // Handle the error appropriately. For simplicity, we'll just print the stack trace here.
+            e.printStackTrace();
+            // Return a default ProcessHandler instance or throw a custom exception as appropriate.
+            return new ProcessHandler(Observable.empty(), Observable.empty(), Completable.complete());
+        }
 
-                new Thread(() -> {
-                    try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
-                        String line;
-                        while ((line = reader.readLine()) != null && !emitter.isDisposed()) {
-                            emitter.onNext(line);
-                        }
-                        emitter.onComplete();
-                    } catch (IOException e) {
-                        if (!emitter.isDisposed()) {
-                            emitter.onError(e);
-                        }
+        Observable<String> stdout = Observable.create(emitter -> {
+            new Thread(() -> {
+                try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+                    String line;
+                    while ((line = reader.readLine()) != null && !emitter.isDisposed()) {
+                        emitter.onNext(line);
                     }
-                }).start();
-            } catch (IOException e) {
-                emitter.onError(e);
-            }
-        }).subscribeOn(Schedulers.io());
-
-        Observable<String> stderr = Observable.<String>create(emitter -> {
-            try {
-                ProcessBuilder builder = new ProcessBuilder(cmd);
-                Process process = builder.start();
-
-                new Thread(() -> {
-                    try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getErrorStream()))) {
-                        String line;
-                        while ((line = reader.readLine()) != null && !emitter.isDisposed()) {
-                            emitter.onNext(line);
-                        }
-                        emitter.onComplete();
-                    } catch (IOException e) {
-                        if (!emitter.isDisposed()) {
-                            emitter.onError(e);
-                        }
+                    emitter.onComplete();
+                } catch (IOException e) {
+                    if (!emitter.isDisposed()) {
+                        emitter.onError(e);
                     }
-                }).start();
-            } catch (IOException e) {
-                emitter.onError(e);
-            }
-        }).subscribeOn(Schedulers.io());
+                }
+            }).start();
+        });
+
+        Observable<String> stderr = Observable.create(emitter -> {
+            new Thread(() -> {
+                try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getErrorStream()))) {
+                    String line;
+                    while ((line = reader.readLine()) != null && !emitter.isDisposed()) {
+                        emitter.onNext(line);
+                    }
+                    emitter.onComplete();
+                } catch (IOException e) {
+                    if (!emitter.isDisposed()) {
+                        emitter.onError(e);
+                    }
+                }
+            }).start();
+        });
 
         Completable completion = Completable.create(emitter -> {
             try {
-                ProcessBuilder builder = new ProcessBuilder(cmd);
-                Process process = builder.start();
-
-                new Thread(() -> {
-                    try {
-                        int exitVal = process.waitFor();
-                        if (exitVal == 0) {
-                            emitter.onComplete();
-                        } else {
-                            emitter.onError(new Throwable("Process exited with error code: " + exitVal));
-                        }
-                    } catch (InterruptedException e) {
-                        if (!emitter.isDisposed()) {
-                            emitter.onError(e);
-                        }
-                    } finally {
-                        process.destroy();
-                    }
-                }).start();
-            } catch (IOException e) {
-                emitter.onError(e);
+                int exitVal = process.waitFor();
+                if (exitVal == 0) {
+                    emitter.onComplete();
+                } else {
+                    emitter.onError(new Throwable("Process exited with error code: " + exitVal));
+                }
+            } catch (InterruptedException e) {
+                if (!emitter.isDisposed()) {
+                    emitter.onError(e);
+                }
             }
-        }).subscribeOn(Schedulers.io());
+        });
 
         return new ProcessHandler(stdout, stderr, completion);
     }
