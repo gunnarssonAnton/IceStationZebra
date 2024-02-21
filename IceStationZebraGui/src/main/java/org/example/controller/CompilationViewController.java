@@ -16,7 +16,6 @@ public class CompilationViewController {
                 Compilation compilation = new Compilation(subject,"ubuntu:latest");
                 compilation.go(name, "");
             });
-
         });
     }
 
