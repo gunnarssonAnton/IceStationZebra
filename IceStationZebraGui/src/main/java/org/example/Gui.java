@@ -2,6 +2,7 @@ package org.example;
 
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.subjects.PublishSubject;
+import org.example.Utility.TerminalMessage;
 import org.example.controller.CompilationViewController;
 import org.example.controller.ExecutionViewController;
 import org.example.controller.TerminalViewController;
@@ -31,8 +32,8 @@ public class Gui extends JFrame {
         this.setLocation(-80,-1200);
 
 
-        this.cards.add(this.compilationViewController.getView());
-        this.cards.add(this.executionViewController.getView());
+        this.cards.add(compilationViewController.getView());
+        this.cards.add(executionViewController.getView());
         this.add(this.cards);
 
         this.add(this.terminalViewController.getView(),BorderLayout.SOUTH);
