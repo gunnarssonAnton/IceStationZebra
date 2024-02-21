@@ -45,15 +45,15 @@ public class Dockerfile {
     public void setEntrypoint(String entryPoint){
         this.entryPoint = entryPoint;
     }
-    public Observable<String> build(String path){
+    public ProcessHandler build(String path){
         if (path == null)
             path = ".";
         String[] cmd = new String[]{"docker", "build", "-t", this.name, "-f",path,"."};
-        return ProcessHandler.getOutput(cmd);
+        return ProcessHandler.construct(cmd);
     }
-    public Observable<String> remove(){
+    public ProcessHandler remove(){
         String[] cmd = new String[]{"docker","rmi",this.name};
-        return ProcessHandler.getOutput(cmd);
+        return ProcessHandler.construct(cmd);
     }
     @Override
     public String toString(){

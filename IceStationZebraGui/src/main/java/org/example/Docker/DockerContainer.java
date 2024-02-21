@@ -55,20 +55,20 @@ public class DockerContainer{
         Collections.addAll(base, args);
         return base.toArray(new String[0]);
     }
-    public Observable<String> run(String[] args){
+    public ProcessHandler run(String[] args){
         //docker run -d --name container_name image_name
         String[] cmd = compileCMD(args);
         System.out.println("CMD ->" + String.join(",",cmd));
-        return ProcessHandler.getOutput(cmd);
+        return ProcessHandler.construct(cmd);
     }
-    public Observable<String> stop(){
+    public ProcessHandler stop(){
         //docker stop my_nginx
         String[] cmd = new String[]{"docker", "stop", this.name};
-        return ProcessHandler.getOutput(cmd);
+        return ProcessHandler.construct(cmd);
     }
-    public Observable<String> remove(){
+    public ProcessHandler remove(){
         String[] cmd = new String[]{"docker", "rm", this.name};
-        return ProcessHandler.getOutput(cmd);
+        return ProcessHandler.construct(cmd);
     }
     public static DockerContainer getBasic(String name, Dockerfile dockerFile){
         DockerContainer container = new DockerContainer(name,dockerFile);
