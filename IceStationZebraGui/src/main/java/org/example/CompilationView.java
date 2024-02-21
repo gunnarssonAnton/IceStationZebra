@@ -12,8 +12,8 @@ import java.util.List;
 
 public class CompilationView extends JPanel {
 
-    private Set<String> codeBases;
-    private Set<String> compilerNamesSet;
+    private final Set<String> codeBases;
+    private final Set<String> compilerNamesSet;
     private final JButton runAllCompilersBtn = new JButton();
     private final FileIO compilerNameFile;
 
@@ -126,11 +126,8 @@ public class CompilationView extends JPanel {
 //            System.out.println(str);
             str += compilerName+"\n";
         }
-        System.out.println("LEN: "+ this.compilerNamesSet.size());
-        System.out.println(str);
         compilerNameFile.write("");
         compilerNameFile.write(str);
-        System.out.printf("Item: has been removed from %s%n", compilerNameFile.toString());
     }
     private InputStream getFileAsInputStream(String filename){
         InputStream ioStream = this.getClass()
@@ -158,7 +155,8 @@ public class CompilationView extends JPanel {
 
     private void addCompiler(String name){
         System.out.println("ADD: "+ name);
-
+        FileIO fileIO = new FileIO(FileIO.getApplicationRootPath("installs"),name+"_install.sh");
+        fileIO.write("");
         this.compilerNamesSet.add(name);
         this.updateList();
     }
