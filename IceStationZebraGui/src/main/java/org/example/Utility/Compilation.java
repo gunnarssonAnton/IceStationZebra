@@ -7,7 +7,12 @@ import org.example.Docker.DockerContainer;
 import org.example.Docker.Dockerfile;
 import org.example.files.FileIO;
 
-import java.awt.*;
+import java.awt.Color;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class Compilation {
     private PublishSubject<TerminalMessage> subject;
@@ -20,7 +25,12 @@ public class Compilation {
         this.pullImage = pullImage;
         this.containerName = "container_" + this.suffix;
     }
-    public void go(String compilerName, String codeFile){
+    public void go(String compilerName){
+        List<String> tests = getTests();
+        tests.forEach(test -> {
+            constructCompileCommand(compilerName,test);
+        });
+        System.exit(99);
         // Create docker file
         Dockerfile dockerfile = Dockerfile.getBasic(this.pullImage, "image_" + this.suffix);
 
@@ -60,7 +70,7 @@ public class Compilation {
 
         // Container stdout
         Disposable containerStdoutDisposable = containerHandler.getStdout().subscribeOn(Schedulers.io()).subscribe(out -> {
-            this.subject.onNext(new TerminalMessage(out,Color.lightGray));
+            this.subject.onNext(new TerminalMessage(out, Color.lightGray));
 
         });
 
@@ -75,5 +85,31 @@ public class Compilation {
                     this.subject.onNext(new TerminalMessage("Container completed",Color.green));
                 },throwable -> subject.onNext(new TerminalMessage("Process failed: " + throwable.getMessage(),Color.red))
         );
+    }
+    private List<String> getTests() {
+        File directory = new File(FileIO.getApplicationRootPath("codebase"));
+        File[] filesList = directory.listFiles();
+        if (filesList != null) {
+            return  Arrays.stream(filesList)
+                    .filter(File::isDirectory)
+                    .map(File::getName)
+                    .collect(Collectors.toList());
+        } else {
+            return new ArrayList<>();
+        }
+    }
+    private String getFilesStringForTest(String test){
+        File sub = new File(FileIO.getApplicationRootPath("codebase/" + test));
+        return Arrays.stream(sub.listFiles()).toList().stream()
+                .filter(File::isFile).map(File::getName) // Convert File to its name
+                .collect(Collectors.joining(" "));
+    }
+    private String constructCompileCommand(String compilerName, String testName){
+        String OUTPUT  = FileIO.getApplicationRootPath("output/" + testName);
+        String compileCommand = new FileIO(FileIO.getApplicationRootPath("compile_commands"),compilerName + "_compileCmd.sh").read();
+        String FILES = getFilesStringForTest(testName);
+        compileCommand = compileCommand.replace("FILES",FILES).replace("OUTPUT",OUTPUT);
+        System.out.println(compileCommand);
+        return compileCommand;
     }
 }
