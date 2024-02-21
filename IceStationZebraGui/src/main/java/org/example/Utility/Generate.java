@@ -27,6 +27,7 @@ public class Generate {
         FileIO.createFolderIf(Paths.get(FileIO.getApplicationRootPath("compile_commands")));
         FileIO.createFolderIf(Paths.get(FileIO.getApplicationRootPath("codebase")));
         FileIO.createFolderIf(Paths.get(FileIO.getApplicationRootPath("output")));
+        FileIO.createFolderIf(Paths.get(FileIO.getApplicationRootPath("files")));
         FileIO.createFolderIf(Paths.get(FileIO.getApplicationRootPath("settings")));
         FileIO.createFolderIf(Paths.get(FileIO.getApplicationRootPath("codebase/mandelbrot")));
     }

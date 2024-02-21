@@ -20,6 +20,7 @@ public class Gui extends JFrame {
     private final TerminalViewController terminalViewController = new TerminalViewController();
     private final CompilationViewController compilationViewController = new CompilationViewController(this.terminalViewController.getSubject());
     private final ExecutionViewController executionViewController = new ExecutionViewController(this.terminalViewController.getSubject());
+
     public Gui(){
         this.pack();
         this.setSize(1000,1000);
@@ -29,7 +30,7 @@ public class Gui extends JFrame {
         this.setLayout(new BorderLayout());
         this.setResizable(false);
         this.setLocationRelativeTo(null);
-        this.setLocation(-80,-1200);
+        //this.setLocation(-80,-1200);
 
 
         this.cards.add(compilationViewController.getView());
@@ -37,7 +38,7 @@ public class Gui extends JFrame {
         this.add(this.cards);
 
         this.add(this.terminalViewController.getView(),BorderLayout.SOUTH);
-        this.terminalViewController.getSubject().onNext(new Date().toString());
+        this.terminalViewController.getSubject().onNext(new TerminalMessage(new Date().toString(),Color.PINK));
         this.compilationViewController
                 .getView()
                 .setOnClick(e-> this.slideOut());
@@ -45,7 +46,6 @@ public class Gui extends JFrame {
                 .getView()
                 .setOnClick(e -> this.slideIn());
     }
-
 
     private void slideIn() {
         Rectangle bounds = cards.getBounds();
@@ -61,6 +61,7 @@ public class Gui extends JFrame {
         cards.setBounds(bounds);
         animateSlide(-1000,true, -100);
     }
+
     private void animateSlide(int targetX, boolean isSlideOut, int dx) {
         Timer timer = new Timer(2, e -> {
             Rectangle bounds = cards.getBounds();
@@ -79,5 +80,4 @@ public class Gui extends JFrame {
         });
         timer.start();
     }
-
 }

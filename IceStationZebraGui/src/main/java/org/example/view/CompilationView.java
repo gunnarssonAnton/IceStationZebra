@@ -23,21 +23,28 @@ public class CompilationView extends JPanel {
     private final Set<String> codeBases;
     private final Set<String> compilerNamesSet;
     private final JButton runAllCompilersBtn = new JButton();
+    private final JButton runCompilerBtn = new JButton();
+    private final JButton toExecutionBtn = new JButton();
     private JList codebasesJList;
     private JList codebaseChildrenJlist;
     private JTextArea outputArea;
     private JList compilerNamesJlist;
     private final FileIO compilerNameFile;
+    Observable EditObseravble;
+
 
 
     public CompilationView(){
         compilerNameFile = new FileIO(FileIO.getApplicationRootPath("settings"),"compiler_names.txt");
         compilerNamesSet = this.extractDataFromFile(compilerNameFile);
         codeBases = new HashSet<>();
-
         this.setLayout(new FlowLayout(FlowLayout.RIGHT));
         this.add(this.listContainer(),BorderLayout.NORTH);
         this.add(this.runBtnContainer(),BorderLayout.CENTER);
+    }
+
+    public Set<String> getCompilerNamesSet(){
+        return this.compilerNamesSet;
     }
 
     private JPanel compilerNamesPanel(){
@@ -123,15 +130,13 @@ public class CompilationView extends JPanel {
 
     private JPanel runBtnContainer(){
         JPanel container = new JPanel();
-        JButton runCompilerBtn = new JButton();
-
         container.setLayout(new FlowLayout(FlowLayout.RIGHT));
-
         container.setBorder(new EmptyBorder(50,50,50,50));
         container.setSize(50,50);
 
         runAllCompilersBtn.setPreferredSize(new Dimension(150,80));
         runCompilerBtn.setPreferredSize(new Dimension(150,80));
+        toExecutionBtn.setPreferredSize(new Dimension(150,80));
 
         runCompilerBtn.addActionListener(e -> {
             String content = compilerNamesJlist.getSelectedValue() + "\n" + codebasesJList.getSelectedValue()+"\n";
@@ -141,18 +146,25 @@ public class CompilationView extends JPanel {
         });
         runCompilerBtn.setText("Run Current");
         runAllCompilersBtn.setText("Run All");
+        toExecutionBtn.setText("execution >");
 
-
+        runAllCompilersBtn.addActionListener(e->System.out.println("RUN ALL"));
+        runCompilerBtn.addActionListener(e->System.out.println("RUN SELECTED"));
+        toExecutionBtn.addActionListener(e->System.out.println("TO EXECUTION"));
 //        runAllCompilersBtn.addActionListener(e->System.out.println("RUN ALL"));
 
 
         container.add(runCompilerBtn);
         container.add(runAllCompilersBtn);
+        container.add(toExecutionBtn);
 
         return container;
     }
 
     public void setOnClick(ActionListener l){
+        this.toExecutionBtn.addActionListener(l);
+    }
+    public void runAllOnClick(ActionListener l){
         this.runAllCompilersBtn.addActionListener(l);
     }
 

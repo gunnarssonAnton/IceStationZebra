@@ -38,7 +38,7 @@ public class DockerContainer{
         List<String> base = new ArrayList<>(Arrays.asList("docker", "run", "-i", "--name", this.name));
 
         this.envs.forEach((key, value) -> {
-            base.add("-e" + key + "=\"" + value + "\"");
+            base.add("-e" + key + "=" + value);
         });
         this.volumes.forEach((key, value) -> {
             if (key.startsWith("./"))
@@ -77,10 +77,10 @@ public class DockerContainer{
         container.setVolume("./compile_commands", "/compile_commands");
         container.setVolume("./codebase", "/codebase");
         container.setVolume("./output", "/output");
-        container.setEntrypointOverride("/compilation_entrypoint.sh");
+        //container.setEntrypointOverride("/compilation_entrypoint.sh");
         container.setEnv("COMPILER_NAME","A-team");
         container.setEnv("COMPILER_WHATEVER","A-team");
-        container.addARG("Dolk_Lundgren");
+        //container.addARG("Dolk_Lundgren");
         return container;
     }
 }
