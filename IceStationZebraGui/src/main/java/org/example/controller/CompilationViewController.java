@@ -16,35 +16,6 @@ public class CompilationViewController {
     PublishSubject<String> subject;
     public CompilationViewController(PublishSubject<String> subject){
         this.subject = subject;
-//                this.view.setClicker(e->{
-//            CardLayout cardLayout = (CardLayout) cards.getLayout();
-//            cardLayout.previous(cards);
-//        });
-
-//        this.view.setOnClick(e-> {
-////            CardLayout cardLayout = (CardLayout) this.cards.getLayout();
-////            cardLayout.next(this.cards);
-//
-//            Dockerfile dockerfile = Dockerfile.getBasic("openjdk:11","testImage");
-//            FileIO file = new FileIO(FileIO.getApplicationRootPath(),"Dockerfile");
-//            file.write(dockerfile.toString());
-//            dockerfile.build(file.getPath().toString()).subscribe(str ->
-//                    SwingUtilities.invokeLater(() -> this.subject.onNext(str)),
-//                    throwable -> SwingUtilities.invokeLater(() -> {
-//                        this.subject.onNext("Error: " + throwable.getMessage());
-//                        throwable.printStackTrace();
-//                    })
-//            );
-//
-//            DockerContainer container = DockerContainer.getBasic("testcontainer",dockerfile);
-//            container.run(new String[0]).subscribe(str ->
-//                    SwingUtilities.invokeLater(() -> this.subject.onNext(str)),
-//                    throwable -> SwingUtilities.invokeLater(() -> {
-//                        this.subject.onNext("Error: " + throwable.getMessage());
-//                        throwable.printStackTrace();
-//                    })
-//            );
-//        });
         this.view.setOnClick(e -> {
             runDocker();
         });
