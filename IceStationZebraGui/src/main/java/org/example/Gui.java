@@ -2,6 +2,7 @@ package org.example;
 
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.subjects.PublishSubject;
+import org.example.Utility.TerminalMessage;
 import org.example.controller.CompilationViewController;
 import org.example.controller.ExecutionViewController;
 import org.example.controller.TerminalViewController;
@@ -35,7 +36,7 @@ public class Gui extends JFrame {
         this.add(this.cards);
 
         this.add(this.terminalViewController.getView(),BorderLayout.SOUTH);
-        this.terminalViewController.getSubject().onNext(new Date().toString());
+        this.terminalViewController.getSubject().onNext(new TerminalMessage(new Date().toString(),Color.pink));
     }
 
 

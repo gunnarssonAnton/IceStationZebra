@@ -6,10 +6,7 @@ import io.reactivex.rxjava3.schedulers.Schedulers;
 import io.reactivex.rxjava3.subjects.PublishSubject;
 import org.example.Docker.DockerContainer;
 import org.example.Docker.Dockerfile;
-import org.example.Utility.Colorize;
-import org.example.Utility.Compilation;
-import org.example.Utility.Generate;
-import org.example.Utility.ProcessHandler;
+import org.example.Utility.*;
 import org.example.files.FileIO;
 import org.example.view.CompilationView;
 
@@ -18,8 +15,8 @@ import java.awt.*;
 
 public class CompilationViewController {
     CompilationView view = new CompilationView();
-    PublishSubject<String> subject;
-    public CompilationViewController(PublishSubject<String> subject){
+    PublishSubject<TerminalMessage> subject;
+    public CompilationViewController(PublishSubject<TerminalMessage> subject){
         this.subject = subject;
         this.view.setOnClick(e -> {
             runDocker();
@@ -31,19 +28,19 @@ public class CompilationViewController {
         file.write(dockerfile.toString());
         ProcessHandler handler = dockerfile.build(file.getPath().toString());
         Disposable stdoutDisposable = handler.getStdout().subscribeOn(Schedulers.io()).subscribe(out -> {
-            this.subject.onNext(Colorize.printInfo(out));
+            this.subject.onNext(new TerminalMessage(out,Color.white));
         }, Throwable::printStackTrace
         , () -> System.out.println("Image stdout complete"));
         Disposable stderrDisposable = handler.getStderr().subscribeOn(Schedulers.io()).subscribe(err -> {
-            this.subject.onNext(Colorize.printAlert(err));
+            this.subject.onNext(new TerminalMessage(err, Color.red));
         }, Throwable::printStackTrace
                 , () -> System.out.println("Image stderr complete"));
         Disposable completionDisposable = handler.getCompletion().subscribe(
                 () -> {
-                    System.out.println("Image Process completed successfully");
+                    subject.onNext(new TerminalMessage("Image Process completed successfully",Color.GREEN));
                     runContainer(dockerfile);
                 },
-                throwable -> System.out.println("Image Process failed: " + throwable.getMessage())
+                throwable -> subject.onNext(new TerminalMessage("Image Process failed: " + throwable.getMessage(),Color.RED))
         );
 
     }
@@ -51,16 +48,16 @@ public class CompilationViewController {
         DockerContainer container = DockerContainer.getBasic("container_" + Generate.generateRandomString(8), dockerfile);
         ProcessHandler containerHandler = container.run(new String[0]);
         Disposable containerStdoutDisposable = containerHandler.getStdout().subscribeOn(Schedulers.io()).subscribe(out -> {
-            this.subject.onNext(Colorize.printInfo("                               "+out));
+            this.subject.onNext(new TerminalMessage(out,Color.lightGray));
 
         });
         Disposable containerStderrDisposable = containerHandler.getStderr().subscribeOn(Schedulers.io()).subscribe(err -> {
-            this.subject.onNext(Colorize.printAlert("                               "+err));
+            this.subject.onNext(new TerminalMessage(err, Color.red));
         });
         Disposable containerCompletionDisposable = containerHandler.getCompletion().subscribe(
                 () -> {
-                    this.subject.onNext(Colorize.printAlert("Container completed"));
-                },throwable -> System.out.println("Process failed: " + throwable.getMessage())
+                    this.subject.onNext(new TerminalMessage("Container completed",Color.green));
+                },throwable -> subject.onNext(new TerminalMessage("Process failed: " + throwable.getMessage(),Color.red))
         );
     }
     public CompilationView getView(){
