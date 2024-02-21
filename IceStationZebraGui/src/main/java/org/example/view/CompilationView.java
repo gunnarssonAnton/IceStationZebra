@@ -112,7 +112,7 @@ public class CompilationView extends JPanel {
         return container;
     }
 
-    protected void setOnClick(ActionListener l){
+    public void setOnClick(ActionListener l){
         this.runAllCompilersBtn.addActionListener(l);
     }
 
