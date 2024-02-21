@@ -1,14 +1,19 @@
 package org.example;
 
+import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.disposables.Disposable;
+import io.reactivex.rxjava3.subjects.PublishSubject;
+
+import javax.security.auth.Subject;
 import javax.swing.*;
 import java.awt.*;
+import java.util.Date;
 
 public class Gui extends JFrame {
-
-
     JPanel cards = new JPanel(new CardLayout());
     CompilationView compilationView = new CompilationView();
     ExecutionView executionView = new ExecutionView();
+    PublishSubject<String> subject = PublishSubject.create();
 
     Gui(){
         this.pack();
@@ -30,22 +35,30 @@ public class Gui extends JFrame {
             System.out.println("RUN");
         });
 
-
-
         this.cards.add(compilationView);
         this.cards.add(executionView);
         this.add(this.cards);
 
         this.add(this.outPutField(),BorderLayout.SOUTH);
+    }
 
+    public PublishSubject<String> getSubject() {
+        return this.subject;
     }
 
     private TextArea outPutField(){
         TextArea textArea = new TextArea();
-        textArea.setText("BIBLE WHORE");
+        textArea.setText(new Date().toString());
         textArea.setEditable(false);
+
+        Disposable disposable = this.subject.subscribe(str -> {
+            textArea.append(str);
+        },throwable -> {
+
+        },() -> {
+
+        });
+
         return textArea;
     }
-
-
 }
