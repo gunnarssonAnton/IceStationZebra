@@ -12,7 +12,11 @@ public class CompilationViewController {
     public CompilationViewController(PublishSubject<TerminalMessage> subject){
         this.subject = subject;
         this.view.setOnClick(e -> {
-            new Compilation(subject,"ubuntu").go();
+            this.view.getCompilerNamesSet().forEach(name -> {
+
+            });
+            Compilation compilation = new Compilation(subject,"ubuntu");
+            compilation.go();
         });
     }
 

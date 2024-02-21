@@ -34,6 +34,10 @@ public class CompilationView extends JPanel {
         this.add(this.runBtnContainer(),BorderLayout.CENTER);
     }
 
+    public Set<String> getCompilerNamesSet(){
+        return this.compilerNamesSet;
+    }
+
     private JPanel compilerNamesPanel(){
         JPanel compilerNamesPanel = new JPanel();
         IconTextListCellRenderer iconTextListCellRenderer = new IconTextListCellRenderer();
