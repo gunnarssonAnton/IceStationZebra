@@ -26,7 +26,7 @@ public class ProcessHandler {
             // Handle the error appropriately. For simplicity, we'll just print the stack trace here.
             e.printStackTrace();
             // Return a default ProcessHandler instance or throw a custom exception as appropriate.
-            return new ProcessHandler(Observable.empty(), Observable.empty(), Completable.complete());
+            return new ProcessHandler(Observable.empty(), Observable.empty(), Completable.complete(), PublishSubject.create());
         }
 
         Observable<String> stdout = Observable.create(emitter -> {
