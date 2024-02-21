@@ -12,7 +12,7 @@ public class ExecutionView extends JPanel {
         this.add(tempBtn);
     }
 
-    protected void setClicker(ActionListener l){
+    public void setOnClick(ActionListener l){
         this.tempBtn.addActionListener(l);
     }
 }
