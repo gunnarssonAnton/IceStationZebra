@@ -20,15 +20,18 @@ public class Compilation {
         this.pullImage = pullImage;
         this.containerName = "container_" + this.suffix;
     }
-    public void go(String compilerName, String file){
-
-        runDockerImage();
-    }
-    private void runDockerImage(DockerContainer container, Dockerfile) {
+    public void go(String compilerName, String codeFile){
+        // Create docker file
         Dockerfile dockerfile = Dockerfile.getBasic(this.pullImage, "image_" + this.suffix);
-        FileIO file = new FileIO(FileIO.getApplicationRootPath(), "Dockerfile");
-        file.write(dockerfile.toString());
-        ProcessHandler handler = dockerfile.build(file.getPath().toString());
+
+        // Create docker container
+        DockerContainer container = DockerContainer.getBasic(this.containerName, dockerfile);
+        container.setEnv("COMPILER_NAME",compilerName);
+        runDockerImage(container, dockerfile);
+    }
+    private void runDockerImage(DockerContainer container, Dockerfile dockerfile) {
+
+        ProcessHandler handler = dockerfile.build();
 
         // Image stdout
         Disposable stdoutDisposable = handler.getStdout().subscribeOn(Schedulers.io()).subscribe(out -> {
@@ -46,13 +49,13 @@ public class Compilation {
         Disposable completionDisposable = handler.getCompletion().subscribeOn(Schedulers.io()).subscribe(
                 () -> {
                     subject.onNext(new TerminalMessage("Image Process completed successfully",Color.GREEN));
-                    runDockerContainer(dockerfile);
+                    runDockerContainer(container, dockerfile);
                 },
                 throwable -> subject.onNext(new TerminalMessage("Image Process failed: " + throwable.getMessage(),Color.RED))
         );
     }
-    private void runDockerContainer(Dockerfile dockerfile){
-        DockerContainer container = DockerContainer.getBasic(this.containerName, dockerfile);
+    private void runDockerContainer(DockerContainer container, Dockerfile dockerfile){
+
         ProcessHandler containerHandler = container.run(new String[0]);
 
         // Container stdout
