@@ -25,7 +25,7 @@ public class Colorize {
         colors.put("RESET", "\u001B[0m");
 
     }
-    private String println(String message, Type type){
+    private static String println(String message, Type type){
         return switch (type){
             case ALERT -> printAlert(message);
             case WARNING -> printWarning(message);
