@@ -8,6 +8,7 @@ import org.example.files.FileIO;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -27,11 +28,10 @@ public class CompilationView extends JPanel {
     private final JButton toExecutionBtn = new JButton();
     private JList codebasesJList;
     private JList codebaseChildrenJlist;
-    private JTextArea outputArea;
+
     private JList compilerNamesJlist;
     private final FileIO compilerNameFile;
-    Observable EditObseravble;
-
+    private JList outputList;
 
 
     public CompilationView(){
@@ -49,39 +49,41 @@ public class CompilationView extends JPanel {
 
     private JPanel compilerNamesPanel(){
         JPanel compilerNamesPanel = new JPanel();
+        JButton addNameBtn = new JButton("Add");
+        JButton removeNameBtn = new JButton("Remove");
+        DefaultListModel listModel = new DefaultListModel();
         IconTextListCellRenderer iconTextListCellRenderer = new IconTextListCellRenderer(UIManager.getIcon("FileView.floppyDriveIcon"));
-        var listModel = new DefaultListModel();
+
         listModel.addAll(compilerNamesSet);
         this.compilerNamesJlist = new JList(listModel);
         this.compilerNamesJlist.setCellRenderer(iconTextListCellRenderer);
-        JButton addNameBtn = new JButton("Add");
-        JButton removeNameBtn = new JButton("Remove");
-        compilerNamesJlist.setBackground(Color.WHITE);
+
+        this.compilerNamesJlist.setBackground(Color.WHITE);
 
 
         addNameBtn.addActionListener(e -> {
             this.showCompilerInput();
-            compilerNamesJlist.setListData(this.compilerNamesSet.toArray());
-            compilerNamesJlist.updateUI();
+            this.compilerNamesJlist.setListData(this.compilerNamesSet.toArray());
+            this.compilerNamesJlist.updateUI();
         });
         removeNameBtn.addActionListener(e -> {
-            var selectedValue = compilerNamesJlist.getSelectedValue().toString();
+            var selectedValue = this.compilerNamesJlist.getSelectedValue().toString();
             System.out.println(selectedValue);
             this.removeCompiler(selectedValue);
 
-            compilerNamesJlist.setListData(this.compilerNamesSet.toArray());
-            compilerNamesJlist.updateUI();
-            compilerNamesJlist.revalidate();
-            compilerNamesJlist.repaint();
+            this.compilerNamesJlist.setListData(this.compilerNamesSet.toArray());
+            this.compilerNamesJlist.updateUI();
+            this.compilerNamesJlist.revalidate();
+            this.compilerNamesJlist.repaint();
 
         });
 
 
 
-        compilerNamesJlist.setPreferredSize(new Dimension(300,250));
+        this.compilerNamesJlist.setPreferredSize(new Dimension(300,250));
         compilerNamesPanel.setPreferredSize(new Dimension(300,300));
         compilerNamesPanel.setBackground(Color.white);
-        compilerNamesPanel.add(compilerNamesJlist);
+        compilerNamesPanel.add(new JScrollPane(this.compilerNamesJlist));
         compilerNamesPanel.add(addNameBtn);
         compilerNamesPanel.add(removeNameBtn);
 
@@ -91,23 +93,10 @@ public class CompilationView extends JPanel {
 
     private JPanel listContainer(){
         JPanel container = new JPanel();
-        JPanel codeBasePanel = new JPanel();
-        JPanel outputPanel = new JPanel();
-
-//        JList codeBase = new JList(this.codeBases.toArray());
-        TextArea output = new TextArea();
 
         container.setBackground(Color.lightGray);
 
-//        codeBase.setPreferredSize(new Dimension(300,300));
-        output.setPreferredSize(new Dimension(300,300));
-
-        output.setText("Output");
-
-//        codeBasePanel.add(codeBase);
-        outputPanel.add(output);
-
-        container.add(new JScrollPane(this.compilerNamesPanel()));
+        container.add(this.compilerNamesPanel());
         container.add(this.codebasePanel());
         container.add(this.outputPanel());
 
@@ -116,15 +105,38 @@ public class CompilationView extends JPanel {
 
     private JPanel outputPanel(){
         JPanel container = new JPanel();
+        JButton updateBtn = new JButton("Update");
         JButton clearBtn = new JButton("Clear");
-        this.outputArea= new JTextArea();
-        this.outputArea.setEditable(false);
-        this.outputArea.setPreferredSize(new Dimension(300,300));
-        container.setLayout(new BorderLayout());
-        clearBtn.setPreferredSize(new Dimension(50,50));
-        container.add(this.outputArea,BorderLayout.CENTER);
-        container.add(clearBtn,BorderLayout.SOUTH);
-        clearBtn.addActionListener(e -> this.outputArea.setText(""));
+        this.outputList = new JList<>();
+        DefaultListModel outputListModel = new DefaultListModel<>();
+        File[] outputFiles = new File(FileIO.getApplicationRootPath("output")).listFiles();
+
+        Arrays.stream(outputFiles).forEach(file -> outputListModel.addElement(file.getName()));
+
+        this.outputList.setModel(outputListModel);
+        this.outputList.setCellRenderer(new IconTextListCellRenderer(UIManager.getIcon("FileView.fileIcon")));
+        clearBtn.addActionListener(e -> {
+            outputListModel.clear();
+            this.outputList.updateUI();
+            this.outputList.revalidate();
+            this.outputList.repaint();
+        });
+        updateBtn.addActionListener(e->{
+            this.outputList.updateUI();
+            this.outputList.revalidate();
+            this.outputList.repaint();
+        });
+
+//        container.setLayout(new BorderLayout());
+        this.outputList.setPreferredSize(new Dimension(300,250));
+        this.outputList.setBackground(Color.white);
+
+        container.setPreferredSize(new Dimension(300,300));
+        container.setBackground(Color.white);
+        container.add(new JScrollPane(outputList));
+        container.add(updateBtn);
+        container.add(clearBtn);
+
         return container;
     }
 
@@ -138,12 +150,6 @@ public class CompilationView extends JPanel {
         runCompilerBtn.setPreferredSize(new Dimension(150,80));
         toExecutionBtn.setPreferredSize(new Dimension(150,80));
 
-        runCompilerBtn.addActionListener(e -> {
-            String content = compilerNamesJlist.getSelectedValue() + "\n" + codebasesJList.getSelectedValue()+"\n";
-            this.outputArea.setText(content);
-
-
-        });
         runCompilerBtn.setText("Run Current");
         runAllCompilersBtn.setText("Run All");
         toExecutionBtn.setText("execution >");
