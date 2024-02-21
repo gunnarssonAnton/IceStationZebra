@@ -20,10 +20,11 @@ public class Compilation {
         this.pullImage = pullImage;
         this.containerName = "container_" + this.suffix;
     }
-    public void go(){
+    public void go(String compilerName, String file){
+
         runDockerImage();
     }
-    private void runDockerImage() {
+    private void runDockerImage(DockerContainer container, Dockerfile) {
         Dockerfile dockerfile = Dockerfile.getBasic(this.pullImage, "image_" + this.suffix);
         FileIO file = new FileIO(FileIO.getApplicationRootPath(), "Dockerfile");
         file.write(dockerfile.toString());
