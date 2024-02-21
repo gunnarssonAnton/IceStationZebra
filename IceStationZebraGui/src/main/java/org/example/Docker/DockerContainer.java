@@ -77,7 +77,7 @@ public class DockerContainer{
         container.setVolume("./compile_commands", "/compile_commands");
         container.setVolume("./codebase", "/codebase");
         container.setVolume("./output", "/output");
-        //container.setEntrypointOverride("/compilation_entrypoint.sh");
+        container.setEntrypointOverride("/compilation_entrypoint.sh");
         container.setEnv("COMPILER_NAME","A-team");
         container.setEnv("COMPILER_WHATEVER","A-team");
         //container.addARG("Dolk_Lundgren");
