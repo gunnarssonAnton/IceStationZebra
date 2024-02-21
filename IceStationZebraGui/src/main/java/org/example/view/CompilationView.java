@@ -20,6 +20,8 @@ public class CompilationView extends JPanel {
     private final Set<String> codeBases;
     private final Set<String> compilerNamesSet;
     private final JButton runAllCompilersBtn = new JButton();
+    private final JButton runCompilerBtn = new JButton();
+    private final JButton toExecutionBtn = new JButton();
     private final FileIO compilerNameFile;
 
 
@@ -105,7 +107,6 @@ public class CompilationView extends JPanel {
 
     private JPanel runBtnContainer(){
         JPanel container = new JPanel();
-        JButton runCompilerBtn = new JButton();
 
         container.setLayout(new FlowLayout(FlowLayout.RIGHT));
 
@@ -114,23 +115,28 @@ public class CompilationView extends JPanel {
 
         runAllCompilersBtn.setPreferredSize(new Dimension(150,80));
         runCompilerBtn.setPreferredSize(new Dimension(150,80));
+        toExecutionBtn.setPreferredSize(new Dimension(150,80));
 
 
         runCompilerBtn.setText("Run Current");
         runAllCompilersBtn.setText("Run All");
+        toExecutionBtn.setText("execution >");
 
 
         runAllCompilersBtn.addActionListener(e->System.out.println("RUN ALL"));
+        runCompilerBtn.addActionListener(e->System.out.println("RUN SELECTED"));
+        toExecutionBtn.addActionListener(e->System.out.println("TO EXECUTION"));
 
 
         container.add(runCompilerBtn);
         container.add(runAllCompilersBtn);
+        container.add(toExecutionBtn);
 
         return container;
     }
 
     public void setOnClick(ActionListener l){
-        this.runAllCompilersBtn.addActionListener(l);
+        this.toExecutionBtn.addActionListener(l);
     }
 
     public void setDubbleClickOnItem(JList compilerNamesJlist){

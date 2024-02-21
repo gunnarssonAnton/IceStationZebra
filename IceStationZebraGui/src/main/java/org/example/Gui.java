@@ -20,6 +20,7 @@ public class Gui extends JFrame {
     private final TerminalViewController terminalViewController = new TerminalViewController();
     private final CompilationViewController compilationViewController = new CompilationViewController(this.terminalViewController.getSubject());
     private final ExecutionViewController executionViewController = new ExecutionViewController(this.terminalViewController.getSubject());
+
     public Gui(){
         this.pack();
         this.setSize(1000,1000);
@@ -46,7 +47,6 @@ public class Gui extends JFrame {
                 .setOnClick(e -> this.slideIn());
     }
 
-
     private void slideIn() {
         Rectangle bounds = cards.getBounds();
         bounds.x = 0;
@@ -61,6 +61,7 @@ public class Gui extends JFrame {
         cards.setBounds(bounds);
         animateSlide(-1000,true, -100);
     }
+
     private void animateSlide(int targetX, boolean isSlideOut, int dx) {
         Timer timer = new Timer(2, e -> {
             Rectangle bounds = cards.getBounds();
@@ -79,5 +80,4 @@ public class Gui extends JFrame {
         });
         timer.start();
     }
-
 }
