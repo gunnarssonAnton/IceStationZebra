@@ -11,7 +11,9 @@ import java.awt.event.MouseEvent;
 public class IconTextListCellRenderer extends JPanel implements ListCellRenderer<String> {
     private JLabel textLabel;
     private JLabel iconLabel;
-    public IconTextListCellRenderer(){
+    private Icon icon;
+    public IconTextListCellRenderer(Icon icon){
+        this.icon = icon;
         this.setLayout(new BorderLayout());
 
         this.textLabel = new JLabel();
@@ -29,7 +31,7 @@ public class IconTextListCellRenderer extends JPanel implements ListCellRenderer
     @Override
     public Component getListCellRendererComponent(JList<? extends String> list, String value, int index, boolean isSelected, boolean cellHasFocus) {
         this.textLabel.setText(value);
-        this.iconLabel.setIcon(UIManager.getIcon("FileView.floppyDriveIcon"));
+        this.iconLabel.setIcon(this.icon);
 
 
             if(isSelected) {
