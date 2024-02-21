@@ -1,11 +1,16 @@
 package org.example.view;
 
+import io.reactivex.rxjava3.core.Observable;
+import org.example.EditFileWindow;
+import org.example.Utility.IconTextListCellRenderer;
 import org.example.files.FileIO;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.*;
 import java.util.*;
 import java.util.List;
@@ -17,9 +22,13 @@ public class CompilationView extends JPanel {
     private final JButton runAllCompilersBtn = new JButton();
     private final FileIO compilerNameFile;
 
+
+
+    Observable EditObseravble;
+
     public CompilationView(){
         compilerNameFile = new FileIO(FileIO.getApplicationRootPath("settings"),"compiler_names.txt");
-        compilerNamesSet = extractDataFromFile(compilerNameFile);
+        compilerNamesSet = this.extractDataFromFile(compilerNameFile);
         codeBases = new HashSet<>();
 
         this.setLayout(new FlowLayout(FlowLayout.RIGHT));
@@ -29,9 +38,15 @@ public class CompilationView extends JPanel {
 
     private JPanel compilerNamesPanel(){
         JPanel compilerNamesPanel = new JPanel();
-        JList compilerNamesJlist = new JList(this.compilerNamesSet.toArray());
+        IconTextListCellRenderer iconTextListCellRenderer = new IconTextListCellRenderer();
+        var listModel = new DefaultListModel();
+        listModel.addAll(compilerNamesSet);
+        JList compilerNamesJlist = new JList(listModel);
+        compilerNamesJlist.setCellRenderer(iconTextListCellRenderer);
         JButton addNameBtn = new JButton("Add");
         JButton removeNameBtn = new JButton("Remove");
+        compilerNamesJlist.setBackground(Color.WHITE);
+
 
         addNameBtn.addActionListener(e -> {
             this.showCompilerInput();
@@ -51,6 +66,7 @@ public class CompilationView extends JPanel {
         });
 
 
+
         compilerNamesJlist.setPreferredSize(new Dimension(300,250));
         compilerNamesPanel.setPreferredSize(new Dimension(300,300));
         compilerNamesPanel.setBackground(Color.white);
@@ -58,6 +74,7 @@ public class CompilationView extends JPanel {
         compilerNamesPanel.add(addNameBtn);
         compilerNamesPanel.add(removeNameBtn);
 
+        this.setDubbleClickOnItem(compilerNamesJlist);
         return compilerNamesPanel;
     }
 
@@ -79,7 +96,7 @@ public class CompilationView extends JPanel {
         codeBasePanel.add(codeBase);
         outputPanel.add(output);
 
-        container.add(this.compilerNamesPanel());
+        container.add(new JScrollPane(this.compilerNamesPanel()));
         container.add(codeBasePanel);
         container.add(outputPanel);
 
@@ -116,6 +133,22 @@ public class CompilationView extends JPanel {
         this.runAllCompilersBtn.addActionListener(l);
     }
 
+    public void setDubbleClickOnItem(JList compilerNamesJlist){
+        compilerNamesJlist.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if(e.getClickCount() == 2){
+                    var selectedValue = compilerNamesJlist.getSelectedValue().toString();
+                    openEditInstallFileWindow(selectedValue);
+                }
+            }
+        });
+
+    }
+    public void openEditInstallFileWindow(String filename){
+        EditFileWindow editFileWindow = new EditFileWindow(filename);
+        editFileWindow.setVisible(true);
+    }
     private Set<String> extractDataFromFile(FileIO fileIO){
         return new HashSet<>(Arrays.asList(fileIO.read().split("\\r?\\n")));
     }
@@ -123,40 +156,16 @@ public class CompilationView extends JPanel {
     private void updateList(){
         String str = "";
         for (String compilerName : this.compilerNamesSet) {
-//            System.out.println(str);
             str += compilerName+"\n";
         }
         compilerNameFile.write("");
         compilerNameFile.write(str);
     }
-    private InputStream getFileAsInputStream(String filename){
-        InputStream ioStream = this.getClass()
-                .getClassLoader()
-                .getResourceAsStream(filename);
-
-        if (ioStream == null){
-            throw  new IllegalArgumentException(filename+ " is not found");
-        }
-        return ioStream;
-    }
-
-    void writeToOutputStream(String filename, String value){
-        try {
-
-            OutputStream fileOutputStream = new FileOutputStream(filename);
-            fileOutputStream.write(value.getBytes());
-            fileOutputStream.close();
-
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
-    }
 
     private void addCompiler(String name){
         System.out.println("ADD: "+ name);
         FileIO fileIO = new FileIO(FileIO.getApplicationRootPath("installs"),name+"_install.sh");
-        fileIO.write("");
+        fileIO.write("#!/bin/bash\n");
         this.compilerNamesSet.add(name);
         this.updateList();
     }
@@ -167,8 +176,7 @@ public class CompilationView extends JPanel {
     }
 
     private void showCompilerInput(){
-
-         String input = JOptionPane.showInputDialog(this,"Enter Compiler name:", "Ice Station Zebra",JOptionPane.PLAIN_MESSAGE);
+         String input = JOptionPane.showInputDialog(this,"Enter Compiler name:", "Ice Station Zebra", JOptionPane.PLAIN_MESSAGE);
          this.addCompiler(input);
     }
 

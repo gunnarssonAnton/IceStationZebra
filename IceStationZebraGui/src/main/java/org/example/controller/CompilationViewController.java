@@ -5,6 +5,7 @@ import io.reactivex.rxjava3.schedulers.Schedulers;
 import io.reactivex.rxjava3.subjects.PublishSubject;
 import org.example.Docker.DockerContainer;
 import org.example.Docker.Dockerfile;
+import org.example.EditFileWindow;
 import org.example.files.FileIO;
 import org.example.view.CompilationView;
 
@@ -77,6 +78,7 @@ public class CompilationViewController {
                         })
                 );
     }
+
 
     public CompilationView getView(){
         return this.view;

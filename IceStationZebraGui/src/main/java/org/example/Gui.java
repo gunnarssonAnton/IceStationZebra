@@ -14,10 +14,11 @@ import java.awt.*;
 import java.util.Date;
 
 public class Gui extends JFrame {
-    JPanel cards = new JPanel(new CardLayout());
-    TerminalViewController terminalViewController = new TerminalViewController();
-    CompilationViewController compilationViewController = new CompilationViewController(this.terminalViewController.getSubject());
-    ExecutionViewController executionViewController = new ExecutionViewController(this.terminalViewController.getSubject());
+    private CardLayout cardLayout = new CardLayout();
+    private JPanel cards = new JPanel(cardLayout);
+    private final TerminalViewController terminalViewController = new TerminalViewController();
+    private final CompilationViewController compilationViewController = new CompilationViewController(this.terminalViewController.getSubject());
+    private final ExecutionViewController executionViewController = new ExecutionViewController(this.terminalViewController.getSubject());
     public Gui(){
         this.pack();
         this.setSize(1000,1000);
@@ -30,15 +31,52 @@ public class Gui extends JFrame {
 
 
 
-        this.cards.add(compilationViewController.getView());
-        this.cards.add(executionViewController.getView());
+        this.cards.add(this.compilationViewController.getView());
+        this.cards.add(this.executionViewController.getView());
         this.add(this.cards);
 
         this.add(this.terminalViewController.getView(),BorderLayout.SOUTH);
         this.terminalViewController.getSubject().onNext(new Date().toString());
+        this.compilationViewController
+                .getView()
+                .setOnClick(e-> this.slideOut());
+        this.executionViewController
+                .getView()
+                .setOnClick(e -> this.slideIn());
     }
 
 
+    private void slideIn() {
+        Rectangle bounds = cards.getBounds();
+        bounds.x = 0;
+        cards.setBounds(bounds);
+        animateSlide(1000,false, 100);
 
+    }
+
+    private void slideOut() {
+        Rectangle bounds = cards.getBounds();
+        bounds.x = 0;
+        cards.setBounds(bounds);
+        animateSlide(-1000,true, -100);
+    }
+    private void animateSlide(int targetX, boolean isSlideOut, int dx) {
+        Timer timer = new Timer(2, e -> {
+            Rectangle bounds = cards.getBounds();
+            if (bounds.x == targetX) {
+                if(isSlideOut){
+                    cardLayout.next(cards);
+                }
+                else{
+                    cardLayout.previous(cards);
+                }
+                ((Timer) e.getSource()).stop();
+            } else {
+                bounds.x += dx;
+                cards.setBounds(bounds);
+            }
+        });
+        timer.start();
+    }
 
 }
