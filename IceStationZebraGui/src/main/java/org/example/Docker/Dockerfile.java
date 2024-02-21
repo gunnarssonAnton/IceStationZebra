@@ -77,7 +77,9 @@ public class Dockerfile {
         return content.toString();
     }
     public static Dockerfile getBasic(String image, String name){
-        Dockerfile dockerfile = new Dockerfile("openjdk:11","testImage");
+        //"openjdk:11"
+        //"testImage"
+        Dockerfile dockerfile = new Dockerfile(image,name);
         dockerfile.addENV("COMPILER_NAME","");
         dockerfile.addENV("COMPILER_WHATEVER","");
         dockerfile.addVolume("/scripts");

@@ -22,14 +22,6 @@ public class TerminalView extends JPanel {
         textArea.setEditable(false);
         textArea.setBackground(Color.darkGray);
         textArea.setForeground(Color.orange);
-        //        Disposable disposable = subject.subscribe(str -> SwingUtilities.invokeLater(() -> {
-//            textArea.append("isz › " + str + "\n");
-//
-//        }),throwable -> {
-//
-//        },() -> {
-//
-//        });
         Disposable disposable = subject.subscribe(str -> {
             textArea.append("isz › " + str + "\n");
         });
