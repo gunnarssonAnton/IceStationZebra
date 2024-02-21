@@ -1,4 +1,4 @@
-package org.example;
+package org.example.view;
 
 import org.example.files.FileIO;
 
@@ -17,7 +17,7 @@ public class CompilationView extends JPanel {
     private final JButton runAllCompilersBtn = new JButton();
     private final FileIO compilerNameFile;
 
-    CompilationView(){
+    public CompilationView(){
         compilerNameFile = new FileIO(FileIO.getApplicationRootPath("settings"),"compiler_names.txt");
         compilerNamesSet = extractDataFromFile(compilerNameFile);
         codeBases = new HashSet<>();
