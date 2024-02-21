@@ -37,7 +37,7 @@ public class Gui extends JFrame {
         this.add(this.cards);
 
         this.add(this.terminalViewController.getView(),BorderLayout.SOUTH);
-        this.terminalViewController.getSubject().onNext(new Date().toString());
+        this.terminalViewController.getSubject().onNext(new TerminalMessage(new Date().toString(),Color.PINK));
         this.compilationViewController
                 .getView()
                 .setOnClick(e-> this.slideOut());

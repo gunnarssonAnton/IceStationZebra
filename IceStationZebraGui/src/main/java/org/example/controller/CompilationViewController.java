@@ -24,7 +24,7 @@ public class CompilationViewController {
     public CompilationViewController(PublishSubject<TerminalMessage> subject){
         this.subject = subject;
         this.view.setOnClick(e -> {
-            new Compilation(subject,"noname").runDocker();
+            new Compilation(subject,"ubuntu").go();
         });
     }
 

@@ -31,13 +31,16 @@ public class TerminalView extends JPanel {
 
         this.textPane.setEditable(false);
         this.textPane.setBackground(Color.darkGray);
-        this.add(this.textPane,BorderLayout.CENTER);
+        this.textPane.setMargin(new Insets(10,10,10,10));
+        JScrollPane scrollPane = new JScrollPane(this.textPane);
+        this.add(scrollPane,BorderLayout.CENTER);
     }
 
     public void addLine(TerminalMessage tm) {
         StyleConstants.setForeground(style, tm.color);
         try {
-            this.doc.insertString(doc.getLength(), "isz › " + tm.message+"\n", style);
+            this.doc.insertString(doc.getLength(), "ISZ › " + tm.message+"\n", style);
+            this.textPane.setCaretPosition(doc.getLength());
         } catch (BadLocationException e) {
             throw new RuntimeException(e);
         }
