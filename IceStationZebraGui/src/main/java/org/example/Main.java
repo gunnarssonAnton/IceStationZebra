@@ -14,11 +14,11 @@ public class Main {
     public static void main(String[] args) throws InterruptedException {
         Generate.generateDependancies();
         SwingUtilities.invokeLater(Gui::new);
-        Dockerfile dockerfile = Dockerfile.getBasic("openjdk:11","testImage");
-        FileIO file = new FileIO(FileIO.getApplicationRootPath(),"Dockerfile");
-        file.write(dockerfile.toString());
-        dockerfile.build(file.getPath().toString()).subscribe(System.out::println);
-        DockerContainer container = DockerContainer.getBasic("testcontainer",dockerfile);
-        container.run(new String[0]).subscribe(System.out::println);
+//        Dockerfile dockerfile = Dockerfile.getBasic("openjdk:11","testImage");
+//        FileIO file = new FileIO(FileIO.getApplicationRootPath(),"Dockerfile");
+//        file.write(dockerfile.toString());
+//        dockerfile.build(file.getPath().toString()).subscribe(System.out::println);
+//        DockerContainer container = DockerContainer.getBasic("testcontainer",dockerfile);
+//        container.run(new String[0]).subscribe(System.out::println);
     }
 }
