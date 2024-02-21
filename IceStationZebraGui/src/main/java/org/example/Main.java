@@ -19,6 +19,6 @@ public class Main {
         file.write(dockerfile.toString());
         dockerfile.build(file.getPath().toString()).subscribe(System.out::println);
         DockerContainer container = DockerContainer.getBasic("testcontainer",dockerfile);
-        container.run(new String[0]).subscribe(System.out::println);
+git merge
     }
 }
