@@ -5,6 +5,7 @@ import io.reactivex.rxjava3.schedulers.Schedulers;
 import io.reactivex.rxjava3.subjects.PublishSubject;
 import org.example.Docker.DockerContainer;
 import org.example.Docker.Dockerfile;
+import org.example.Utility.Generate;
 import org.example.files.FileIO;
 import org.example.view.CompilationView;
 
@@ -21,7 +22,7 @@ public class CompilationViewController {
         });
     }
     public void runDocker() {
-        Dockerfile dockerfile = Dockerfile.getBasic("openjdk:11", "testImage");
+        Dockerfile dockerfile = Dockerfile.getBasic("openjdk:11", "image_"+Generate.generateRandomString(8));
         FileIO file = new FileIO(FileIO.getApplicationRootPath(), "Dockerfile");
         file.write(dockerfile.toString());
 
@@ -37,7 +38,7 @@ public class CompilationViewController {
                 .observeOn(Schedulers.io()) // Ensure subsequent operations also run in an appropriate scheduler
                 .andThen(Completable.defer(() -> {
                     // After successful build, start the container
-                    DockerContainer container = DockerContainer.getBasic("testcontainer", dockerfile);
+                    DockerContainer container = DockerContainer.getBasic("container_" + Generate.generateRandomString(8), dockerfile);
                     return container.run(new String[0]).ignoreElements(); // Convert Observable to Completable if necessary
                 }))
                 .subscribe(
