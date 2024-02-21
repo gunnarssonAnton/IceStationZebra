@@ -5,6 +5,7 @@ import io.reactivex.rxjava3.schedulers.Schedulers;
 import io.reactivex.rxjava3.subjects.PublishSubject;
 import org.example.Docker.DockerContainer;
 import org.example.Docker.Dockerfile;
+import org.example.Utility.Colorize;
 import org.example.Utility.Generate;
 import org.example.files.FileIO;
 import org.example.view.CompilationView;
@@ -29,7 +30,10 @@ public class CompilationViewController {
         // Start building the Docker image
         dockerfile.build(file.getPath().toString())
                 .observeOn(Schedulers.io()) // Perform build operation in IO scheduler
-                .doOnNext(str -> SwingUtilities.invokeLater(() -> this.subject.onNext(str))) // Handle build output
+                .doOnNext(str -> SwingUtilities.invokeLater(() -> {
+//                    this.subject.onNext(str);
+                    System.out.println("Image:" + str);
+                })) // Handle build output
                 .doOnError(throwable -> SwingUtilities.invokeLater(() -> {
                     this.subject.onNext("Build error: " + throwable.getMessage());
                     throwable.printStackTrace();
@@ -42,7 +46,10 @@ public class CompilationViewController {
                     return container.run(new String[0]).ignoreElements(); // Convert Observable to Completable if necessary
                 }))
                 .subscribe(
-                        () -> SwingUtilities.invokeLater(() -> this.subject.onNext("Container started successfully")),
+                        () -> SwingUtilities.invokeLater(() -> {
+                            this.subject.onNext(Colorize.printInfo("Container started successfully"));
+
+                        }),
                         throwable -> SwingUtilities.invokeLater(() -> {
                             this.subject.onNext("Run error: " + throwable.getMessage());
                             throwable.printStackTrace();
