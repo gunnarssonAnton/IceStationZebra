@@ -95,6 +95,7 @@ public class Dockerfile {
         dockerfile.addVolume("/output");
         dockerfile.addCOPY("/scripts/compilation_entrypoint.sh","/compilation_entrypoint.sh");
         dockerfile.addRUN("chmod +x /compilation_entrypoint.sh");
+//        dockerfile.addRUN("ls");
 //        dockerfile.addCOPY("/scripts/execution_entrypoint.sh","/execution_entrypoint.sh");
 //        dockerfile.addRUN("chmod +x /execution_entrypoint.sh");
         dockerfile.addCMD("echo \"$(ls)\"\n");
