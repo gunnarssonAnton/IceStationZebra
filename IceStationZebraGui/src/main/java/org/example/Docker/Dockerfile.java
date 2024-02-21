@@ -19,6 +19,7 @@ public class Dockerfile {
     private String name;
     private String image;
     private String entryPoint = "/bin/bash";
+    private FileIO fileLocation;
 
     public Dockerfile(String image, String name){
         this.image = image;
@@ -45,10 +46,13 @@ public class Dockerfile {
     public void setEntrypoint(String entryPoint){
         this.entryPoint = entryPoint;
     }
-    public ProcessHandler build(String path){
-        if (path == null)
-            path = ".";
-        String[] cmd = new String[]{"docker", "build", "-t", this.name, "-f",path,"."};
+    private void write(){
+        this.fileLocation = new FileIO(FileIO.getApplicationRootPath(), "Dockerfile");
+        this.fileLocation.write(this.toString());
+    }
+    public ProcessHandler build(){
+        this.write();
+        String[] cmd = new String[]{"docker", "build", "-t", this.name, "-f",this.fileLocation.getPath().toString(),"."};
         return ProcessHandler.construct(cmd);
     }
     public ProcessHandler remove(){

@@ -133,7 +133,9 @@ public class CompilationView extends JPanel {
     public void setOnClick(ActionListener l){
         this.toExecutionBtn.addActionListener(l);
     }
-
+    public void runAllOnClick(ActionListener l){
+        this.runAllCompilersBtn.addActionListener(l);
+    }
     public void setDubbleClickOnItem(JList compilerNamesJlist){
         compilerNamesJlist.addMouseListener(new MouseAdapter() {
             @Override
