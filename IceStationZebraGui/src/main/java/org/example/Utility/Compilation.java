@@ -17,27 +17,29 @@ import java.util.stream.Collectors;
 public class Compilation {
     private PublishSubject<TerminalMessage> subject;
     private final String pullImage;
-    private final String containerName;
+    //private final String containerName;
     private final String suffix = Generate.generateRandomString(12);
 
     public Compilation(PublishSubject<TerminalMessage> subject, String pullImage){
         this.subject = subject;
         this.pullImage = pullImage;
-        this.containerName = "container_" + this.suffix;
+        //this.containerName = "container_" + this.suffix;
     }
     public void go(String compilerName){
-        List<String> tests = getTests();
-        tests.forEach(test -> {
-            constructCompileCommand(compilerName,test);
-        });
-        System.exit(99);
-        // Create docker file
+        // Create basic docker file
         Dockerfile dockerfile = Dockerfile.getBasic(this.pullImage, "image_" + this.suffix);
 
-        // Create docker container
-        DockerContainer container = DockerContainer.getBasic(this.containerName, dockerfile);
-        container.setEnv("COMPILER_NAME",compilerName);
-        runDockerImage(container, dockerfile);
+        List<String> tests = getTests();
+        tests.forEach(test -> {
+            String compileCommand = constructCompileCommand(compilerName,test);
+            // Create basic docker container
+            DockerContainer container = DockerContainer.getBasic("container_" + Generate.generateRandomString(12), dockerfile);
+            container.setEnv("COMPILER_NAME",compilerName);
+            container.setEnv("COMPILER_COMMAND",compileCommand);
+            runDockerImage(container, dockerfile);
+        });
+
+
     }
     private void runDockerImage(DockerContainer container, Dockerfile dockerfile) {
 
@@ -85,6 +87,7 @@ public class Compilation {
                     this.subject.onNext(new TerminalMessage("Container completed",Color.green));
                 },throwable -> subject.onNext(new TerminalMessage("Process failed: " + throwable.getMessage(),Color.red))
         );
+
     }
     private List<String> getTests() {
         File directory = new File(FileIO.getApplicationRootPath("codebase"));
@@ -101,11 +104,11 @@ public class Compilation {
     private String getFilesStringForTest(String test){
         File sub = new File(FileIO.getApplicationRootPath("codebase/" + test));
         return Arrays.stream(sub.listFiles()).toList().stream()
-                .filter(File::isFile).map(File::getName) // Convert File to its name
+                .filter(File::isFile).map(file ->"/codebase/" + test + "/" + file.getName()) // Convert File to its name
                 .collect(Collectors.joining(" "));
     }
     private String constructCompileCommand(String compilerName, String testName){
-        String OUTPUT  = FileIO.getApplicationRootPath("output/" + testName);
+        String OUTPUT  = "/output/" + compilerName + "_" + testName;//FileIO.getApplicationRootPath("output/" + testName);
         String compileCommand = new FileIO(FileIO.getApplicationRootPath("compile_commands"),compilerName + "_compileCmd.sh").read();
         String FILES = getFilesStringForTest(testName);
         compileCommand = compileCommand.replace("FILES",FILES).replace("OUTPUT",OUTPUT);

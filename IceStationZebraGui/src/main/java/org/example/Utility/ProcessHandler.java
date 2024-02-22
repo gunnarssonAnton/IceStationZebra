@@ -65,6 +65,7 @@ public class ProcessHandler {
         stdin.subscribe(data -> {
             try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(process.getOutputStream()))) {
                 writer.write(data);
+                System.out.println("Sent " + data + " to stdin");
                 writer.flush(); // Ensure data is sent to the process
             } catch (IOException e) {
                 e.printStackTrace(); // Handle exception

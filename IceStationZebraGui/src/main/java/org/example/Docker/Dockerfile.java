@@ -69,7 +69,7 @@ public class Dockerfile {
         content.append("\n");
 
         //
-        this.envs.forEach(env -> content.append("ENV ").append(env).append("=Dolk").append("\n"));
+        this.envs.forEach(env -> content.append("ENV ").append(env).append("=unset").append("\n"));
         content.append("\n");
         //
         this.copys.forEach(cpy -> content.append("COPY ").append(cpy));
@@ -91,7 +91,7 @@ public class Dockerfile {
         //"testImage"
         Dockerfile dockerfile = new Dockerfile(image,name);
         dockerfile.addENV("COMPILER_NAME","");
-        dockerfile.addENV("COMPILER_WHATEVER","");
+        dockerfile.addENV("COMPILER_COMMAND","");
         dockerfile.addVolume("/scripts");
         dockerfile.addVolume("/installs");
         dockerfile.addVolume("/compile_commands");
