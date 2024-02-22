@@ -1,14 +1,9 @@
 package org.example;
 
-import io.reactivex.rxjava3.disposables.Disposable;
-import io.reactivex.rxjava3.subjects.PublishSubject;
 import org.example.Utility.TerminalMessage;
 import org.example.controller.CompilationViewController;
 import org.example.controller.ExecutionViewController;
 import org.example.controller.TerminalViewController;
-import org.example.view.CompilationView;
-import org.example.view.ExecutionView;
-import org.example.view.TerminalView;
 
 import javax.swing.*;
 import java.awt.*;
@@ -22,6 +17,11 @@ public class Gui extends JFrame {
     private final ExecutionViewController executionViewController = new ExecutionViewController(this.terminalViewController.getSubject());
 
     public Gui(){
+        // Icon
+        System.out.println(Main.class.getResource("ISZ_icon.png").getPath());
+        ImageIcon imgIcon = new ImageIcon(Main.class.getResource("ISZ_icon.png"));
+        this.setIconImage(imgIcon.getImage());
+        this.setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getClassLoader().getResource("org/example/ISZ_icon.png")));
         this.pack();
         this.setSize(1000,1000);
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -31,7 +31,6 @@ public class Gui extends JFrame {
         this.setResizable(false);
         this.setLocationRelativeTo(null);
         //this.setLocation(-80,-1200);
-
 
         this.cards.add(compilationViewController.getView());
         this.cards.add(executionViewController.getView());
