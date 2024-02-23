@@ -1,5 +1,6 @@
 package org.example.Utility;
 
+import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 import io.reactivex.rxjava3.subjects.PublishSubject;
@@ -19,11 +20,14 @@ public class Compilation {
     private final String pullImage;
     //private final String containerName;
     private final String suffix = Generate.generateRandomString(12);
-
+    private Observable<String> terminalInput = null;
     public Compilation(PublishSubject<TerminalMessage> subject, String pullImage){
         this.subject = subject;
         this.pullImage = pullImage;
         //this.containerName = "container_" + this.suffix;
+    }
+    public void setTerminalInput(Observable<String> terminalInput){
+        this.terminalInput = terminalInput;
     }
     public void go(String compilerName){
         // Create basic docker file
@@ -36,6 +40,7 @@ public class Compilation {
             DockerContainer container = DockerContainer.getBasic("container_" + Generate.generateRandomString(12), dockerfile);
             container.setEnv("COMPILER_NAME",compilerName);
             container.setEnv("COMPILER_COMMAND",compileCommand);
+            container.setEntrypointOverride("/scripts/test_entrypoint.sh");
             runDockerImage(container, dockerfile);
         });
 
@@ -69,7 +74,8 @@ public class Compilation {
     private void runDockerContainer(DockerContainer container, Dockerfile dockerfile){
 
         ProcessHandler containerHandler = container.run(new String[0]);
-
+        //this.terminalInput.subscribeOn(Schedulers.io()).subscribe(System.out::println);
+        this.terminalInput.subscribeOn(Schedulers.io()).subscribe(containerHandler::stdin);
         // Container stdout
         Disposable containerStdoutDisposable = containerHandler.getStdout().subscribeOn(Schedulers.io()).subscribe(out -> {
             this.subject.onNext(new TerminalMessage(out, Color.lightGray));

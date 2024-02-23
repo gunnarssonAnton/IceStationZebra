@@ -1,5 +1,6 @@
 package org.example;
 
+import io.reactivex.rxjava3.core.Observable;
 import org.example.Utility.TerminalMessage;
 import org.example.controller.CompilationViewController;
 import org.example.controller.ExecutionViewController;
@@ -15,7 +16,6 @@ public class Gui extends JFrame {
     private final TerminalViewController terminalViewController = new TerminalViewController();
     private final CompilationViewController compilationViewController = new CompilationViewController(this.terminalViewController.getSubject());
     private final ExecutionViewController executionViewController = new ExecutionViewController(this.terminalViewController.getSubject());
-
     public Gui(){
         // Icon
         System.out.println(Main.class.getResource("ISZ_icon.png").getPath());
@@ -38,6 +38,8 @@ public class Gui extends JFrame {
 
         this.add(this.terminalViewController.getView(),BorderLayout.SOUTH);
         this.terminalViewController.getSubject().onNext(new TerminalMessage(new Date().toString(),Color.PINK));
+        Observable<String> terminalInput = this.terminalViewController.getView().getTerminalInputFieldObservable();
+        compilationViewController.setTerminalInput(terminalInput);
         this.compilationViewController
                 .getView()
                 .setOnClick(e-> this.slideOut());
