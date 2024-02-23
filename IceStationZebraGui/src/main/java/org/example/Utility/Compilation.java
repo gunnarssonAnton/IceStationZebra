@@ -36,6 +36,7 @@ public class Compilation {
             DockerContainer container = DockerContainer.getBasic("container_" + Generate.generateRandomString(12), dockerfile);
             container.setEnv("COMPILER_NAME",compilerName);
             container.setEnv("COMPILER_COMMAND",compileCommand);
+//            container.setEntrypointOverride("bin/bash");
             runDockerImage(container, dockerfile);
         });
 

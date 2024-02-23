@@ -1,6 +1,5 @@
 package org.example.view;
 
-import io.reactivex.rxjava3.core.Observable;
 import org.example.EditFileWindow;
 import org.example.Utility.IconTextListCellRenderer;
 import org.example.files.FileIO;
@@ -8,16 +7,12 @@ import org.example.files.FileIO;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.*;
 import java.util.*;
-import java.util.List;
 import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Supplier;
 
 public class CompilationView extends JPanel {
 
@@ -28,7 +23,6 @@ public class CompilationView extends JPanel {
     private final JButton toExecutionBtn = new JButton();
     private JList codebasesJList;
     private JList codebaseChildrenJlist;
-
     private JList compilerNamesJlist;
     private final FileIO compilerNameFile;
     private JList outputList;
@@ -48,11 +42,15 @@ public class CompilationView extends JPanel {
     }
 
     private JPanel compilerNamesPanel(){
-        JPanel compilerNamesPanel = new JPanel();
+        JPanel compilerNamesPanel = new JPanel(new BorderLayout());
         JButton addNameBtn = new JButton("Add");
         JButton removeNameBtn = new JButton("Remove");
+        JPanel buttonContainer = new JPanel();
         DefaultListModel listModel = new DefaultListModel();
         IconTextListCellRenderer iconTextListCellRenderer = new IconTextListCellRenderer(UIManager.getIcon("FileView.floppyDriveIcon"));
+
+        buttonContainer.add(addNameBtn);
+        buttonContainer.add(removeNameBtn);
 
         listModel.addAll(compilerNamesSet);
         this.compilerNamesJlist = new JList(listModel);
@@ -80,20 +78,18 @@ public class CompilationView extends JPanel {
 
 
 
-        this.compilerNamesJlist.setPreferredSize(new Dimension(300,250));
+        this.compilerNamesJlist.setPreferredSize(new Dimension(250,250));
         compilerNamesPanel.setPreferredSize(new Dimension(300,300));
         compilerNamesPanel.setBackground(Color.white);
-        compilerNamesPanel.add(new JScrollPane(this.compilerNamesJlist));
-        compilerNamesPanel.add(addNameBtn);
-        compilerNamesPanel.add(removeNameBtn);
+        compilerNamesPanel.add(new JScrollPane(this.compilerNamesJlist),BorderLayout.CENTER);
+        compilerNamesPanel.add(buttonContainer, BorderLayout.SOUTH);
 
-        this.setDubbleClickOnItem(compilerNamesJlist, this::openEditInstallFileWindow);
+        this.setLeftDoubleClickOnItem(compilerNamesJlist, this::openEditInstallFileWindow);
         return compilerNamesPanel;
     }
 
     private JPanel listContainer(){
         JPanel container = new JPanel();
-
         container.setBackground(Color.lightGray);
 
         container.add(this.compilerNamesPanel());
@@ -104,11 +100,14 @@ public class CompilationView extends JPanel {
     }
 
     private JPanel outputPanel(){
-        JPanel container = new JPanel();
+        JPanel container = new JPanel(new BorderLayout());
         JButton updateBtn = new JButton("Update");
         JButton clearBtn = new JButton("Clear");
         this.outputList = new JList<>();
         DefaultListModel outputListModel = new DefaultListModel<>();
+        JPanel buttonConainer = new JPanel();
+        buttonConainer.add(updateBtn);
+        buttonConainer.add(clearBtn);
         File[] outputFiles = new File(FileIO.getApplicationRootPath("output")).listFiles();
 
         Arrays.stream(outputFiles).forEach(file -> outputListModel.addElement(file.getName()));
@@ -128,14 +127,13 @@ public class CompilationView extends JPanel {
         });
 
 //        container.setLayout(new BorderLayout());
-        this.outputList.setPreferredSize(new Dimension(300,250));
+        this.outputList.setPreferredSize(new Dimension(250,250));
         this.outputList.setBackground(Color.white);
 
         container.setPreferredSize(new Dimension(300,300));
         container.setBackground(Color.white);
-        container.add(new JScrollPane(outputList));
-        container.add(updateBtn);
-        container.add(clearBtn);
+        container.add(new JScrollPane(outputList),BorderLayout.CENTER);
+        container.add(buttonConainer, BorderLayout.SOUTH);
 
         return container;
     }
@@ -157,7 +155,7 @@ public class CompilationView extends JPanel {
         runAllCompilersBtn.addActionListener(e->System.out.println("RUN ALL"));
         runCompilerBtn.addActionListener(e->System.out.println("RUN SELECTED"));
         toExecutionBtn.addActionListener(e->System.out.println("TO EXECUTION"));
-//        runAllCompilersBtn.addActionListener(e->System.out.println("RUN ALL"));
+        runAllCompilersBtn.addActionListener(e->System.out.println("RUN ALL"));
 
 
         container.add(runCompilerBtn);
@@ -174,11 +172,11 @@ public class CompilationView extends JPanel {
         this.runAllCompilersBtn.addActionListener(l);
     }
 
-    public void setDubbleClickOnItem(JList jList, Consumer<String> callback){
+    public void setLeftDoubleClickOnItem(JList jList, Consumer<String> callback){
             jList.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                if(e.getClickCount() == 2){
+                if(e.getClickCount() == 2 && e.getButton() == 1){
                     var selectedValue = jList.getSelectedValue().toString();
                     callback.accept(selectedValue);
                 }
@@ -186,11 +184,23 @@ public class CompilationView extends JPanel {
         });
 
     }
+    private void setRightDoubleClickOnItem(JList jList, Consumer<String> callback){
+        jList.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if(e.getClickCount() == 2 && e.getButton() == 3){
+                    var selectedValue = jList.getSelectedValue().toString();
+                    callback.accept(selectedValue);
+                }
+            }
+        });
+    }
 
     public void openEditInstallFileWindow(String filename){
         EditFileWindow editFileWindow = new EditFileWindow(filename);
         editFileWindow.setVisible(true);
     }
+
     private Set<String> extractDataFromFile(FileIO fileIO){
         return new HashSet<>(Arrays.asList(fileIO.read().split("\\r?\\n")));
     }
@@ -225,10 +235,15 @@ public class CompilationView extends JPanel {
 
     private JPanel codebasePanel(){
         CardLayout cardLayout = new CardLayout();
-        JPanel container = new JPanel(cardLayout);
-
+        JPanel container = new JPanel(new BorderLayout());
+        JPanel cardContainer = new JPanel(cardLayout);
+        JPanel buttonContainer = new JPanel();
         File folder = new File(FileIO.getApplicationRootPath("codebase"));
         File[] files = folder.listFiles();
+        JButton addBtn = new JButton("Add");
+        JButton removeBtn = new JButton("Remove");
+        buttonContainer.add(addBtn);
+        buttonContainer.add(removeBtn);
         var listModel = new DefaultListModel();
         for (File file : files) {
             listModel.addElement(file.getName());
@@ -239,32 +254,31 @@ public class CompilationView extends JPanel {
         this.codebasesJList.setPreferredSize(new Dimension(300,300));
         container.setPreferredSize(new Dimension(300,300));
 
-        DefaultListModel childListModel = new DefaultListModel<>();
-        this.codebaseChildrenJlist = new JList();
-        this.setDubbleClickOnItem(this.codebasesJList, parentFolder -> {
-            System.out.println(parentFolder);
-            File[] childFolders = new File(FileIO.getApplicationRootPath("codebase/"+parentFolder)).listFiles();
-//            assert childFolders != null;
-            for (File childFile : childFolders) {
-                childListModel.addElement(childFile.getName());
-            }
+//        DefaultListModel childListModel = new DefaultListModel<>();
+//        this.codebaseChildrenJlist = new JList();
+//        this.setLeftDoubleClickOnItem(this.codebasesJList, parentFolder -> {
+//            System.out.println(parentFolder);
+//            File[] childFolders = new File(FileIO.getApplicationRootPath("codebase/"+parentFolder)).listFiles();
+//            for (File childFile : childFolders) {
+//                childListModel.addElement(childFile.getName());
+//            }
+//
+//            this.codebaseChildrenJlist.setModel(childListModel);
+//            cardLayout.next(cardContainer);
+//        });
 
-            this.codebaseChildrenJlist.setModel(childListModel);
-            cardLayout.next(container);
-        });
+//        this.codebaseChildrenJlist.setCellRenderer(new IconTextListCellRenderer(UIManager.getIcon("FileView.fileIcon")));
+//        this.setRightDoubleClickOnItem(this.codebaseChildrenJlist,child -> {
+//            cardLayout.previous(cardContainer);
+//        });
 
-        this.codebaseChildrenJlist.setCellRenderer(new IconTextListCellRenderer(UIManager.getIcon("FileView.fileIcon")));
         container.setBackground(Color.white);
+        cardContainer.add(this.codebasesJList);
+//        cardContainer.add(this.codebaseChildrenJlist);
 
-        container.add(this.codebasesJList);
-        container.add(this.codebaseChildrenJlist);
+        container.add(cardContainer,BorderLayout.CENTER);
+        container.add(buttonContainer, BorderLayout.SOUTH);
         return container;
     }
 
-    private void testFrame(String filename){
-        JFrame jFrame = new JFrame();
-        jFrame.add(new JLabel(filename));
-        jFrame.setSize(new Dimension(300,300));
-        jFrame.setVisible(true);
-    }
 }
