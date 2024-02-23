@@ -38,8 +38,8 @@ public class Gui extends JFrame {
         } catch (final SecurityException e) {
             System.out.println("There was a security exception for: 'taskbar.setIconImage'");
         }
-//        this.setIconImage(imgIcon.getImage());
-//        this.setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getClassLoader().getResource("org/example/ISZ_icon.png")));
+        this.setIconImage(imgIcon.getImage());
+        this.setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getClassLoader().getResource("org/example/ISZ_icon.png")));
         this.pack();
         this.setSize(1000,1000);
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);

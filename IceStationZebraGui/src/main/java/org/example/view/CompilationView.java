@@ -6,18 +6,23 @@ import org.example.files.FileIO;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.*;
-import java.util.*;
+import java.io.File;
+import java.nio.file.Path;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.function.Consumer;
 
 public class CompilationView extends JPanel {
 
-    private final Set<String> codeBases;
+    private final Set<String> codeBaseSet;
     private final Set<String> compilerNamesSet;
+    private final Set<String> outputSet;
     private final JButton runAllCompilersBtn = new JButton();
     private final JButton runCompilerBtn = new JButton();
     private final JButton toExecutionBtn = new JButton();
@@ -29,9 +34,10 @@ public class CompilationView extends JPanel {
 
 
     public CompilationView(){
-        compilerNameFile = new FileIO(FileIO.getApplicationRootPath("settings"),"compiler_names.txt");
-        compilerNamesSet = this.extractDataFromFile(compilerNameFile);
-        codeBases = new HashSet<>();
+        this.compilerNameFile = new FileIO(FileIO.getApplicationRootPath("settings"),"compiler_names.txt");
+        this.compilerNamesSet = this.extractDataFromFile(compilerNameFile);
+        this.codeBaseSet = new HashSet<>();
+        this.outputSet = new HashSet<>();
         this.setLayout(new FlowLayout(FlowLayout.RIGHT));
         this.add(this.listContainer(),BorderLayout.NORTH);
         this.add(this.runBtnContainer(),BorderLayout.CENTER);
@@ -79,6 +85,7 @@ public class CompilationView extends JPanel {
 
 
         this.compilerNamesJlist.setPreferredSize(new Dimension(250,250));
+        this.compilerNamesJlist.setBorder(new LineBorder(Color.BLACK));
         compilerNamesPanel.setPreferredSize(new Dimension(300,300));
         compilerNamesPanel.setBackground(Color.white);
         compilerNamesPanel.add(new JScrollPane(this.compilerNamesJlist),BorderLayout.CENTER);
@@ -90,8 +97,8 @@ public class CompilationView extends JPanel {
 
     private JPanel listContainer(){
         JPanel container = new JPanel();
-        container.setBackground(Color.lightGray);
-
+        container.setPreferredSize(new Dimension(975, 310));
+        container.setLayout(new FlowLayout(FlowLayout.CENTER));
         container.add(this.compilerNamesPanel());
         container.add(this.codebasePanel());
         container.add(this.outputPanel());
@@ -103,25 +110,29 @@ public class CompilationView extends JPanel {
         JPanel container = new JPanel(new BorderLayout());
         JButton updateBtn = new JButton("Update");
         JButton clearBtn = new JButton("Clear");
-        this.outputList = new JList<>();
-        DefaultListModel outputListModel = new DefaultListModel<>();
-        JPanel buttonConainer = new JPanel();
-        buttonConainer.add(updateBtn);
-        buttonConainer.add(clearBtn);
+
+//        DefaultListModel outputListModel = new DefaultListModel<>();
+        JPanel buttonContainer = new JPanel();
+        buttonContainer.add(updateBtn);
+        buttonContainer.add(clearBtn);
         File[] outputFiles = new File(FileIO.getApplicationRootPath("output")).listFiles();
 
-        Arrays.stream(outputFiles).forEach(file -> outputListModel.addElement(file.getName()));
+        this.outputSet.addAll(Arrays.stream(outputFiles).map(File::getName).toList());
+        this.outputList = new JList<>(outputSet.toArray());
 
-        this.outputList.setModel(outputListModel);
         this.outputList.setCellRenderer(new IconTextListCellRenderer(UIManager.getIcon("FileView.fileIcon")));
         clearBtn.addActionListener(e -> {
-            outputListModel.clear();
-            this.outputList.updateUI();
+            for (String s : this.outputSet) {
+                this.outputSet.remove(s);
+            }
+            this.updateOutput();
+
             this.outputList.revalidate();
             this.outputList.repaint();
         });
         updateBtn.addActionListener(e->{
-            this.outputList.updateUI();
+
+            this.updateOutput();
             this.outputList.revalidate();
             this.outputList.repaint();
         });
@@ -129,11 +140,12 @@ public class CompilationView extends JPanel {
 //        container.setLayout(new BorderLayout());
         this.outputList.setPreferredSize(new Dimension(250,250));
         this.outputList.setBackground(Color.white);
+        this.outputList.setBorder(new LineBorder(Color.BLACK));
 
         container.setPreferredSize(new Dimension(300,300));
         container.setBackground(Color.white);
         container.add(new JScrollPane(outputList),BorderLayout.CENTER);
-        container.add(buttonConainer, BorderLayout.SOUTH);
+        container.add(buttonContainer, BorderLayout.SOUTH);
 
         return container;
     }
@@ -184,17 +196,17 @@ public class CompilationView extends JPanel {
         });
 
     }
-    private void setRightDoubleClickOnItem(JList jList, Consumer<String> callback){
-        jList.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                if(e.getClickCount() == 2 && e.getButton() == 3){
-                    var selectedValue = jList.getSelectedValue().toString();
-                    callback.accept(selectedValue);
-                }
-            }
-        });
-    }
+//    private void setRightDoubleClickOnItem(JList jList, Consumer<String> callback){
+//        jList.addMouseListener(new MouseAdapter() {
+//            @Override
+//            public void mouseClicked(MouseEvent e) {
+//                if(e.getClickCount() == 2 && e.getButton() == 3){
+//                    var selectedValue = jList.getSelectedValue().toString();
+//                    callback.accept(selectedValue);
+//                }
+//            }
+//        });
+//    }
 
     public void openEditInstallFileWindow(String filename){
         EditFileWindow editFileWindow = new EditFileWindow(filename);
@@ -214,6 +226,13 @@ public class CompilationView extends JPanel {
         compilerNameFile.write(str);
     }
 
+    private void updateOutput(){
+        File[] outputFiles = new File(FileIO.getApplicationRootPath("output")).listFiles();
+        this.outputSet.addAll(Arrays.stream(outputFiles).map(File::getName).toList());
+        this.outputList.setListData(outputSet.toArray());
+        this.outputList.updateUI();
+    }
+
     private void addCompiler(String name){
         System.out.println("ADD: "+ name);
         FileIO fileIO = new FileIO(FileIO.getApplicationRootPath("installs"),name+"_install.sh");
@@ -229,9 +248,17 @@ public class CompilationView extends JPanel {
 
     private void showCompilerInput(){
          String input = JOptionPane.showInputDialog(this,"Enter Compiler name:", "Ice Station Zebra", JOptionPane.PLAIN_MESSAGE);
-         this.addCompiler(input);
+         if(input != null){
+             this.addCompiler(input);
+         }
     }
 
+    private void showCodebaseInput(){
+        String input = JOptionPane.showInputDialog(this,"Enter Test name:", "Ice Station Zebra", JOptionPane.PLAIN_MESSAGE);
+        if (input != null){
+            this.addToCodebase(input);
+        }
+    }
 
     private JPanel codebasePanel(){
         CardLayout cardLayout = new CardLayout();
@@ -242,14 +269,19 @@ public class CompilationView extends JPanel {
         File[] files = folder.listFiles();
         JButton addBtn = new JButton("Add");
         JButton removeBtn = new JButton("Remove");
+        this.codeBaseSet.addAll(Arrays.stream(files).map(File::getName).toList());
+        this.codebasesJList = new JList<>(codeBaseSet.toArray());
+
         buttonContainer.add(addBtn);
         buttonContainer.add(removeBtn);
-        var listModel = new DefaultListModel();
-        for (File file : files) {
-            listModel.addElement(file.getName());
-        }
+        addBtn.addActionListener(e -> {
+            this.showCodebaseInput();
+            this.codebasesJList.setListData(codeBaseSet.toArray());
+            System.out.println("SIZE"+ codeBaseSet.size());
+            this.codebasesJList.updateUI();
+        });
 
-        this.codebasesJList = new JList<>(listModel);
+
         this.codebasesJList.setCellRenderer(new IconTextListCellRenderer(UIManager.getIcon("FileView.directoryIcon")));
         this.codebasesJList.setPreferredSize(new Dimension(300,300));
         container.setPreferredSize(new Dimension(300,300));
@@ -272,13 +304,18 @@ public class CompilationView extends JPanel {
 //            cardLayout.previous(cardContainer);
 //        });
 
+
+        this.codebasesJList.setBorder(new LineBorder(Color.BLACK));
         container.setBackground(Color.white);
         cardContainer.add(this.codebasesJList);
-//        cardContainer.add(this.codebaseChildrenJlist);
 
         container.add(cardContainer,BorderLayout.CENTER);
         container.add(buttonContainer, BorderLayout.SOUTH);
         return container;
+    }
+    private void addToCodebase(String name){
+        FileIO.createFolderIf(Path.of(FileIO.getApplicationRootPath("codebase/" + name)));
+        this.codeBaseSet.add(name);
     }
 
 }
