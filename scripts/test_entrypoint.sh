@@ -1,10 +1,11 @@
 #!/bin/bash
 echo "Listening to stdin..."
 
-while IFS= read -r line; do
-    echo "You typed: $line"
+while true; do
+  read line
+  echo "You typed: $line"
+  sleep 1
 done
-
 
 #while true; do
 #  read line
