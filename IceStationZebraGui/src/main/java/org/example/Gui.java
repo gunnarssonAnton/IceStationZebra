@@ -1,5 +1,6 @@
 package org.example;
 
+import com.apple.eawt.ApplicationAdapter;
 import io.reactivex.rxjava3.core.Observable;
 import org.example.Utility.TerminalMessage;
 import org.example.controller.CompilationViewController;
@@ -8,6 +9,7 @@ import org.example.controller.TerminalViewController;
 
 import javax.swing.*;
 import java.awt.*;
+import java.net.URL;
 import java.util.Date;
 
 public class Gui extends JFrame {
@@ -20,8 +22,24 @@ public class Gui extends JFrame {
         // Icon
         System.out.println(Main.class.getResource("ISZ_icon.png").getPath());
         ImageIcon imgIcon = new ImageIcon(Main.class.getResource("ISZ_icon.png"));
-        this.setIconImage(imgIcon.getImage());
-        this.setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getClassLoader().getResource("org/example/ISZ_icon.png")));
+        //loading an image from a file
+        final Toolkit defaultToolkit = Toolkit.getDefaultToolkit();
+        final URL imageResource = Main.class.getClassLoader().getResource("org/example/ISZ_icon.png");
+        final Image image = defaultToolkit.getImage(imageResource);
+
+        //this is new since JDK 9
+        final Taskbar taskbar = Taskbar.getTaskbar();
+
+        try {
+            //set icon for mac os (and other systems which do support this method)
+            taskbar.setIconImage(image);
+        } catch (final UnsupportedOperationException e) {
+            System.out.println("The os does not support: 'taskbar.setIconImage'");
+        } catch (final SecurityException e) {
+            System.out.println("There was a security exception for: 'taskbar.setIconImage'");
+        }
+//        this.setIconImage(imgIcon.getImage());
+//        this.setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getClassLoader().getResource("org/example/ISZ_icon.png")));
         this.pack();
         this.setSize(1000,1000);
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);

@@ -1,0 +1,15 @@
+{
+  "global": 99,
+  "user": "name",
+  "compilations": [
+    {
+      "dockerImage": "ubuntu:latest",
+      "givenName": "gcc",
+      "compileCommand": "gcc FILES -o OUTPUT",
+      "installation": [
+        "apt install gcc",
+        "gcc --version"
+      ]
+    }
+  ]
+}

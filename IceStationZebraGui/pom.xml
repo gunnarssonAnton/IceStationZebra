@@ -47,5 +47,10 @@
             <artifactId>rxjava</artifactId>
             <version>3.1.5</version>
         </dependency>
+        <dependency>
+            <groupId>com.apple</groupId>
+            <artifactId>AppleJavaExtensions</artifactId>
+            <version>1.4</version>
+        </dependency>
     </dependencies>
 </project>
