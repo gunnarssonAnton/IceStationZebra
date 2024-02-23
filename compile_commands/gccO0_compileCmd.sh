@@ -1,0 +1,1 @@
+gcc -O0 FILES -o OUTPUT
