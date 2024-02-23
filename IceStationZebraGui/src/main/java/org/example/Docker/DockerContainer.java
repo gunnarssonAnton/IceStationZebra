@@ -26,7 +26,6 @@ public class DockerContainer{
     }
     public void setVolume(String key, String value){
         this.volumes.put(key,value);
-
     }
     public void addARG(String arg){
         this.args.add(arg);
