@@ -27,7 +27,6 @@ public class CompilationView extends JPanel {
     private final JButton runCompilerBtn = new JButton();
     private final JButton toExecutionBtn = new JButton();
     private JList codebasesJList;
-    private JList codebaseChildrenJlist;
     private JList compilerNamesJlist;
     private final FileIO compilerNameFile;
     private JList outputList;
@@ -125,8 +124,9 @@ public class CompilationView extends JPanel {
             for (String s : this.outputSet) {
                 this.outputSet.remove(s);
             }
-            this.updateOutput();
-
+//            this.updateOutput();
+            this.outputList.setListData(this.outputSet.toArray());
+            this.outputList.updateUI();
             this.outputList.revalidate();
             this.outputList.repaint();
         });
