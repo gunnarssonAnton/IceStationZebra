@@ -1,26 +1,30 @@
 package org.example;
 
 import org.example.Utility.BashSyntaxHighlighting;
-import org.example.files.FileIO;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.List;
 
 public class EditFileWindow extends JFrame {
-    private final FileIO installFile;
-    private final FileIO compileFile;
+//    private final FileIO installFile;
+//    private final FileIO compileFile;
     private final CardLayout cardLayout = new CardLayout();
     private JPanel cardConainer = new JPanel(cardLayout);
     private final JTextPane installTextPane = new JTextPane();
     private final JTextPane compilingTextPane = new JTextPane();
     private final JButton saveBtn = new JButton("Save");
     private final JMenuBar menuBar = new JMenuBar();
+    private String compileCommand = "";
+    private List<String> installationList = new ArrayList<>();
+    private String givenName = "";
 
-    public EditFileWindow(String filename){
-        this.installFile = new FileIO(FileIO.getApplicationRootPath("installs"),filename+"_install.sh");
-        this.compileFile = new FileIO(FileIO.getApplicationRootPath("compile_commands"),filename+"_compileCmd.sh");
+    public EditFileWindow(){
+//        this.installFile = new FileIO(FileIO.getApplicationRootPath("installs"),filename+"_install.sh");
+//        this.compileFile = new FileIO(FileIO.getApplicationRootPath("compile_commands"),filename+"_compileCmd.sh");
+
         this.setSize(500,500);
         this.setLayout(new BorderLayout());
         this.setTitle("Ice Station Zebra Editor");
@@ -37,43 +41,31 @@ public class EditFileWindow extends JFrame {
         editCompilingCommand.setBackground(Color.white);
 
 
+        this.givenName = JOptionPane.showInputDialog(this,"Enter Compiler Name:","Ice Station Zebra", JOptionPane.PLAIN_MESSAGE);
+//        this.add(inputField, BorderLayout.NORTH);
+
         this.menuBar.setBackground(Color.white);
         this.menuBar.add(editInstallCommand);
         this.menuBar.add(editCompilingCommand);
 
-
         this.setJMenuBar(this.menuBar);
         this.setLocationRelativeTo(null);
-        this.saveBtn.addActionListener(e -> saveToFile());
+//        this.saveBtn.addActionListener(e -> saveToFile());
 
-        this.compilingTextPane.setText(this.compileFile.read());
+//        this.compilingTextPane.setText(this.compileFile.read());
         this.compilingTextPane.setSize(new Dimension(500,500));
 
-        this.installTextPane.setText(this.installFile.read());
+//        this.installTextPane.setText(this.installFile.read());
         this.installTextPane.setSize(new Dimension(500,500));
 
         JPanel compileTextAreaContainer = new JPanel();
         JPanel installTextAreaContainer = new JPanel();
 
-        compileTextAreaContainer.setLayout(new BorderLayout());
-        compileTextAreaContainer.add(this.compilingTextPane,BorderLayout.CENTER);
-        compileTextAreaContainer.add(new JLabel("Compile File",SwingConstants.CENTER),BorderLayout.NORTH);
-        compileTextAreaContainer.setBackground(Color.lightGray);
 
-        installTextAreaContainer.setLayout(new BorderLayout());
-        installTextAreaContainer.add(this.installTextPane, BorderLayout.CENTER);
-        installTextAreaContainer.add(new JLabel("Install File",SwingConstants.CENTER),BorderLayout.NORTH);
-        installTextAreaContainer.setBackground(Color.lightGray);
-
+        this.styleJPanel(compileTextAreaContainer, this.compilingTextPane, "Compile File");
+        this.styleJPanel(installTextAreaContainer, this.installTextPane,"Install File");
 
         this.cardConainer.add(installTextAreaContainer);
-        this.addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowClosing(WindowEvent e) {
-                saveToFile();
-            }
-
-        });
 
         editInstallCommand.addActionListener(e -> {
             this.cardConainer.add(installTextAreaContainer);
@@ -91,14 +83,25 @@ public class EditFileWindow extends JFrame {
         this.add(this.saveBtn,BorderLayout.SOUTH);
     }
 
-    private void saveToFile(){
-        String installContent = installTextPane.getText();
-        installFile.write(installContent);
 
-        String compileContent = compilingTextPane.getText();
-        compileFile.write(compileContent);
-
-        this.dispose();
+    public void setListenerOnSaveBtn(ActionListener listener){
+        this.saveBtn.addActionListener(listener);
+    }
+    private void styleJPanel(JPanel container, JTextPane textPane,String label){
+        container.setLayout(new BorderLayout());
+        container.add(textPane, BorderLayout.CENTER);
+        container.add(new JLabel(label,SwingConstants.CENTER),BorderLayout.NORTH);
+        container.setBackground(Color.lightGray);
+    }
+    public List<String> getInstallationList(){
+        return this.installationList;
     }
 
+    public String getCompileCommand() {
+        return this.compileCommand;
+    }
+
+    public String getGivenName() {
+        return this.givenName;
+    }
 }

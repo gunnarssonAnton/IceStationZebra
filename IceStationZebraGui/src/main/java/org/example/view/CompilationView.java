@@ -3,13 +3,18 @@ package org.example.view;
 import org.example.EditFileWindow;
 import org.example.Utility.GuiUtil;
 import org.example.Utility.IconTextListCellRenderer;
+import org.example.Utility.IszHandler;
 import org.example.files.FileIO;
+import org.example.models.Event;
+import org.json.JSONArray;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.File;
 import java.nio.file.Path;
 import java.util.Arrays;
@@ -29,10 +34,15 @@ public class CompilationView extends JPanel {
     private JList compilerNamesJlist;
     private JList outputList;
     private final FileIO compilerNameFile;
+    private final IszHandler iszHandler = new IszHandler();
 
+    private Set<Event> eventSet;
     public CompilationView(){
+
         this.compilerNameFile = new FileIO(FileIO.getApplicationRootPath("settings"),"compiler_names.txt");
-        this.compilerNamesSet = this.extractDataFromFile(compilerNameFile);
+        this.compilerNamesSet = this.iszHandler.getGivenNames();
+        this.eventSet = this.iszHandler.getEvents();
+//        System.out.println(iszHandler.getEvents());
         this.codeBaseSet = new HashSet<>();
         this.outputSet = new HashSet<>();
         this.setLayout(new FlowLayout(FlowLayout.RIGHT));
@@ -61,7 +71,8 @@ public class CompilationView extends JPanel {
 
 
         addNameBtn.addActionListener(e -> {
-            this.guiUtil.showInputDialog(this, "Enter Compiler Name", this::addCompiler);
+//            this.guiUtil.showInputDialog(this, "Enter Compiler Name", this::addCompiler);
+            this.showAddEventDialog();
             this.guiUtil.updateJList(this.compilerNamesJlist, this.compilerNamesSet);
         });
 
@@ -165,13 +176,13 @@ public class CompilationView extends JPanel {
 
 
     public void openEditInstallFileWindow(String filename){
-        EditFileWindow editFileWindow = new EditFileWindow(filename);
-        editFileWindow.setVisible(true);
+//        EditFileWindow editFileWindow = new EditFileWindow(filename);
+//        editFileWindow.setVisible(true);
     }
 
-    private Set<String> extractDataFromFile(FileIO fileIO){
-        return new HashSet<>(Arrays.asList(fileIO.read().split("\\r?\\n")));
-    }
+//    private Set<String> extractDataFromFile(FileIO fileIO){
+//        return new HashSet<>(Arrays.asList(fileIO.read().split("\\r?\\n")));
+//    }
 
     private void updateCompilerNameFile(){
         String str = "";
@@ -228,7 +239,7 @@ public class CompilationView extends JPanel {
         this.codebasesJList.setPreferredSize(new Dimension(300,300));
         container.setPreferredSize(new Dimension(300,300));
 
-
+        guiUtil.setDoubleClickOnJListItem(this.codebasesJList, this::openFileChooser);
         this.codebasesJList.setBorder(new LineBorder(Color.BLACK));
         container.setBackground(Color.white);
         cardContainer.add(this.codebasesJList);
@@ -240,6 +251,50 @@ public class CompilationView extends JPanel {
     private void addToCodebase(String name){
         FileIO.createFolderIf(Path.of(FileIO.getApplicationRootPath("codebase/" + name)));
         this.codeBaseSet.add(name);
+    }
+
+    private void openFileChooser(String filename){
+        JFileChooser jFileChooser = new JFileChooser(FileIO.getApplicationRootPath("codebase/"+filename));
+        jFileChooser.setVisible(true);
+
+        jFileChooser.showOpenDialog(this);
+    }
+
+    private void showAddEventDialog(){
+
+        EditFileWindow editFileWindow = new EditFileWindow();
+        editFileWindow.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                Event newEvent = new Event(
+                        Event.DOCKERIMAGE,
+                        editFileWindow.getCompileCommand(),
+                        editFileWindow.getGivenName(),
+                        new JSONArray(editFileWindow.getInstallationList())
+                        );
+
+
+                iszHandler.writeToIsz(newEvent);
+                compilerNamesSet.add(newEvent.givenName());
+                guiUtil.updateJList(compilerNamesJlist,compilerNamesSet);
+            }
+        });
+
+        editFileWindow.setListenerOnSaveBtn(e ->{
+                Event newEvent = new Event(
+                        Event.DOCKERIMAGE,
+                        editFileWindow.getCompileCommand(),
+                        editFileWindow.getGivenName(),
+                        new JSONArray(editFileWindow.getInstallationList())
+                );
+
+                iszHandler.writeToIsz(newEvent);
+                editFileWindow.dispose();
+                compilerNamesSet.add(newEvent.givenName());
+                guiUtil.updateJList(compilerNamesJlist,compilerNamesSet);
+                });
+
+        editFileWindow.setVisible(true);
     }
 
 }
