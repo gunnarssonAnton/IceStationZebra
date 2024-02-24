@@ -1,7 +1,7 @@
 {
   "global": 99,
   "user": "name",
-  "compilations": [
+  "events": [
     {
       "dockerImage": "ubuntu:latest",
       "givenName": "gcc",
