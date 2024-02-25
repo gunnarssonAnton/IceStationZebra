@@ -5,7 +5,7 @@ import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 import io.reactivex.rxjava3.subjects.PublishSubject;
 import org.example.Docker.DockerContainer;
-import org.example.Docker.Dockerfile;
+import org.example.Docker.DockerImage;
 import org.example.files.FileIO;
 
 import java.awt.Color;
@@ -17,38 +17,38 @@ import java.util.stream.Collectors;
 
 public class Compilation {
     private PublishSubject<TerminalMessage> subject;
-    private final String pullImage;
     //private final String containerName;
     private final String suffix = Generate.generateRandomString(12);
     private Observable<String> terminalInput = null;
-    public Compilation(PublishSubject<TerminalMessage> subject, String pullImage){
+    DockerContainer container;
+    DockerImage image;
+    public Compilation(PublishSubject<TerminalMessage> subject, DockerContainer container, DockerImage image){
         this.subject = subject;
-        this.pullImage = pullImage;
-        //this.containerName = "container_" + this.suffix;
+        this.container = container;
+        this.image = image;
     }
     public void setTerminalInput(Observable<String> terminalInput){
         this.terminalInput = terminalInput;
     }
     public void go(String compilerName){
         // Create basic docker file
-        Dockerfile dockerfile = Dockerfile.getBasic(this.pullImage, "image_" + this.suffix);
 
         List<String> tests = getTests();
         tests.forEach(test -> {
             String compileCommand = constructCompileCommand(compilerName,test);
             // Create basic docker container
-            DockerContainer container = DockerContainer.getBasic("container_" + Generate.generateRandomString(12), dockerfile);
+            DockerContainer container = DockerContainer.getBasic("container_" + Generate.generateRandomString(12), this.image);
             container.setEnv("COMPILER_NAME",compilerName);
             container.setEnv("COMPILER_COMMAND",compileCommand);
             //container.setEntrypointOverride("/scripts/test_entrypoint.sh");
-            runDockerImage(container, dockerfile);
+            runDockerImage(container, this.image);
         });
 
 
     }
-    private void runDockerImage(DockerContainer container, Dockerfile dockerfile) {
+    private void runDockerImage(DockerContainer container, DockerImage dockerImage) {
 
-        ProcessHandler handler = dockerfile.build();
+        ProcessHandler handler = dockerImage.build();
 
         // Image stdout
         Disposable stdoutDisposable = handler.getStdout().subscribeOn(Schedulers.io()).subscribe(out -> {
@@ -66,12 +66,12 @@ public class Compilation {
         Disposable completionDisposable = handler.getCompletion().subscribeOn(Schedulers.io()).subscribe(
                 () -> {
                     subject.onNext(new TerminalMessage("Image Process completed successfully",Color.GREEN));
-                    runDockerContainer(container, dockerfile);
+                    runDockerContainer(container, dockerImage);
                 },
                 throwable -> subject.onNext(new TerminalMessage("Image Process failed: " + throwable.getMessage(),Color.RED))
         );
     }
-    private void runDockerContainer(DockerContainer container, Dockerfile dockerfile){
+    private void runDockerContainer(DockerContainer container, DockerImage dockerImage){
 
         ProcessHandler containerHandler = container.run(new String[0]);
         //this.terminalInput.subscribeOn(Schedulers.io()).subscribe(System.out::println);
