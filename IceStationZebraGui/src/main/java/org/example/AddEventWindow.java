@@ -34,7 +34,7 @@ public class AddEventWindow extends JFrame {
         this.setTitle("Ice Station Zebra Editor");
         this.saveBtn.setPreferredSize(new Dimension(100,20));
         this.installTextPane.setDocument(new BashSyntaxHighlighting());
-        this.installTextPane.setText("#!/bin/bash\n");
+//        this.installTextPane.setText("#!/bin/bash\n");
         this.givenName = JOptionPane.showInputDialog(this,"Enter Compiler Name:","Ice Station Zebra", JOptionPane.PLAIN_MESSAGE);
 
         this.saveBtn.addActionListener(e->this.saveEvent());
