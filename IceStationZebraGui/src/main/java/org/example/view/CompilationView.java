@@ -1,9 +1,10 @@
 package org.example.view;
 
-import org.example.EditFileWindow;
+import org.example.AddEventWindow;
+import org.example.EditIceEventWindow;
 import org.example.Utility.GuiUtil;
 import org.example.Utility.IconTextListCellRenderer;
-import org.example.Utility.IszHandler;
+import org.example.Utility.IceHandler;
 import org.example.files.FileIO;
 import org.example.models.Event;
 import org.json.JSONArray;
@@ -24,24 +25,24 @@ import java.util.Set;
 public class CompilationView extends JPanel {
 
     private final Set<String> codeBaseSet;
-    private final Set<String> compilerNamesSet;
+    private final Set<String> eventNamesSet;
     private final Set<String> outputSet;
     private final JButton runAllCompilersBtn = new JButton();
     private final JButton runCompilerBtn = new JButton();
     private final JButton toExecutionBtn = new JButton();
     private final GuiUtil guiUtil = new GuiUtil();
     private JList codebasesJList;
-    private JList compilerNamesJlist;
+    private JList eventNamesJlist;
     private JList outputList;
-    private final FileIO compilerNameFile;
-    private final IszHandler iszHandler = new IszHandler();
+//    private final FileIO compilerNameFile;
+    private final IceHandler iceHandler = new IceHandler(new FileIO(FileIO.getApplicationRootPath("settings"),"config.ice"));
 
     private Set<Event> eventSet;
     public CompilationView(){
 
-        this.compilerNameFile = new FileIO(FileIO.getApplicationRootPath("settings"),"compiler_names.txt");
-        this.compilerNamesSet = this.iszHandler.getGivenNames();
-        this.eventSet = this.iszHandler.getEvents();
+//        this.compilerNameFile = new FileIO(FileIO.getApplicationRootPath("settings"),"compiler_names.txt");
+        this.eventNamesSet = this.iceHandler.getGivenNames();
+        this.eventSet = this.iceHandler.getEvents();
 //        System.out.println(iszHandler.getEvents());
         this.codeBaseSet = new HashSet<>();
         this.outputSet = new HashSet<>();
@@ -50,8 +51,8 @@ public class CompilationView extends JPanel {
         this.add(this.runBtnContainer(),BorderLayout.CENTER);
     }
 
-    public Set<String> getCompilerNamesSet(){
-        return this.compilerNamesSet;
+    public Set<String> getEventNamesSet(){
+        return this.eventNamesSet;
     }
 
     private JPanel compilerNamesPanel(){
@@ -60,37 +61,37 @@ public class CompilationView extends JPanel {
         JButton removeNameBtn = new JButton("Remove");
         JPanel buttonContainer = new JPanel();
         IconTextListCellRenderer iconTextListCellRenderer = new IconTextListCellRenderer(UIManager.getIcon("FileView.floppyDriveIcon"));
-        this.compilerNamesJlist = new JList(this.compilerNamesSet.toArray());
+        this.eventNamesJlist = new JList(this.eventNamesSet.toArray());
 
         buttonContainer.add(addNameBtn);
         buttonContainer.add(removeNameBtn);
 
 
-        this.compilerNamesJlist.setCellRenderer(iconTextListCellRenderer);
-        this.compilerNamesJlist.setBackground(Color.WHITE);
+        this.eventNamesJlist.setCellRenderer(iconTextListCellRenderer);
+        this.eventNamesJlist.setBackground(Color.WHITE);
 
 
         addNameBtn.addActionListener(e -> {
 //            this.guiUtil.showInputDialog(this, "Enter Compiler Name", this::addCompiler);
             this.showAddEventDialog();
-            this.guiUtil.updateJList(this.compilerNamesJlist, this.compilerNamesSet);
+            this.guiUtil.updateJList(this.eventNamesJlist, this.eventNamesSet);
         });
 
         removeNameBtn.addActionListener(e -> {
-            String selectedValue = this.compilerNamesJlist.getSelectedValue().toString();
+            String selectedValue = this.eventNamesJlist.getSelectedValue().toString();
             this.removeCompiler(selectedValue);
-            this.guiUtil.updateJList(this.compilerNamesJlist, this.compilerNamesSet);
+            this.guiUtil.updateJList(this.eventNamesJlist, this.eventNamesSet);
         });
 
-        this.compilerNamesJlist.setPreferredSize(new Dimension(250,250));
-        this.compilerNamesJlist.setBorder(new LineBorder(Color.BLACK));
+        this.eventNamesJlist.setPreferredSize(new Dimension(250,250));
+        this.eventNamesJlist.setBorder(new LineBorder(Color.BLACK));
 
         compilerNamesPanel.setPreferredSize(new Dimension(300,300));
         compilerNamesPanel.setBackground(Color.white);
-        compilerNamesPanel.add(new JScrollPane(this.compilerNamesJlist),BorderLayout.CENTER);
+        compilerNamesPanel.add(new JScrollPane(this.eventNamesJlist),BorderLayout.CENTER);
         compilerNamesPanel.add(buttonContainer, BorderLayout.SOUTH);
 
-        this.guiUtil.setDoubleClickOnJListItem(compilerNamesJlist, this::openEditInstallFileWindow);
+        this.guiUtil.setDoubleClickOnJListItem(eventNamesJlist, this::openEditIceEventWindow);
         return compilerNamesPanel;
     }
 
@@ -175,23 +176,24 @@ public class CompilationView extends JPanel {
     }
 
 
-    public void openEditInstallFileWindow(String filename){
-//        EditFileWindow editFileWindow = new EditFileWindow(filename);
-//        editFileWindow.setVisible(true);
+    public void openEditIceEventWindow(String eventName){
+        EditIceEventWindow editIceEventWindow = new EditIceEventWindow(this.iceHandler.getSpecificEvent(eventName));
+        editIceEventWindow.setVisible(true);
+        System.out.println(this.iceHandler.getSpecificEvent(eventName));
     }
 
 //    private Set<String> extractDataFromFile(FileIO fileIO){
 //        return new HashSet<>(Arrays.asList(fileIO.read().split("\\r?\\n")));
 //    }
 
-    private void updateCompilerNameFile(){
-        String str = "";
-        for (String compilerName : this.compilerNamesSet) {
-            str += compilerName+"\n";
-        }
-        compilerNameFile.write("");
-        compilerNameFile.write(str);
-    }
+//    private void updateCompilerNameFile(){
+//        String str = "";
+//        for (String compilerName : this.compilerNamesSet) {
+//            str += compilerName+"\n";
+//        }
+//        compilerNameFile.write("");
+//        compilerNameFile.write(str);
+//    }
 
     private void updateOutput(){
         File[] outputFiles = new File(FileIO.getApplicationRootPath("output")).listFiles();
@@ -199,18 +201,18 @@ public class CompilationView extends JPanel {
         this.guiUtil.updateJList(this.outputList, this.outputSet);
     }
 
-    private void addCompiler(String name){
-        System.out.println("ADD: "+ name);
-        FileIO fileIO = new FileIO(FileIO.getApplicationRootPath("installs"),name+"_install.sh");
-        fileIO.write("#!/bin/bash\n");
-        this.compilerNamesSet.add(name);
-        this.updateCompilerNameFile();
-    }
+//    private void addCompiler(String name){
+//        System.out.println("ADD: "+ name);
+//        FileIO fileIO = new FileIO(FileIO.getApplicationRootPath("installs"),name+"_install.sh");
+//        fileIO.write("#!/bin/bash\n");
+//        this.compilerNamesSet.add(name);
+////        this.updateCompilerNameFile();
+//    }
 
     private void removeCompiler(String name){
         System.out.println("REMOVE: "+name);
-        this.compilerNamesSet.remove(name);
-        this.updateCompilerNameFile();
+        this.eventNamesSet.remove(name);
+//        this.updateCompilerNameFile();
     }
 
 
@@ -262,39 +264,52 @@ public class CompilationView extends JPanel {
 
     private void showAddEventDialog(){
 
-        EditFileWindow editFileWindow = new EditFileWindow();
-        editFileWindow.addWindowListener(new WindowAdapter() {
+        AddEventWindow addEventWindow = new AddEventWindow();
+        addEventWindow.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
+                addEventWindow.saveInfo();
                 Event newEvent = new Event(
                         Event.DOCKERIMAGE,
-                        editFileWindow.getCompileCommand(),
-                        editFileWindow.getGivenName(),
-                        new JSONArray(editFileWindow.getInstallationList())
+                        addEventWindow.getCompileCommand(),
+                        addEventWindow.getGivenName(),
+                        new JSONArray(addEventWindow.getInstallationList())
                         );
 
+                iceHandler.writeToIce(newEvent);
+//                compilerNamesSet.add(newEvent.givenName());
 
-                iszHandler.writeToIsz(newEvent);
-                compilerNamesSet.add(newEvent.givenName());
-                guiUtil.updateJList(compilerNamesJlist,compilerNamesSet);
+                eventNamesSet.addAll(iceHandler.getGivenNames());
+                updateEventNameSet();
+                guiUtil.updateJList(eventNamesJlist, eventNamesSet);
             }
         });
 
-        editFileWindow.setListenerOnSaveBtn(e ->{
+        addEventWindow.setListenerOnSaveBtn(e ->{
+            addEventWindow.saveInfo();
                 Event newEvent = new Event(
                         Event.DOCKERIMAGE,
-                        editFileWindow.getCompileCommand(),
-                        editFileWindow.getGivenName(),
-                        new JSONArray(editFileWindow.getInstallationList())
+                        addEventWindow.getCompileCommand(),
+                        addEventWindow.getGivenName(),
+                        new JSONArray(addEventWindow.getInstallationList())
                 );
+                iceHandler.writeToIce(newEvent);
+                addEventWindow.dispose();
 
-                iszHandler.writeToIsz(newEvent);
-                editFileWindow.dispose();
-                compilerNamesSet.add(newEvent.givenName());
-                guiUtil.updateJList(compilerNamesJlist,compilerNamesSet);
+                updateEventNameSet();
+                eventNamesSet.addAll(iceHandler.getGivenNames());
                 });
 
-        editFileWindow.setVisible(true);
+        addEventWindow.setVisible(true);
+
+    }
+    private void updateEventNameSet(){
+        for (String s : this.eventNamesSet) {
+            if (this.iceHandler.getSpecificEvent(s)==null){
+                this.eventNamesSet.remove(s);
+            }
+        }
+        this.guiUtil.updateJList(this.eventNamesJlist, this.eventNamesSet);
     }
 
 }

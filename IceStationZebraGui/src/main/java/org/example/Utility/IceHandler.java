@@ -13,41 +13,43 @@ import org.json.JSONObject;
 import java.util.HashSet;
 import java.util.Set;
 
-public class IszHandler {
+public class IceHandler {
     private final ObjectWriter objectWriter = new ObjectMapper().writer().with(SerializationFeature.INDENT_OUTPUT);
-    private FileIO iszFile = new FileIO(FileIO.getApplicationRootPath("settings"),"config.isz");
-    private final JSONArray iszArray = new JSONArray();
+    private FileIO iceFile;
+    private final JSONArray iceArray = new JSONArray();
 
 
-    public IszHandler(){
-        this.getGivenNames();
+    public IceHandler(FileIO iceFile){
+        this.iceFile = iceFile;
+        this.modifiEvent();
     }
 
-    public void writeToIsz(Event event){
-        iszArray.put(event.toIsz());
-        Config config = new Config(99,"name", iszArray.toList());
+    public void writeToIce(Event event){
+        iceArray.put(event.toIce());
+        Config config = new Config(99,"name", iceArray.toList());
         try {
-            this.iszFile.write(objectWriter.writeValueAsString(config));
+            this.iceFile.write(objectWriter.writeValueAsString(config));
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
     }
-    public void writeToIsz(Set<Event> events){
-        events.stream().map(Event::toIsz).forEach(iszArray::put);
-        Config config = new Config(99,"name", iszArray.toList());
+    public void writeToIce(Set<Event> events){
+        events.stream().map(Event::toIce).forEach(iceArray::put);
+        Config config = new Config(99,"name", iceArray.toList());
         try {
-            this.iszFile.write(objectWriter.writeValueAsString(config));
+            this.iceFile.write(objectWriter.writeValueAsString(config));
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
     }
+
     public Set<String> getGivenNames(){
         Set<String> givenNameSet = new HashSet<>();
-        JSONObject jsonObject = new JSONObject(this.iszFile.read());
+        JSONObject jsonObject = new JSONObject(this.iceFile.read());
         ((JSONArray) jsonObject.get("events")).forEach(obj->{
-            JSONObject iszEvent = new JSONObject(obj.toString());
+            JSONObject iceEvent = new JSONObject(obj.toString());
 
-            givenNameSet.add(iszEvent.get("givenName").toString());
+            givenNameSet.add(iceEvent.get("givenName").toString());
         });
         System.out.println(givenNameSet);
         return givenNameSet;
@@ -55,7 +57,7 @@ public class IszHandler {
 
     public Set<Event> getEvents(){
         Set<Event> eventSet = new HashSet<>();
-        JSONObject startObj = new JSONObject(this.iszFile.read());
+        JSONObject startObj = new JSONObject(this.iceFile.read());
         ((JSONArray) startObj.get("events")).forEach(obj->{
             JSONObject iszEvent = new JSONObject(obj.toString());
             eventSet.add(
@@ -68,9 +70,26 @@ public class IszHandler {
         });
         return eventSet;
     }
+
+    public Event getSpecificEvent(String givenName){
+        Event event = null;
+        for (Event event1 : this.getEvents()) {
+            if(event1.givenName().equals(givenName)){
+                event = event1;
+            }
+        }
+        return event;
+    }
+
+    public void modifiEvent(){
+        for (Object o : this.iceArray) {
+            System.out.println(o);
+        }
+//         this.iceArray.getJSONObject()
+    }
     public String readIsz() {
-        System.out.println(this.iszFile.read());
-        return this.iszFile.read();
+        System.out.println(this.iceFile.read());
+        return this.iceFile.read();
     }
 
 
