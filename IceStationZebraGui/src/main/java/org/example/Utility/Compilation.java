@@ -40,7 +40,7 @@ public class Compilation {
             DockerContainer container = DockerContainer.getBasic("container_" + Generate.generateRandomString(12), dockerfile);
             container.setEnv("COMPILER_NAME",compilerName);
             container.setEnv("COMPILER_COMMAND",compileCommand);
-            container.setEntrypointOverride("/scripts/test_entrypoint.sh");
+            //container.setEntrypointOverride("/scripts/test_entrypoint.sh");
             runDockerImage(container, dockerfile);
         });
 
