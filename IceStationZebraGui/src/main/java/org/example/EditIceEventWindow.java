@@ -1,36 +1,27 @@
 package org.example;
 
 import org.example.Utility.BashSyntaxHighlighting;
+import org.example.models.Event;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionListener;
-import java.util.ArrayList;
-import java.util.List;
 
-public class EditFileWindow extends JFrame {
-//    private final FileIO installFile;
-//    private final FileIO compileFile;
+public class EditIceEventWindow extends JFrame {
+    //    private final FileIO compileFile;
     private final CardLayout cardLayout = new CardLayout();
     private JPanel cardConainer = new JPanel(cardLayout);
     private final JTextPane installTextPane = new JTextPane();
     private final JTextPane compilingTextPane = new JTextPane();
     private final JButton saveBtn = new JButton("Save");
     private final JMenuBar menuBar = new JMenuBar();
-    private String compileCommand = "";
-    private List<String> installationList = new ArrayList<>();
-    private String givenName = "";
 
-    public EditFileWindow(){
-//        this.installFile = new FileIO(FileIO.getApplicationRootPath("installs"),filename+"_install.sh");
-//        this.compileFile = new FileIO(FileIO.getApplicationRootPath("compile_commands"),filename+"_compileCmd.sh");
-
+    public EditIceEventWindow(Event event) {
+        this.configureTextPanes(event);
+        this.setTitle("Edit:"+event.givenName());
         this.setSize(500,500);
         this.setLayout(new BorderLayout());
-        this.setTitle("Ice Station Zebra Editor");
         this.saveBtn.setPreferredSize(new Dimension(100,20));
 
-        this.installTextPane.setDocument(new BashSyntaxHighlighting());
 
         JButton editInstallCommand = new JButton("Install cmd");
         editInstallCommand.setBackground(Color.white);
@@ -40,24 +31,6 @@ public class EditFileWindow extends JFrame {
         editCompilingCommand.setFocusPainted(false);
         editCompilingCommand.setBackground(Color.white);
 
-
-        this.givenName = JOptionPane.showInputDialog(this,"Enter Compiler Name:","Ice Station Zebra", JOptionPane.PLAIN_MESSAGE);
-//        this.add(inputField, BorderLayout.NORTH);
-
-        this.menuBar.setBackground(Color.white);
-        this.menuBar.add(editInstallCommand);
-        this.menuBar.add(editCompilingCommand);
-
-        this.setJMenuBar(this.menuBar);
-        this.setLocationRelativeTo(null);
-//        this.saveBtn.addActionListener(e -> saveToFile());
-
-//        this.compilingTextPane.setText(this.compileFile.read());
-        this.compilingTextPane.setSize(new Dimension(500,500));
-
-//        this.installTextPane.setText(this.installFile.read());
-        this.installTextPane.setSize(new Dimension(500,500));
-
         JPanel compileTextAreaContainer = new JPanel();
         JPanel installTextAreaContainer = new JPanel();
 
@@ -66,6 +39,7 @@ public class EditFileWindow extends JFrame {
         this.styleJPanel(installTextAreaContainer, this.installTextPane,"Install File");
 
         this.cardConainer.add(installTextAreaContainer);
+
 
         editInstallCommand.addActionListener(e -> {
             this.cardConainer.add(installTextAreaContainer);
@@ -79,29 +53,40 @@ public class EditFileWindow extends JFrame {
             editInstallCommand.setEnabled(true);
             editCompilingCommand.setEnabled(false);
         });
+        this.menuBar.setBackground(Color.white);
+        this.menuBar.add(editInstallCommand);
+        this.menuBar.add(editCompilingCommand);
+
+        this.setJMenuBar(this.menuBar);
+        this.setLocationRelativeTo(null);
+
         this.add(this.cardConainer, BorderLayout.CENTER);
         this.add(this.saveBtn,BorderLayout.SOUTH);
     }
 
-
-    public void setListenerOnSaveBtn(ActionListener listener){
-        this.saveBtn.addActionListener(listener);
-    }
     private void styleJPanel(JPanel container, JTextPane textPane,String label){
         container.setLayout(new BorderLayout());
         container.add(textPane, BorderLayout.CENTER);
         container.add(new JLabel(label,SwingConstants.CENTER),BorderLayout.NORTH);
         container.setBackground(Color.lightGray);
     }
-    public List<String> getInstallationList(){
-        return this.installationList;
+
+    private void configureTextPanes(Event event){
+        String installationContent = "";
+        for (Object o : event.installation()) {
+            installationContent += o.toString() + "\n";
+        }
+
+        this.installTextPane.setSize(new Dimension(500,500));
+        this.installTextPane.setDocument(new BashSyntaxHighlighting());
+        this.installTextPane.setText(installationContent);
+
+
+
+        this.compilingTextPane.setSize(new Dimension(500,500));
+        this.compilingTextPane.setText(event.compileCommand());
     }
 
-    public String getCompileCommand() {
-        return this.compileCommand;
-    }
 
-    public String getGivenName() {
-        return this.givenName;
-    }
+
 }

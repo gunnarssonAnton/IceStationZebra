@@ -7,7 +7,7 @@ public record Config(
         String user,
         java.util.List<Object> events
 ) {
-    public JSONObject toIsz(){
+    public JSONObject toIce(){
         JSONObject jsonConfig = new JSONObject();
         jsonConfig.put("global", global);
         jsonConfig.put("user", user);
