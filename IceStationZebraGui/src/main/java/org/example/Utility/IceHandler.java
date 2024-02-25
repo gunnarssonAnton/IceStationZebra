@@ -14,16 +14,27 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class IceHandler {
+
+    private static IceHandler INSTANCE = null;
     private final ObjectWriter objectWriter = new ObjectMapper().writer().with(SerializationFeature.INDENT_OUTPUT);
-    private FileIO iceFile;
+    private final FileIO iceFile = new FileIO(FileIO.getApplicationRootPath("settings"),"config.ice");
     private final JSONArray iceArray = new JSONArray();
 
 
-    public IceHandler(FileIO iceFile){
-        this.iceFile = iceFile;
+    private IceHandler(){
         this.modifiEvent();
     }
 
+    public static IceHandler getInstance(){
+        if (INSTANCE == null){
+            INSTANCE = new IceHandler();
+        }
+        return INSTANCE;
+    }
+
+    public FileIO getIceFile(){
+        return this.iceFile;
+    }
     public void writeToIce(Event event){
         iceArray.put(event.toIce());
         Config config = new Config(99,"name", iceArray.toList());
