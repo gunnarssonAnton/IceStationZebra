@@ -9,6 +9,8 @@ import org.example.Utility.Compilation;
 import org.example.models.Event;
 import org.example.view.CompilationView;
 
+import java.util.Arrays;
+
 public class CompilationViewController {
     Observable<String> terminalInput;
     CompilationView view = new CompilationView();
@@ -27,6 +29,7 @@ public class CompilationViewController {
     }
 
     public void compile(Event event){
+        System.out.println("Compile:" + event.givenName());
         // Image
         DockerImage image = new DockerImage(Event.DOCKERIMAGE, event.givenName() + "_" + Generate.generateRandomString(8));
         image.addVolume("/scripts");
@@ -35,17 +38,20 @@ public class CompilationViewController {
         image.addENV("EVENT_NAME","");
         image.addENV("EVENT_INSTALL","");
         image.addENV("EVENT_COMPILE_COMMAND","");
-        image.setEntrypoint("/scripts/compilation_entrypoint.sh");
+        image.addCOPY("/scripts/compilation_entrypoint.sh","/compilation_entrypoint.sh");
+        image.addRUN("chmod +x /compilation_entrypoint.sh");
+        image.setEntrypoint("/compilation_entrypoint.sh");
 
         // Container
         ISZTest.getTests().forEach(iszTest -> {
-            DockerContainer container = new DockerContainer(event.givenName(), image);
+            DockerContainer container = new DockerContainer(event.givenName() + "_" + iszTest.getName() + "_" + Generate.generateRandomString(8), image);
             container.setVolume("./scripts", "/scripts");
             container.setVolume("./codebase", "/codebase");
             container.setVolume("./output", "/output");
-            container.addENV("EVENT_NAME",event.givenName());
-            container.addENV("EVENT_INSTALL",event.installation().join(";"));
-            container.addENV("EVENT_COMPILE_COMMAND",iszTest.constructCompileCommand(event));
+            container.addENV("EVENT_NAME", event.givenName());
+            System.out.println("cm cmdns:" + Arrays.asList(event.installation()).stream().skip(1).map(s -> ((String)s).contains(";") ? s : s + ";"));
+            container.addENV("EVENT_INSTALL", event.installation().join(";"));
+            container.addENV("EVENT_COMPILE_COMMAND", iszTest.constructCompileCommand(event));
 
             // Compilation
             Compilation compilation = new Compilation(event, this.subject, container, image);

@@ -1,5 +1,6 @@
 package org.example.Docker;
 
+import org.example.Utility.Generate;
 import org.example.Utility.ProcessHandler;
 import org.example.files.FileIO;
 
@@ -43,7 +44,7 @@ public class DockerImage {
         this.entryPoint = entryPoint;
     }
     private void write(){
-        this.fileLocation = new FileIO(FileIO.getApplicationRootPath(), "Dockerfile");
+        this.fileLocation = new FileIO(FileIO.getApplicationRootPath(), "Dockerfile_" + Generate.generateRandomString(8));
         this.fileLocation.write(this.toString());
     }
     public ProcessHandler build(){
@@ -82,25 +83,25 @@ public class DockerImage {
         content.append("ENTRYPOINT ").append(this.entryPoint);
         return content.toString();
     }
-    public static DockerImage getBasic(String image, String name){
-        //"openjdk:11"
-        //"testImage"
-        DockerImage dockerImage = new DockerImage(image,name);
-        dockerImage.addENV("EVENT_NAME","");
-        dockerImage.addENV("EVENT_INSTALL","");
-        dockerImage.addENV("EVENT_COMPILE_COMMAND","");
-        dockerImage.addVolume("/scripts");
-        dockerImage.addVolume("/installs");
-        dockerImage.addVolume("/compile_commands");
-        dockerImage.addVolume("/codebase");
-        dockerImage.addVolume("/output");
-   //     dockerImage.addCOPY("/scripts/compilation_entrypoint.sh","/compilation_entrypoint.sh");
-     //   dockerImage.addRUN("chmod +x /compilation_entrypoint.sh");
-//        dockerfile.addRUN("ls");
-//        dockerfile.addCOPY("/scripts/execution_entrypoint.sh","/execution_entrypoint.sh");
-//        dockerfile.addRUN("chmod +x /execution_entrypoint.sh");
-        //dockerImage.addCMD("echo \"$(ls)\"\n");
-
-        return dockerImage;
-    }
+//    public static DockerImage getBasic(String image, String name){
+//        //"openjdk:11"
+//        //"testImage"
+//        DockerImage dockerImage = new DockerImage(image,name);
+//        dockerImage.addENV("EVENT_NAME","");
+//        dockerImage.addENV("EVENT_INSTALL","");
+//        dockerImage.addENV("EVENT_COMPILE_COMMAND","");
+//        dockerImage.addVolume("/scripts");
+//        dockerImage.addVolume("/installs");
+//        dockerImage.addVolume("/compile_commands");
+//        dockerImage.addVolume("/codebase");
+//        dockerImage.addVolume("/output");
+//   //     dockerImage.addCOPY("/scripts/compilation_entrypoint.sh","/compilation_entrypoint.sh");
+//     //   dockerImage.addRUN("chmod +x /compilation_entrypoint.sh");
+////        dockerfile.addRUN("ls");
+////        dockerfile.addCOPY("/scripts/execution_entrypoint.sh","/execution_entrypoint.sh");
+////        dockerfile.addRUN("chmod +x /execution_entrypoint.sh");
+//        //dockerImage.addCMD("echo \"$(ls)\"\n");
+//
+//        return dockerImage;
+//    }
 }

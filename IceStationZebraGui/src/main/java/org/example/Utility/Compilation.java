@@ -24,15 +24,18 @@ public class Compilation {
     DockerContainer container;
     DockerImage image;
     Event event;
+
     public Compilation(Event event, PublishSubject<TerminalMessage> subject, DockerContainer container, DockerImage image){
         this.subject = subject;
         this.container = container;
         this.image = image;
         this.event = event;
     }
+
     public void setTerminalInput(Observable<String> terminalInput){
         this.terminalInput = terminalInput;
     }
+
     public void go(){
         // Create basic docker file
 
@@ -49,10 +52,9 @@ public class Compilation {
 
         this.runDockerImage();
     }
+
     private void runDockerImage() {
-
         ProcessHandler handler = this.image.build();
-
         // Image stdout
         Disposable stdoutDisposable = handler.getStdout().subscribeOn(Schedulers.io()).subscribe(out -> {
                     this.subject.onNext(new TerminalMessage(out, Color.WHITE));
@@ -74,8 +76,8 @@ public class Compilation {
                 throwable -> subject.onNext(new TerminalMessage("Image Process failed: " + throwable.getMessage(),Color.RED))
         );
     }
-    private void runDockerContainer(){
 
+    private void runDockerContainer(){
         ProcessHandler containerHandler = container.run(new String[0]);
         //this.terminalInput.subscribeOn(Schedulers.io()).subscribe(System.out::println);
         this.terminalInput.subscribeOn(Schedulers.io()).subscribe(containerHandler::stdin);
@@ -96,9 +98,5 @@ public class Compilation {
                     this.subject.onNext(new TerminalMessage("Container completed",Color.green));
                 },throwable -> subject.onNext(new TerminalMessage("Process failed: " + throwable.getMessage(),Color.red))
         );
-
     }
-
-
-
 }

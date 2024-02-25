@@ -16,7 +16,9 @@ public class ISZTest {
         this.name = name;
     }
 
-
+    public String getName(){
+        return this.name;
+    }
     private String getFilenamesForCompileCommand(){
         File sub = new File(FileIO.getApplicationRootPath("codebase/" + this.name));
         return Arrays.stream(sub.listFiles()).toList().stream()
