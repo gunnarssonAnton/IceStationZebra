@@ -1,13 +1,14 @@
 package org.example.models;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
+
+import java.util.List;
 
 public record Event(
         String dockerImage,
         String compileCommand,
         String givenName,
-        JSONArray installation) {
+        List<String> installation) {
     public static final String DOCKERIMAGE = "ubuntu:latest";
 
     public JSONObject toIce(){
@@ -17,8 +18,5 @@ public record Event(
         iszObject.put("compileCommand", compileCommand);
         iszObject.put("installation",installation);
         return iszObject;
-    }
-    public Boolean containsShebang(){
-        return installation().toList().contains("#!/bin/bash");
     }
 }

@@ -10,6 +10,7 @@ import org.example.models.Event;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -19,10 +20,10 @@ public class IceHandler {
     private final ObjectWriter objectWriter = new ObjectMapper().writer().with(SerializationFeature.INDENT_OUTPUT);
     private final FileIO iceFile = new FileIO(FileIO.getApplicationRootPath("settings"),"config.ice");
     private final JSONArray iceArray = new JSONArray();
-
+    private final Config config = new Config(99,"name", new ArrayList<>());
 
     private IceHandler(){
-        this.modifiEvent();
+//        this.modifyEvent();
     }
 
     public static IceHandler getInstance(){
@@ -35,24 +36,12 @@ public class IceHandler {
     public FileIO getIceFile(){
         return this.iceFile;
     }
-    public void writeToIce(Event event){
-        iceArray.put(event.toIce());
-        Config config = new Config(99,"name", iceArray.toList());
-        try {
-            this.iceFile.write(objectWriter.writeValueAsString(config));
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
+    public void addEvent(Event event){
+//        iceArray.put(event.toIce());
+        this.config.events().add(event);
+        this.writeToIce();
     }
-    public void writeToIce(Set<Event> events){
-        events.stream().map(Event::toIce).forEach(iceArray::put);
-        Config config = new Config(99,"name", iceArray.toList());
-        try {
-            this.iceFile.write(objectWriter.writeValueAsString(config));
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
-    }
+
 
     public Set<String> getGivenNames(){
         Set<String> givenNameSet = new HashSet<>();
@@ -66,43 +55,39 @@ public class IceHandler {
         return givenNameSet;
     }
 
+
     public Set<Event> getEvents(){
-        Set<Event> eventSet = new HashSet<>();
-        JSONObject startObj = new JSONObject(this.iceFile.read());
-        ((JSONArray) startObj.get("events")).forEach(obj->{
-            JSONObject iszEvent = new JSONObject(obj.toString());
-            eventSet.add(
-                    new Event(
-                            iszEvent.getString("dockerImage"),
-                            iszEvent.getString("compileCommand"),
-                            iszEvent.getString("givenName"),
-                            iszEvent.getJSONArray("installation")
-                    ));
-        });
-        return eventSet;
+        return new HashSet<>(this.config.events());
     }
 
     public Event getSpecificEvent(String givenName){
         Event event = null;
-        for (Event event1 : this.getEvents()) {
-            if(event1.givenName().equals(givenName)){
-                event = event1;
+        for (Event ev : this.getEvents()) {
+            if (ev.givenName().equals(givenName)){
+                event = ev;
             }
         }
         return event;
     }
 
-    public void modifiEvent(){
-        for (Object o : this.iceArray) {
-            System.out.println(o);
-        }
-//         this.iceArray.getJSONObject()
+    public void modifyEvent(String givenName){
+        this.getSpecificEvent(givenName).compileCommand();
     }
+
+    public void removeEvent(String givenName){
+        this.config.events().remove(this.getSpecificEvent(givenName));
+        this.writeToIce();
+    }
+
     public String readIsz() {
         System.out.println(this.iceFile.read());
         return this.iceFile.read();
     }
-
-
-
+    private void writeToIce(){
+        try {
+            this.iceFile.write(objectWriter.writeValueAsString(this.config));
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

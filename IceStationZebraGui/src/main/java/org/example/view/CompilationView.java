@@ -3,19 +3,15 @@ package org.example.view;
 import org.example.AddEventWindow;
 import org.example.EditIceEventWindow;
 import org.example.Utility.GuiUtil;
-import org.example.Utility.IconTextListCellRenderer;
 import org.example.Utility.IceHandler;
+import org.example.Utility.IconTextListCellRenderer;
 import org.example.files.FileIO;
-import org.example.models.Event;
-import org.json.JSONArray;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.event.ActionListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.io.File;
 import java.nio.file.Path;
 import java.util.Arrays;
@@ -36,13 +32,11 @@ public class CompilationView extends JPanel {
     private JList outputList;
 //    private final FileIO compilerNameFile;
     private final IceHandler iceHandler = IceHandler.getInstance();
-    private Set<Event> eventSet;
     public CompilationView(){
 
 //        this.compilerNameFile = new FileIO(FileIO.getApplicationRootPath("settings"),"compiler_names.txt");
         this.eventNamesSet = this.iceHandler.getGivenNames();
-        this.eventSet = this.iceHandler.getEvents();
-//        System.out.println(iszHandler.getEvents());
+//        this.eventSet =         System.out.println(iszHandler.getEvents());
         this.codeBaseSet = new HashSet<>();
         this.outputSet = new HashSet<>();
         this.setLayout(new FlowLayout(FlowLayout.RIGHT));
@@ -181,18 +175,6 @@ public class CompilationView extends JPanel {
         System.out.println(this.iceHandler.getSpecificEvent(eventName));
     }
 
-//    private Set<String> extractDataFromFile(FileIO fileIO){
-//        return new HashSet<>(Arrays.asList(fileIO.read().split("\\r?\\n")));
-//    }
-
-//    private void updateCompilerNameFile(){
-//        String str = "";
-//        for (String compilerName : this.compilerNamesSet) {
-//            str += compilerName+"\n";
-//        }
-//        compilerNameFile.write("");
-//        compilerNameFile.write(str);
-//    }
 
     private void updateOutput(){
         File[] outputFiles = new File(FileIO.getApplicationRootPath("output")).listFiles();
@@ -200,13 +182,6 @@ public class CompilationView extends JPanel {
         this.guiUtil.updateJList(this.outputList, this.outputSet);
     }
 
-//    private void addCompiler(String name){
-//        System.out.println("ADD: "+ name);
-//        FileIO fileIO = new FileIO(FileIO.getApplicationRootPath("installs"),name+"_install.sh");
-//        fileIO.write("#!/bin/bash\n");
-//        this.compilerNamesSet.add(name);
-////        this.updateCompilerNameFile();
-//    }
 
     private void removeCompiler(String name){
         System.out.println("REMOVE: "+name);
@@ -249,6 +224,7 @@ public class CompilationView extends JPanel {
         container.add(buttonContainer, BorderLayout.SOUTH);
         return container;
     }
+
     private void addToCodebase(String name){
         FileIO.createFolderIf(Path.of(FileIO.getApplicationRootPath("codebase/" + name)));
         this.codeBaseSet.add(name);
@@ -264,51 +240,22 @@ public class CompilationView extends JPanel {
     private void showAddEventDialog(){
 
         AddEventWindow addEventWindow = new AddEventWindow();
-        addEventWindow.addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowClosing(WindowEvent e) {
-                addEventWindow.saveInfo();
-                Event newEvent = new Event(
-                        Event.DOCKERIMAGE,
-                        addEventWindow.getCompileCommand(),
-                        addEventWindow.getGivenName(),
-                        new JSONArray(addEventWindow.getInstallationList())
-                        );
-
-                iceHandler.writeToIce(newEvent);
-//                compilerNamesSet.add(newEvent.givenName());
-
-                eventNamesSet.addAll(iceHandler.getGivenNames());
-                updateEventNameSet();
-                guiUtil.updateJList(eventNamesJlist, eventNamesSet);
-            }
-        });
-
-        addEventWindow.setListenerOnSaveBtn(e ->{
-            addEventWindow.saveInfo();
-                Event newEvent = new Event(
-                        Event.DOCKERIMAGE,
-                        addEventWindow.getCompileCommand(),
-                        addEventWindow.getGivenName(),
-                        new JSONArray(addEventWindow.getInstallationList())
-                );
-                iceHandler.writeToIce(newEvent);
-                addEventWindow.dispose();
-
-                updateEventNameSet();
-                eventNamesSet.addAll(iceHandler.getGivenNames());
-                });
-
         addEventWindow.setVisible(true);
 
+        System.out.println("TERST");
+
+        eventNamesSet.add(addEventWindow.getGivenName());
+        this.guiUtil.updateJList(eventNamesJlist, eventNamesSet);
+//        this.cleanUpEventSet();
     }
-    private void updateEventNameSet(){
+    private void cleanUpEventSet(){
         for (String s : this.eventNamesSet) {
-            if (this.iceHandler.getSpecificEvent(s)==null){
+            if (this.iceHandler.getSpecificEvent(s) == null){
+                System.out.println("dddddddddddddd: "+s);
                 this.eventNamesSet.remove(s);
             }
         }
-        this.guiUtil.updateJList(this.eventNamesJlist, this.eventNamesSet);
+        this.guiUtil.updateJList(eventNamesJlist, eventNamesSet);
     }
 
 }

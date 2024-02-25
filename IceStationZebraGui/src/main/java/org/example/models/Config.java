@@ -2,10 +2,12 @@ package org.example.models;
 
 import org.json.JSONObject;
 
+import java.util.List;
+
 public record Config(
         int global,
         String user,
-        java.util.List<Object> events
+        List<Event> events
 ) {
     public JSONObject toIce(){
         JSONObject jsonConfig = new JSONObject();

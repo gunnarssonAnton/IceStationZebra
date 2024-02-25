@@ -1,6 +1,7 @@
 package org.example;
 
 import org.example.Utility.BashSyntaxHighlighting;
+import org.example.Utility.IceHandler;
 import org.example.models.Event;
 
 import javax.swing.*;
@@ -15,6 +16,7 @@ public class EditIceEventWindow extends JFrame {
     private final JButton saveBtn = new JButton("Save");
     private final JMenuBar menuBar = new JMenuBar();
 
+    private final IceHandler iceHandler = IceHandler.getInstance();
     public EditIceEventWindow(Event event) {
         this.configureTextPanes(event);
         this.setTitle("Edit:"+event.givenName());
@@ -87,6 +89,9 @@ public class EditIceEventWindow extends JFrame {
         this.compilingTextPane.setText(event.compileCommand());
     }
 
+    private void saveToIce(){
+
+    }
 
 
 }
