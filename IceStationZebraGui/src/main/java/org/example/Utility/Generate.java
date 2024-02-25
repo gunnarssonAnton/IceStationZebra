@@ -33,5 +33,6 @@ public class Generate {
         FileIO.createFileIf(Paths.get(FileIO.getApplicationRootPath("scripts/after.sh")));
         FileIO.createFileIf(Paths.get(FileIO.getApplicationRootPath("scripts/execution_entrypoint.sh")));
         FileIO.createFileIf(Paths.get(FileIO.getApplicationRootPath("scripts/compilation_entrypoint.sh")));
+        FileIO.createFileIf(Paths.get(FileIO.getApplicationRootPath("settings/config.ice")));
     }
 }

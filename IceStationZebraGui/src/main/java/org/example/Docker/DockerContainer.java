@@ -66,17 +66,17 @@ public class DockerContainer{
         String[] cmd = new String[]{"docker", "rm", this.name};
         return ProcessHandler.construct(cmd);
     }
-    public static DockerContainer getBasic(String name, DockerImage dockerFile){
-        DockerContainer container = new DockerContainer(name,dockerFile);
-        container.setVolume("./scripts", "/scripts");
-        container.setVolume("./installs", "/installs");
-        container.setVolume("./compile_commands", "/compile_commands");
-        container.setVolume("./codebase", "/codebase");
-        container.setVolume("./output", "/output");
-        container.setEntrypointOverride("/compilation_entrypoint.sh");
-        container.addENV("COMPILER_NAME","A-team");
-        container.addENV("COMPILER_WHATEVER","A-team");
-        //container.addARG("Dolk_Lundgren");
-        return container;
-    }
+//    public static DockerContainer getBasic(String name, DockerImage dockerFile){
+//        DockerContainer container = new DockerContainer(name,dockerFile);
+//        container.setVolume("./scripts", "/scripts");
+//        container.setVolume("./installs", "/installs");
+//        container.setVolume("./compile_commands", "/compile_commands");
+//        container.setVolume("./codebase", "/codebase");
+//        container.setVolume("./output", "/output");
+//        container.setEntrypointOverride("/compilation_entrypoint.sh");
+//        container.addENV("COMPILER_NAME","A-team");
+//        container.addENV("COMPILER_WHATEVER","A-team");
+//        //container.addARG("Dolk_Lundgren");
+//        return container;
+//    }
 }

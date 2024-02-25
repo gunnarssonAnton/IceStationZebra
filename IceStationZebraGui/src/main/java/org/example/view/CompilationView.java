@@ -177,8 +177,11 @@ public class CompilationView extends JPanel {
         return container;
     }
 
-    public void setOnCompileClick(ActionListener l){
+    public void setOnClick(ActionListener l){
         this.toExecutionBtn.addActionListener(l);
+    }
+    public void setOnCompileClick(ActionListener l){
+        this.runCompilerBtn.addActionListener(l);
     }
     public void setOnCompileAllClick(ActionListener l){
         this.runAllCompilersBtn.addActionListener(l);
