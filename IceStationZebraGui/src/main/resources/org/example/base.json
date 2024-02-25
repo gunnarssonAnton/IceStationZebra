@@ -7,8 +7,17 @@
       "givenName": "gcc",
       "compileCommand": "gcc FILES -o OUTPUT",
       "installation": [
-        "apt install gcc",
+        "apt install gcc -y",
         "gcc --version"
+      ]
+    },
+    {
+      "dockerImage": "ubuntu:latest",
+      "givenName": "clang",
+      "compileCommand": "clang FILES -o OUTPUT",
+      "installation": [
+        "apt install clang -y",
+        "clang --version"
       ]
     }
   ]
