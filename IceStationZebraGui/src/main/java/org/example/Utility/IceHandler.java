@@ -12,7 +12,9 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class IceHandler {
 
@@ -23,7 +25,7 @@ public class IceHandler {
     private final Config config = new Config(99,"name", new ArrayList<>());
 
     private IceHandler(){
-//        this.modifyEvent();
+        this.getListFromFile();
     }
 
     public static IceHandler getInstance(){
@@ -32,7 +34,24 @@ public class IceHandler {
         }
         return INSTANCE;
     }
+    private void getListFromFile(){
+        JSONObject jsonObject = new JSONObject(this.iceFile.read());
+        ((JSONArray) jsonObject.get("events")).forEach(obj->{
+            JSONObject iceEvent = new JSONObject(obj.toString());
+            this.config.events().add(
+                    new Event(Event.DOCKERIMAGE,
+                            iceEvent.getString("compileCommand").toString(),
+                            iceEvent.getString("givenName").toString(),
+                            this.convertToObjectList(iceEvent.getJSONArray("installation").toList())
+                            ));
 
+
+        });
+    }
+    private List<String> convertToObjectList(List<Object>objectsList){
+        return objectsList.stream().map(Object::toString).collect(Collectors.toList());
+
+    }
     public FileIO getIceFile(){
         return this.iceFile;
     }
@@ -48,8 +67,8 @@ public class IceHandler {
         JSONObject jsonObject = new JSONObject(this.iceFile.read());
         ((JSONArray) jsonObject.get("events")).forEach(obj->{
             JSONObject iceEvent = new JSONObject(obj.toString());
-
             givenNameSet.add(iceEvent.get("givenName").toString());
+
         });
         System.out.println(givenNameSet);
         return givenNameSet;
@@ -63,6 +82,7 @@ public class IceHandler {
     public Event getSpecificEvent(String givenName){
         Event event = null;
         for (Event ev : this.getEvents()) {
+
             if (ev.givenName().equals(givenName)){
                 event = ev;
             }
@@ -70,7 +90,7 @@ public class IceHandler {
         return event;
     }
 
-    public void modifyEvent(String givenName){
+    public void modifyEvent(String givenName, Event modifiedEvent){
         this.getSpecificEvent(givenName).compileCommand();
     }
 
