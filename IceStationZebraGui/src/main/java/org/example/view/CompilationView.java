@@ -10,6 +10,8 @@ import org.example.files.FileIO;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -30,6 +32,7 @@ public class CompilationView extends JPanel {
     private JList codebasesJList;
     private JList eventNamesJlist;
     private JList outputList;
+    public Event selectedEvent;
 //    private final FileIO compilerNameFile;
     private final IceHandler iceHandler = IceHandler.getInstance();
     public CompilationView(){
@@ -42,6 +45,13 @@ public class CompilationView extends JPanel {
         this.setLayout(new FlowLayout(FlowLayout.RIGHT));
         this.add(this.listContainer(),BorderLayout.NORTH);
         this.add(this.runBtnContainer(),BorderLayout.CENTER);
+        this.eventNamesJlist.addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                String eventName = (String)((JList)e.getSource()).getSelectedValue();
+                selectedEvent = IceHandler.getInstance().getSpecificEvent(eventName);
+            }
+        });
     }
 
     public Set<String> getEventNamesSet(){
@@ -164,7 +174,10 @@ public class CompilationView extends JPanel {
     public void setOnClick(ActionListener l){
         this.toExecutionBtn.addActionListener(l);
     }
-    public void runAllOnClick(ActionListener l){
+    public void setOnCompileClick(ActionListener l){
+        this.runCompilerBtn.addActionListener(l);
+    }
+    public void setOnCompileAllClick(ActionListener l){
         this.runAllCompilersBtn.addActionListener(l);
     }
 

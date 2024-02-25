@@ -1,1 +1,0 @@
-clang FILES -o OUTPUT
