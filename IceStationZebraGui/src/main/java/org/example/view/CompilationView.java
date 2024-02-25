@@ -36,7 +36,7 @@ public class CompilationView extends JPanel {
     private JList codebasesJList;
     private JList eventNamesJlist;
     private JList outputList;
-    private Event selectedEvent;
+    public Event selectedEvent;
 //    private final FileIO compilerNameFile;
     private final IceHandler iceHandler = IceHandler.getInstance();
     private Set<Event> eventSet;
@@ -55,7 +55,7 @@ public class CompilationView extends JPanel {
             @Override
             public void valueChanged(ListSelectionEvent e) {
                 String eventName = (String)((JList)e.getSource()).getSelectedValue();
-
+                selectedEvent = IceHandler.getInstance().getSpecificEvent(eventName);
             }
         });
     }

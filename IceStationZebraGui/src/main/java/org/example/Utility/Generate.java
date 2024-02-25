@@ -23,8 +23,6 @@ public class Generate {
     }
     private static void generateFolders(){
         FileIO.createFolderIf(Paths.get(FileIO.getApplicationRootPath("scripts")));
-        FileIO.createFolderIf(Paths.get(FileIO.getApplicationRootPath("installs")));
-        FileIO.createFolderIf(Paths.get(FileIO.getApplicationRootPath("compile_commands")));
         FileIO.createFolderIf(Paths.get(FileIO.getApplicationRootPath("codebase")));
         FileIO.createFolderIf(Paths.get(FileIO.getApplicationRootPath("output")));
         FileIO.createFolderIf(Paths.get(FileIO.getApplicationRootPath("files")));
@@ -35,6 +33,5 @@ public class Generate {
         FileIO.createFileIf(Paths.get(FileIO.getApplicationRootPath("scripts/after.sh")));
         FileIO.createFileIf(Paths.get(FileIO.getApplicationRootPath("scripts/execution_entrypoint.sh")));
         FileIO.createFileIf(Paths.get(FileIO.getApplicationRootPath("scripts/compilation_entrypoint.sh")));
-        FileIO.createFileIf(Paths.get(FileIO.getApplicationRootPath("settings/compiler_names.txt")));
     }
 }

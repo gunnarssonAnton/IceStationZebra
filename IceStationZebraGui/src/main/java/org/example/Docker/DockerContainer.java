@@ -18,7 +18,7 @@ public class DockerContainer{
         this.name = name.toLowerCase();
         this.image = image;
     }
-    public void setEnv(String key, String value){
+    public void addENV(String key, String value){
         this.envs.put(key,value);
     }
     public void setVolume(String key, String value){
@@ -74,8 +74,8 @@ public class DockerContainer{
         container.setVolume("./codebase", "/codebase");
         container.setVolume("./output", "/output");
         container.setEntrypointOverride("/compilation_entrypoint.sh");
-        container.setEnv("COMPILER_NAME","A-team");
-        container.setEnv("COMPILER_WHATEVER","A-team");
+        container.addENV("COMPILER_NAME","A-team");
+        container.addENV("COMPILER_WHATEVER","A-team");
         //container.addARG("Dolk_Lundgren");
         return container;
     }

@@ -86,19 +86,20 @@ public class DockerImage {
         //"openjdk:11"
         //"testImage"
         DockerImage dockerImage = new DockerImage(image,name);
-        dockerImage.addENV("COMPILER_NAME","");
-        dockerImage.addENV("COMPILER_COMMAND","");
+        dockerImage.addENV("EVENT_NAME","");
+        dockerImage.addENV("EVENT_INSTALL","");
+        dockerImage.addENV("EVENT_COMPILE_COMMAND","");
         dockerImage.addVolume("/scripts");
         dockerImage.addVolume("/installs");
         dockerImage.addVolume("/compile_commands");
         dockerImage.addVolume("/codebase");
         dockerImage.addVolume("/output");
-        dockerImage.addCOPY("/scripts/compilation_entrypoint.sh","/compilation_entrypoint.sh");
-        dockerImage.addRUN("chmod +x /compilation_entrypoint.sh");
+   //     dockerImage.addCOPY("/scripts/compilation_entrypoint.sh","/compilation_entrypoint.sh");
+     //   dockerImage.addRUN("chmod +x /compilation_entrypoint.sh");
 //        dockerfile.addRUN("ls");
 //        dockerfile.addCOPY("/scripts/execution_entrypoint.sh","/execution_entrypoint.sh");
 //        dockerfile.addRUN("chmod +x /execution_entrypoint.sh");
-        dockerImage.addCMD("echo \"$(ls)\"\n");
+        //dockerImage.addCMD("echo \"$(ls)\"\n");
 
         return dockerImage;
     }

@@ -7,6 +7,7 @@ import io.reactivex.rxjava3.subjects.PublishSubject;
 import org.example.Docker.DockerContainer;
 import org.example.Docker.DockerImage;
 import org.example.files.FileIO;
+import org.example.models.Event;
 
 import java.awt.Color;
 import java.io.File;
@@ -22,33 +23,35 @@ public class Compilation {
     private Observable<String> terminalInput = null;
     DockerContainer container;
     DockerImage image;
-    public Compilation(PublishSubject<TerminalMessage> subject, DockerContainer container, DockerImage image){
+    Event event;
+    public Compilation(Event event, PublishSubject<TerminalMessage> subject, DockerContainer container, DockerImage image){
         this.subject = subject;
         this.container = container;
         this.image = image;
+        this.event = event;
     }
     public void setTerminalInput(Observable<String> terminalInput){
         this.terminalInput = terminalInput;
     }
-    public void go(String compilerName){
+    public void go(){
         // Create basic docker file
 
-        List<String> tests = getTests();
-        tests.forEach(test -> {
-            String compileCommand = constructCompileCommand(compilerName,test);
-            // Create basic docker container
-            DockerContainer container = DockerContainer.getBasic("container_" + Generate.generateRandomString(12), this.image);
-            container.setEnv("COMPILER_NAME",compilerName);
-            container.setEnv("COMPILER_COMMAND",compileCommand);
-            //container.setEntrypointOverride("/scripts/test_entrypoint.sh");
-            runDockerImage(container, this.image);
-        });
+//        List<String> tests = getTests();
+//        tests.forEach(test -> {
+//            String compileCommand = constructCompileCommand(test);
+//            // Create basic docker container
+//            DockerContainer container = DockerContainer.getBasic("container_" + Generate.generateRandomString(12), this.image);
+//            container.addENV("COMPILER_NAME",event.givenName());
+//            container.addENV("COMPILER_COMMAND",compileCommand);
+//            //container.setEntrypointOverride("/scripts/test_entrypoint.sh");
+//            runDockerImage(container, this.image);
+//        });
 
-
+        this.runDockerImage();
     }
-    private void runDockerImage(DockerContainer container, DockerImage dockerImage) {
+    private void runDockerImage() {
 
-        ProcessHandler handler = dockerImage.build();
+        ProcessHandler handler = this.image.build();
 
         // Image stdout
         Disposable stdoutDisposable = handler.getStdout().subscribeOn(Schedulers.io()).subscribe(out -> {
@@ -66,12 +69,12 @@ public class Compilation {
         Disposable completionDisposable = handler.getCompletion().subscribeOn(Schedulers.io()).subscribe(
                 () -> {
                     subject.onNext(new TerminalMessage("Image Process completed successfully",Color.GREEN));
-                    runDockerContainer(container, dockerImage);
+                    runDockerContainer();
                 },
                 throwable -> subject.onNext(new TerminalMessage("Image Process failed: " + throwable.getMessage(),Color.RED))
         );
     }
-    private void runDockerContainer(DockerContainer container, DockerImage dockerImage){
+    private void runDockerContainer(){
 
         ProcessHandler containerHandler = container.run(new String[0]);
         //this.terminalInput.subscribeOn(Schedulers.io()).subscribe(System.out::println);
@@ -95,30 +98,7 @@ public class Compilation {
         );
 
     }
-    private List<String> getTests() {
-        File directory = new File(FileIO.getApplicationRootPath("codebase"));
-        File[] filesList = directory.listFiles();
-        if (filesList != null) {
-            return  Arrays.stream(filesList)
-                    .filter(File::isDirectory)
-                    .map(File::getName)
-                    .collect(Collectors.toList());
-        } else {
-            return new ArrayList<>();
-        }
-    }
-    private String getFilesStringForTest(String test){
-        File sub = new File(FileIO.getApplicationRootPath("codebase/" + test));
-        return Arrays.stream(sub.listFiles()).toList().stream()
-                .filter(File::isFile).map(file ->"/codebase/" + test + "/" + file.getName()) // Convert File to its name
-                .collect(Collectors.joining(" "));
-    }
-    private String constructCompileCommand(String compilerName, String testName){
-        String OUTPUT  = "/output/" + compilerName + "_" + testName;//FileIO.getApplicationRootPath("output/" + testName);
-        String compileCommand = new FileIO(FileIO.getApplicationRootPath("compile_commands"),compilerName + "_compileCmd.sh").read();
-        String FILES = getFilesStringForTest(testName);
-        compileCommand = compileCommand.replace("FILES",FILES).replace("OUTPUT",OUTPUT);
-        System.out.println(compileCommand);
-        return compileCommand;
-    }
+
+
+
 }
