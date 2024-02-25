@@ -38,8 +38,7 @@ public class CompilationView extends JPanel {
     private JList outputList;
     private Event selectedEvent;
 //    private final FileIO compilerNameFile;
-    private final IceHandler iceHandler = new IceHandler(new FileIO(FileIO.getApplicationRootPath("settings"),"config.ice"));
-
+    private final IceHandler iceHandler = IceHandler.getInstance();
     private Set<Event> eventSet;
     public CompilationView(){
 
