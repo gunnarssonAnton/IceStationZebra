@@ -10,6 +10,7 @@ import org.example.models.Event;
 import org.example.view.CompilationView;
 
 import java.util.Arrays;
+import java.util.stream.Collectors;
 
 public class CompilationViewController {
     Observable<String> terminalInput;
@@ -19,11 +20,13 @@ public class CompilationViewController {
         this.subject = subject;
         this.view.setOnCompileAllClick(e -> {
             // Get events from Singleton
+            IceHandler.getInstance().getEvents().forEach(this::compile);
         });
         this.view.setOnCompileClick(e -> {
             this.compile(this.view.selectedEvent);
         });
     }
+
     public void setTerminalInput(Observable<String> terminalInput){
         this.terminalInput = terminalInput;
     }
@@ -49,8 +52,8 @@ public class CompilationViewController {
             container.setVolume("./codebase", "/codebase");
             container.setVolume("./output", "/output");
             container.addENV("EVENT_NAME", event.givenName());
-            System.out.println("cm cmdns:" + Arrays.asList(event.installation()).stream().skip(1).map(s -> ((String)s).contains(";") ? s : s + ";"));
-            container.addENV("EVENT_INSTALL", event.installation().join(";"));
+            //System.out.println("cm cmdns:" + event.installation().stream().skip(0).map(s -> s.contains(";") ? s : s + ";").collect(Collectors.joining()).replaceAll(";$",""));
+            container.addENV("EVENT_INSTALL", event.installation().stream().skip(0).map(s -> s.contains(";") ? s : s + ";").collect(Collectors.joining()).replaceAll(";$",""));
             container.addENV("EVENT_COMPILE_COMMAND", iszTest.constructCompileCommand(event));
 
             // Compilation
@@ -58,11 +61,6 @@ public class CompilationViewController {
             compilation.setTerminalInput(this.terminalInput);
             compilation.go();
         });
-
-
-    }
-    public void compileAll(){
-
     }
 
     public CompilationView getView(){

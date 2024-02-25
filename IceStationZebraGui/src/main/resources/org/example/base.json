@@ -7,6 +7,7 @@
       "givenName": "gcc",
       "compileCommand": "gcc FILES -o OUTPUT",
       "installation": [
+        "apt update && apt upgrade -y",
         "apt install gcc -y",
         "gcc --version"
       ]
@@ -16,8 +17,30 @@
       "givenName": "clang",
       "compileCommand": "clang FILES -o OUTPUT",
       "installation": [
+        "apt update && apt upgrade -y",
         "apt install clang -y",
         "clang --version"
+      ]
+    },
+    {
+      "dockerImage": "ubuntu:latest",
+      "givenName": "openJavac",
+      "compileCommand": "NO COMMAND",
+      "installation": [
+        "apt update && apt upgrade -y",
+        "apt install openjdk-17-jdk -y",
+        "javac --version"
+      ]
+    },
+    {
+      "dockerImage": "ubuntu:latest",
+      "givenName": "ECJ",
+      "compileCommand": "NO COMMAND",
+      "installation": [
+        "apt-get update && apt-get upgrade -y",
+        "apt-get install ecj -y",
+        "apt-get install --reinstall java-wrapper -y",
+        "ecj --version"
       ]
     }
   ]
