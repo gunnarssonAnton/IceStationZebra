@@ -34,6 +34,7 @@ public class CompilationViewController {
         // Image
         DockerImage image = new DockerImage(Event.DOCKERIMAGE, event.givenName() + "_" + Generate.generateRandomString(8));
         image.addVolume("/scripts");
+        image.addVolume("/files");
         image.addVolume("/codebase");
         image.addVolume("/output");
         image.addENV("EVENT_NAME","");
@@ -47,6 +48,7 @@ public class CompilationViewController {
         ISZTest.getTests().forEach(iszTest -> {
             DockerContainer container = new DockerContainer(event.givenName() + "_" + iszTest.getName() + "_" + Generate.generateRandomString(8), image);
             container.setVolume("./scripts", "/scripts");
+            container.setVolume("./files", "/files");
             container.setVolume("./codebase", "/codebase");
             container.setVolume("./output", "/output");
             container.addENV("EVENT_NAME", event.givenName());
