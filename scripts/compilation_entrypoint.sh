@@ -5,18 +5,19 @@ if [ -z "$EVENT_NAME" ]; then
 else
     echo "This is a compilation for the $EVENT_NAME compiler."
 
-#    FILENAME="/installs/${COMPILER_NAME}_install.sh"
-
-#    chmod +x "$FILENAME"
-
-#    ./${FILENAME}
     echo "Name: $EVENT_NAME"
     echo "Install: $EVENT_INSTALL"
     echo "Compile command: $EVENT_COMPILE_COMMAND"
 
+    echo "[INSTALLING $EVENT_NAME]"
     eval $EVENT_INSTALL
+    echo "[COMPILING $EVENT_NAME]"
     eval $EVENT_COMPILE_COMMAND
     echo "$EVENT_NAME done."
+
+    echo "Name: $EVENT_NAME"
+    echo "Install: $EVENT_INSTALL"
+    echo "Compile command: $EVENT_COMPILE_COMMAND"
 fi
 
 exec bash

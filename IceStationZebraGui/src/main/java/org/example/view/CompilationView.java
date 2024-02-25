@@ -6,6 +6,7 @@ import org.example.Utility.GuiUtil;
 import org.example.Utility.IceHandler;
 import org.example.Utility.IconTextListCellRenderer;
 import org.example.files.FileIO;
+import org.example.models.Event;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -48,7 +49,7 @@ public class CompilationView extends JPanel {
         this.eventNamesJlist.addListSelectionListener(new ListSelectionListener() {
             @Override
             public void valueChanged(ListSelectionEvent e) {
-                String eventName = (String)((JList)e.getSource()).getSelectedValue();
+                String eventName = (String)((JList<?>)e.getSource()).getSelectedValue();
                 selectedEvent = IceHandler.getInstance().getSpecificEvent(eventName);
             }
         });
