@@ -6,6 +6,7 @@ import org.example.Utility.GuiUtil;
 import org.example.Utility.IceHandler;
 import org.example.Utility.IconTextListCellRenderer;
 import org.example.files.FileIO;
+import org.example.models.Event;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;

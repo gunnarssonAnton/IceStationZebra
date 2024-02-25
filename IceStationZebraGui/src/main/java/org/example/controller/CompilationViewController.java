@@ -4,12 +4,12 @@ import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.subjects.PublishSubject;
 import org.example.Docker.DockerContainer;
 import org.example.Docker.DockerImage;
-import org.example.Utility.*;
 import org.example.Utility.Compilation;
+import org.example.Utility.Generate;
+import org.example.Utility.ISZTest;
+import org.example.Utility.TerminalMessage;
 import org.example.models.Event;
 import org.example.view.CompilationView;
-
-import java.util.Arrays;
 
 public class CompilationViewController {
     Observable<String> terminalInput;
@@ -49,8 +49,8 @@ public class CompilationViewController {
             container.setVolume("./codebase", "/codebase");
             container.setVolume("./output", "/output");
             container.addENV("EVENT_NAME", event.givenName());
-            System.out.println("cm cmdns:" + Arrays.asList(event.installation()).stream().skip(1).map(s -> ((String)s).contains(";") ? s : s + ";"));
-            container.addENV("EVENT_INSTALL", event.installation().join(";"));
+//            System.out.println("cm cmdns:" + Arrays.asList(event.installation()).stream().skip(1).map(s -> ((String)s).contains(";") ? s : s + ";"));
+//            container.addENV("EVENT_INSTALL", event.installation().join(";"));
             container.addENV("EVENT_COMPILE_COMMAND", iszTest.constructCompileCommand(event));
 
             // Compilation
