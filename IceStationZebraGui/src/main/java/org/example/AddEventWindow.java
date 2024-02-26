@@ -12,16 +12,12 @@ import java.util.Arrays;
 import java.util.List;
 
 public class AddEventWindow extends JFrame {
-//    private final FileIO installFile;
-//    private final FileIO compileFile;
     private final CardLayout cardLayout = new CardLayout();
     private JPanel cardConainer = new JPanel(cardLayout);
     private final JTextPane installTextPane = new JTextPane();
     private final JTextPane compilingTextPane = new JTextPane();
     private final JButton saveBtn = new JButton("Save");
     private final JMenuBar menuBar = new JMenuBar();
-
-
     private String givenName;
 
     private final IceHandler iceHandler = IceHandler.getInstance();
@@ -34,7 +30,7 @@ public class AddEventWindow extends JFrame {
         this.setTitle("Ice Station Zebra Editor");
         this.saveBtn.setPreferredSize(new Dimension(100,20));
         this.installTextPane.setDocument(new BashSyntaxHighlighting());
-//        this.installTextPane.setText("#!/bin/bash\n");
+
         this.givenName = JOptionPane.showInputDialog(this,"Enter Compiler Name:","Ice Station Zebra", JOptionPane.PLAIN_MESSAGE);
 
         this.saveBtn.addActionListener(e->this.saveEvent());
