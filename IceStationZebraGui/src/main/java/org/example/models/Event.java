@@ -3,6 +3,7 @@ package org.example.models;
 import org.json.JSONObject;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 public record Event(
         String dockerImage,
@@ -19,4 +20,8 @@ public record Event(
         iszObject.put("installation",installation);
         return iszObject;
     }
+
+   public String join(){
+        return this.installation.stream().skip(0).map(s -> s.contains(";") ? s : s + ";").collect(Collectors.joining()).replaceAll(";$","");
+   }
 }

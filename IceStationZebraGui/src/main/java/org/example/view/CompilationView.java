@@ -223,6 +223,11 @@ public class CompilationView extends JPanel {
             guiUtil.showInputDialog(this, "Enter test name:", this::addToCodebase);
             guiUtil.updateJList(this.codebasesJList,this.codeBaseSet);
         });
+        removeBtn.addActionListener(e->{
+            this.iceHandler.removeEvent(this.eventNamesJlist.getSelectedValue().toString());
+            this.eventNamesSet.remove(this.eventNamesJlist.getSelectedValue().toString());
+            this.guiUtil.updateJList(this.eventNamesJlist, this.eventNamesSet);
+        });
 
 
         this.codebasesJList.setCellRenderer(new IconTextListCellRenderer(UIManager.getIcon("FileView.directoryIcon")));

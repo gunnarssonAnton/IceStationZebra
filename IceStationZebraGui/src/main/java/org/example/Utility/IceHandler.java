@@ -21,7 +21,6 @@ public class IceHandler {
     private static IceHandler INSTANCE = null;
     private final ObjectWriter objectWriter = new ObjectMapper().writer().with(SerializationFeature.INDENT_OUTPUT);
     private final FileIO iceFile = new FileIO(FileIO.getApplicationRootPath("settings"),"config.ice");
-    private final JSONArray iceArray = new JSONArray();
     private final Config config = new Config(99,"name", new ArrayList<>());
 
     private IceHandler(){
@@ -56,7 +55,6 @@ public class IceHandler {
         return this.iceFile;
     }
     public void addEvent(Event event){
-//        iceArray.put(event.toIce());
         this.config.events().add(event);
         this.writeToIce();
     }
@@ -91,7 +89,8 @@ public class IceHandler {
     }
 
     public void modifyEvent(String givenName, Event modifiedEvent){
-        this.getSpecificEvent(givenName).compileCommand();
+        this.removeEvent(givenName);
+        this.addEvent(modifiedEvent);
     }
 
     public void removeEvent(String givenName){
