@@ -10,7 +10,6 @@ import org.example.files.FileIO;
 import org.example.models.Event;
 import org.example.view.CompilationView;
 
-import java.util.Arrays;
 import java.util.stream.Collectors;
 
 public class CompilationViewController {

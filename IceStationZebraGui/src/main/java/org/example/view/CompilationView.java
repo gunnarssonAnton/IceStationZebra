@@ -37,12 +37,10 @@ public class CompilationView extends JPanel {
 //    private final FileIO compilerNameFile;
     private final IceHandler iceHandler = IceHandler.getInstance();
     public CompilationView(){
-
-//        this.compilerNameFile = new FileIO(FileIO.getApplicationRootPath("settings"),"compiler_names.txt");
-        this.eventNamesSet = this.iceHandler.getGivenNames();
-//        this.eventSet =         System.out.println(iszHandler.getEvents());
+        this.eventNamesSet = this.iceHandler.getEventNames();
         this.codeBaseSet = new HashSet<>();
         this.outputSet = new HashSet<>();
+
         this.setLayout(new FlowLayout(FlowLayout.RIGHT));
         this.add(this.listContainer(),BorderLayout.NORTH);
         this.add(this.runBtnContainer(),BorderLayout.CENTER);
@@ -76,7 +74,6 @@ public class CompilationView extends JPanel {
 
 
         addNameBtn.addActionListener(e -> {
-//            this.guiUtil.showInputDialog(this, "Enter Compiler Name", this::addCompiler);
             this.showAddEventDialog();
             this.guiUtil.updateJList(this.eventNamesJlist, this.eventNamesSet);
         });
@@ -124,14 +121,10 @@ public class CompilationView extends JPanel {
         this.outputList = new JList<>(this.outputSet.toArray());
 
         this.outputList.setCellRenderer(new IconTextListCellRenderer(UIManager.getIcon("FileView.fileIcon")));
-        clearBtn.addActionListener(e -> {
-            for (String s : this.outputSet) {
-                this.outputSet.remove(s);
-            }
-            this.guiUtil.updateJList(this.outputList, this.outputSet);
-        });
 
-        updateBtn.addActionListener(e-> this.updateOutput());
+        clearBtn.addActionListener(e -> this.clearOutputDir());
+
+        updateBtn.addActionListener(e-> this.updateOutputJList());
 
         this.outputList.setPreferredSize(new Dimension(250,250));
         this.outputList.setBackground(Color.white);
@@ -190,17 +183,31 @@ public class CompilationView extends JPanel {
     }
 
 
-    private void updateOutput(){
+    private void updateOutputJList(){
         File[] outputFiles = new File(FileIO.getApplicationRootPath("output")).listFiles();
         this.outputSet.addAll(Arrays.stream(outputFiles).map(File::getName).toList());
         this.guiUtil.updateJList(this.outputList, this.outputSet);
     }
 
+    private void clearOutputDir(){
+        File[] outputFiles = new File(FileIO.getApplicationRootPath("output")).listFiles();
+        for (File outputFile : outputFiles) {
+            this.outputSet.remove(outputFile.getName());
+            if (!outputFile.isDirectory()){
+                outputFile.delete();
+            }
+        }
+        this.guiUtil.updateJList(this.outputList, this.outputSet);
+    }
 
+    /**
+     * Removes an event from the list and from the config
+     * @param name name of event
+     */
     private void removeCompiler(String name){
         System.out.println("REMOVE: "+name);
         this.eventNamesSet.remove(name);
-//        this.updateCompilerNameFile();
+        this.iceHandler.removeEvent(name);
     }
 
 
@@ -219,9 +226,14 @@ public class CompilationView extends JPanel {
 
         buttonContainer.add(addBtn);
         buttonContainer.add(removeBtn);
+
         addBtn.addActionListener(e -> {
             guiUtil.showInputDialog(this, "Enter test name:", this::addToCodebase);
             guiUtil.updateJList(this.codebasesJList,this.codeBaseSet);
+        });
+
+        removeBtn.addActionListener(e->{
+            this.guiUtil.updateJList(this.eventNamesJlist, this.eventNamesSet);
         });
 
 
@@ -229,7 +241,7 @@ public class CompilationView extends JPanel {
         this.codebasesJList.setPreferredSize(new Dimension(300,300));
         container.setPreferredSize(new Dimension(300,300));
 
-        guiUtil.setDoubleClickOnJListItem(this.codebasesJList, this::openFileChooser);
+        this.guiUtil.setDoubleClickOnJListItem(this.codebasesJList, this::openFileChooser);
         this.codebasesJList.setBorder(new LineBorder(Color.BLACK));
         container.setBackground(Color.white);
         cardContainer.add(this.codebasesJList);
@@ -239,6 +251,10 @@ public class CompilationView extends JPanel {
         return container;
     }
 
+    /**
+     * Add a folder to the codebase
+     * @param name the name
+     */
     private void addToCodebase(String name){
         FileIO.createFolderIf(Path.of(FileIO.getApplicationRootPath("codebase/" + name)));
         this.codeBaseSet.add(name);
@@ -251,16 +267,12 @@ public class CompilationView extends JPanel {
         jFileChooser.showOpenDialog(this);
     }
 
-    private void showAddEventDialog(){
 
+    private void showAddEventDialog(){
         AddEventWindow addEventWindow = new AddEventWindow();
         addEventWindow.setVisible(true);
-
-        System.out.println("TERST");
-
         eventNamesSet.add(addEventWindow.getGivenName());
         this.guiUtil.updateJList(eventNamesJlist, eventNamesSet);
-//        this.cleanUpEventSet();
     }
     private void cleanUpEventSet(){
         for (String s : this.eventNamesSet) {
