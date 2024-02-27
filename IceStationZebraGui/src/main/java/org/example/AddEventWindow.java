@@ -101,6 +101,8 @@ public class AddEventWindow extends JFrame {
         container.add(new JLabel(label,SwingConstants.CENTER),BorderLayout.NORTH);
         container.setBackground(Color.lightGray);
     }
+
+
     public String getGivenName() {
         return givenName;
     }

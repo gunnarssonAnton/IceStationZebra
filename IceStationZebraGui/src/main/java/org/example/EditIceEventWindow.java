@@ -15,7 +15,7 @@ import java.util.List;
 
 public class EditIceEventWindow extends JFrame {
     private final CardLayout cardLayout = new CardLayout();
-    private JPanel cardConainer = new JPanel(cardLayout);
+    private final JPanel textPaneContainer = new JPanel(cardLayout);
     private final JTextPane installTextPane = new JTextPane();
     private final JTextPane compilingTextPane = new JTextPane();
     private final JButton saveBtn = new JButton("Save");
@@ -48,21 +48,23 @@ public class EditIceEventWindow extends JFrame {
         this.styleJPanel(compileTextAreaContainer, this.compilingTextPane, this.compileTextLabel);
         this.styleJPanel(installTextAreaContainer, this.installTextPane,this.installTextLabel);
 
-        this.cardConainer.add(installTextAreaContainer);
+        this.textPaneContainer.add(installTextAreaContainer);
 
-
+        //Disables change the content in to container and disables the button you just clicked on
         editInstallCommand.addActionListener(e -> {
-            this.cardConainer.add(installTextAreaContainer);
-            this.cardConainer.remove(compileTextAreaContainer);
+            this.textPaneContainer.add(installTextAreaContainer);
+            this.textPaneContainer.remove(compileTextAreaContainer);
             editCompilingCommand.setEnabled(true);
             editInstallCommand.setEnabled(false);
         });
+        //Disables change the content in to container and disables the button you just clicked on
         editCompilingCommand.addActionListener(e -> {
-            this.cardConainer.add(compileTextAreaContainer);
-            this.cardConainer.remove(installTextAreaContainer);
+            this.textPaneContainer.add(compileTextAreaContainer);
+            this.textPaneContainer.remove(installTextAreaContainer);
             editInstallCommand.setEnabled(true);
             editCompilingCommand.setEnabled(false);
         });
+
         this.menuBar.setBackground(Color.white);
         this.menuBar.add(editInstallCommand);
         this.menuBar.add(editCompilingCommand);
@@ -70,10 +72,16 @@ public class EditIceEventWindow extends JFrame {
         this.setJMenuBar(this.menuBar);
         this.setLocationRelativeTo(null);
 
-        this.add(this.cardConainer, BorderLayout.CENTER);
+        this.add(this.textPaneContainer, BorderLayout.CENTER);
         this.add(this.saveBtn,BorderLayout.SOUTH);
     }
 
+    /**
+     * Styles the JPanels and adds a text pane to the JPanel
+     * @param container the JPanel
+     * @param textPane the text pane
+     * @param label the label displayed in the JPanel
+     */
     private void styleJPanel(JPanel container, JTextPane textPane,String label){
         container.setLayout(new BorderLayout());
         container.add(textPane, BorderLayout.CENTER);
@@ -81,6 +89,10 @@ public class EditIceEventWindow extends JFrame {
         container.setBackground(Color.lightGray);
     }
 
+    /**
+     * used to Configure the Text panes
+     * @param event a parameter
+     */
     private void configureTextPanes(Event event){
         String installationContent = "";
         for (Object o : event.installation()) {
@@ -90,7 +102,6 @@ public class EditIceEventWindow extends JFrame {
         this.installTextPane.setSize(new Dimension(500,500));
         this.installTextPane.setDocument(new BashSyntaxHighlighting());
         this.installTextPane.setText(installationContent);
-
 
 
         this.compilingTextPane.setSize(new Dimension(500,500));
