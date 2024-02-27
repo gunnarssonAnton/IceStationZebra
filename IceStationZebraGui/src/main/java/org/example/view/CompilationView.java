@@ -37,12 +37,10 @@ public class CompilationView extends JPanel {
 //    private final FileIO compilerNameFile;
     private final IceHandler iceHandler = IceHandler.getInstance();
     public CompilationView(){
-
-//        this.compilerNameFile = new FileIO(FileIO.getApplicationRootPath("settings"),"compiler_names.txt");
         this.eventNamesSet = this.iceHandler.getEventNames();
-//        this.eventSet =         System.out.println(iszHandler.getEvents());
         this.codeBaseSet = new HashSet<>();
         this.outputSet = new HashSet<>();
+
         this.setLayout(new FlowLayout(FlowLayout.RIGHT));
         this.add(this.listContainer(),BorderLayout.NORTH);
         this.add(this.runBtnContainer(),BorderLayout.CENTER);
@@ -123,14 +121,10 @@ public class CompilationView extends JPanel {
         this.outputList = new JList<>(this.outputSet.toArray());
 
         this.outputList.setCellRenderer(new IconTextListCellRenderer(UIManager.getIcon("FileView.fileIcon")));
-        clearBtn.addActionListener(e -> {
-            for (String s : this.outputSet) {
-                this.outputSet.remove(s);
-            }
-            this.guiUtil.updateJList(this.outputList, this.outputSet);
-        });
 
-        updateBtn.addActionListener(e-> this.updateOutput());
+        clearBtn.addActionListener(e -> this.clearOutputDir());
+
+        updateBtn.addActionListener(e-> this.updateOutputJList());
 
         this.outputList.setPreferredSize(new Dimension(250,250));
         this.outputList.setBackground(Color.white);
@@ -189,12 +183,22 @@ public class CompilationView extends JPanel {
     }
 
 
-    private void updateOutput(){
+    private void updateOutputJList(){
         File[] outputFiles = new File(FileIO.getApplicationRootPath("output")).listFiles();
         this.outputSet.addAll(Arrays.stream(outputFiles).map(File::getName).toList());
         this.guiUtil.updateJList(this.outputList, this.outputSet);
     }
 
+    private void clearOutputDir(){
+        File[] outputFiles = new File(FileIO.getApplicationRootPath("output")).listFiles();
+        for (File outputFile : outputFiles) {
+            this.outputSet.remove(outputFile.getName());
+            if (!outputFile.isDirectory()){
+                outputFile.delete();
+            }
+        }
+        this.guiUtil.updateJList(this.outputList, this.outputSet);
+    }
 
     /**
      * Removes an event from the list and from the config
