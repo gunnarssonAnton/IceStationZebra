@@ -5,6 +5,7 @@ import org.example.Utility.ProcessHandler;
 import org.example.files.FileIO;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class DockerImage {
@@ -26,7 +27,10 @@ public class DockerImage {
         return this.name;
     }
     public void addENV(String key,String value){
-        this.envs.add(key + "=" + value);
+        String theValue = value;
+        if (theValue.contains(" "))
+            theValue = "\"" + theValue + "\"";
+        this.envs.add(key + "=" + theValue);
     }
     public void addVolume(String volume){
         this.volumes.add(volume);
@@ -48,8 +52,12 @@ public class DockerImage {
         this.fileLocation.write(this.toString());
     }
     public ProcessHandler build(){
+        return this.build(".");
+    }
+    public ProcessHandler build(String path){
         this.write();
-        String[] cmd = new String[]{"docker", "build", "-t", this.name, "-f",this.fileLocation.getPath().toString(),"."};
+        String[] cmd = new String[]{"docker", "build", "-t", this.name, "-f",this.fileLocation.getPath().toString(), path};
+        System.out.println("Build:" + String.join(" ",cmd));
         return ProcessHandler.construct(cmd);
     }
     public ProcessHandler remove(){
@@ -66,7 +74,7 @@ public class DockerImage {
         content.append("\n");
 
         //
-        this.envs.forEach(env -> content.append("ENV ").append(env).append("=unset").append("\n"));
+        this.envs.forEach(env -> content.append("ENV ").append(env).append("unset").append("\n"));
         content.append("\n");
         //
         this.copys.forEach(cpy -> content.append("COPY ").append(cpy));
@@ -84,24 +92,5 @@ public class DockerImage {
         return content.toString();
     }
 //    public static DockerImage getBasic(String image, String name){
-//        //"openjdk:11"
-//        //"testImage"
-//        DockerImage dockerImage = new DockerImage(image,name);
-//        dockerImage.addENV("EVENT_NAME","");
-//        dockerImage.addENV("EVENT_INSTALL","");
-//        dockerImage.addENV("EVENT_COMPILE_COMMAND","");
-//        dockerImage.addVolume("/scripts");
-//        dockerImage.addVolume("/installs");
-//        dockerImage.addVolume("/compile_commands");
-//        dockerImage.addVolume("/codebase");
-//        dockerImage.addVolume("/output");
-//   //     dockerImage.addCOPY("/scripts/compilation_entrypoint.sh","/compilation_entrypoint.sh");
-//     //   dockerImage.addRUN("chmod +x /compilation_entrypoint.sh");
-////        dockerfile.addRUN("ls");
-////        dockerfile.addCOPY("/scripts/execution_entrypoint.sh","/execution_entrypoint.sh");
-////        dockerfile.addRUN("chmod +x /execution_entrypoint.sh");
-//        //dockerImage.addCMD("echo \"$(ls)\"\n");
-//
-//        return dockerImage;
 //    }
 }

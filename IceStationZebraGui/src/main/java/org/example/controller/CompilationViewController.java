@@ -6,6 +6,7 @@ import org.example.Docker.DockerContainer;
 import org.example.Docker.DockerImage;
 import org.example.Utility.*;
 import org.example.Utility.Compilation;
+import org.example.files.FileIO;
 import org.example.models.Event;
 import org.example.view.CompilationView;
 
@@ -35,34 +36,42 @@ public class CompilationViewController {
         System.out.println("Compile:" + event.givenName());
         // Image
         DockerImage image = new DockerImage(Event.DOCKERIMAGE, event.givenName() + "_" + Generate.generateRandomString(8));
+        image.addRUN("mkdir -p /output");
         image.addVolume("/scripts");
         image.addVolume("/files");
         image.addVolume("/codebase");
         image.addVolume("/output");
-        image.addENV("EVENT_NAME","");
-        image.addENV("EVENT_INSTALL","");
-        image.addENV("EVENT_COMPILE_COMMAND","");
-        image.addCOPY("/scripts/compilation_entrypoint.sh","/compilation_entrypoint.sh");
-        image.addRUN("chmod +x /compilation_entrypoint.sh");
-        image.setEntrypoint("/compilation_entrypoint.sh");
+        //image.addCOPY("/scripts/compilation_entrypoint.sh","/compilation_entrypoint.sh");
+        //image.addRUN("chmod +x /compilation_entrypoint.sh");
+        //image.addRUN(event.installation().stream().skip(0).map(s -> s.contains(";") ? s : s + ";").collect(Collectors.joining()).replaceAll(" && $",""));
+        //image.setEntrypoint("/compilation_entrypoint.sh");
 
-        // Container
+        event.installation().forEach(image::addRUN);
         ISZTest.getTests().forEach(iszTest -> {
-            DockerContainer container = new DockerContainer(event.givenName() + "_" + iszTest.getName() + "_" + Generate.generateRandomString(8), image);
-            container.setVolume("./scripts", "/scripts");
-            container.setVolume("./files", "/files");
-            container.setVolume("./codebase", "/codebase");
-            container.setVolume("./output", "/output");
-            container.addENV("EVENT_NAME", event.givenName());
-            //System.out.println("cm cmdns:" + event.installation().stream().skip(0).map(s -> s.contains(";") ? s : s + ";").collect(Collectors.joining()).replaceAll(";$",""));
-            container.addENV("EVENT_INSTALL", event.installation().stream().skip(0).map(s -> s.contains(";") ? s : s + ";").collect(Collectors.joining()).replaceAll(";$",""));
-            container.addENV("EVENT_COMPILE_COMMAND", iszTest.constructCompileCommand(event));
-
-            // Compilation
-            Compilation compilation = new Compilation(event, this.subject, container, image);
+            image.addCOPY("codebase/" + iszTest.getName(),"/codebase/" + iszTest.getName());
+            image.addRUN(iszTest.constructCompileCommand(event));
+            Compilation compilation = new Compilation(event,subject,new DockerContainer(event.givenName() + "_" + iszTest.getName() + "_" + Generate.generateRandomString(8), image),image);
             compilation.setTerminalInput(this.terminalInput);
             compilation.go();
         });
+
+        // Container
+//        ISZTest.getTests().forEach(iszTest -> {
+//            DockerContainer container = new DockerContainer(event.givenName() + "_" + iszTest.getName() + "_" + Generate.generateRandomString(8), image);
+//            container.setVolume("./scripts", "/scripts");
+//            container.setVolume("./files", "/files");
+//            container.setVolume("./codebase", "/codebase");
+//            container.setVolume("./output", "/output");
+//            container.addENV("EVENT_NAME", event.givenName());
+//            //System.out.println("cm cmdns:" + event.installation().stream().skip(0).map(s -> s.contains(";") ? s : s + ";").collect(Collectors.joining()).replaceAll(";$",""));
+//            //container.addENV("EVENT_INSTALL", event.installation().stream().skip(0).map(s -> s.contains(";") ? s : s + ";").collect(Collectors.joining()).replaceAll(";$",""));
+//            container.addENV("EVENT_COMPILE_COMMAND", iszTest.constructCompileCommand(event));
+//
+//            // Compilation
+//            Compilation compilation = new Compilation(event, this.subject, container, image);
+//            compilation.setTerminalInput(this.terminalInput);
+//            compilation.go();
+//        });
     }
 
     public CompilationView getView(){
