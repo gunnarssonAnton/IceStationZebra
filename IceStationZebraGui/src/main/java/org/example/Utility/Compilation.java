@@ -54,31 +54,33 @@ public class Compilation {
     }
 
     private void runDockerImage() {
-        ProcessHandler handler = this.image.build(FileIO.getApplicationRootPath());
-        // Image stdout
-        Disposable stdoutDisposable = handler.getStdout().subscribeOn(Schedulers.io()).subscribe(out -> {
-                    this.subject.onNext(new TerminalMessage(out, Color.WHITE));
-                }, Throwable::printStackTrace
-                , () -> System.out.println("Image stdout complete"));
+        ProcessHandler handler = this.image.build(FileIO.getApplicationRootPath(), this.subject);
 
-        // Image stderr
-        Disposable stderrDisposable = handler.getStderr().subscribeOn(Schedulers.io()).subscribe(err -> {
-                    this.subject.onNext(new TerminalMessage(err, Color.orange));
-                }, Throwable::printStackTrace
-                , () -> System.out.println("Image stderr complete"));
-
-        // Image completion
-        Disposable completionDisposable = handler.getCompletion().subscribeOn(Schedulers.io()).subscribe(
-                () -> {
-                    subject.onNext(new TerminalMessage("Image Process completed successfully",Color.GREEN));
-                    //runDockerContainer();
-                },
-                throwable -> subject.onNext(new TerminalMessage("Image Process failed: " + throwable.getMessage(),Color.RED))
-        );
+//        //ProcessHandler handler = this.image.build();
+//        // Image stdout
+//        Disposable stdoutDisposable = handler.getStdout().subscribeOn(Schedulers.io()).subscribe(out -> {
+//                    this.subject.onNext(new TerminalMessage(out, Color.WHITE));
+//                }, Throwable::printStackTrace
+//                , () -> System.out.println("Image stdout complete"));
+//
+//        // Image stderr
+//        Disposable stderrDisposable = handler.getStderr().subscribeOn(Schedulers.io()).subscribe(err -> {
+//                    this.subject.onNext(new TerminalMessage(err, Color.orange));
+//                }, Throwable::printStackTrace
+//                , () -> System.out.println("Image stderr complete"));
+//
+//        // Image completion
+//        Disposable completionDisposable = handler.getCompletion().subscribeOn(Schedulers.io()).subscribe(
+//                () -> {
+//                    subject.onNext(new TerminalMessage("Image Process completed successfully",Color.GREEN));
+//                    runDockerContainer();
+//                },
+//                throwable -> subject.onNext(new TerminalMessage("Image Process failed: " + throwable.getMessage(),Color.RED))
+//        );
     }
 
     private void runDockerContainer(){
-        ProcessHandler containerHandler = container.run(new String[0]);
+        ProcessHandler containerHandler = container.run(this.subject);
         //this.terminalInput.subscribeOn(Schedulers.io()).subscribe(System.out::println);
         this.terminalInput.subscribeOn(Schedulers.io()).subscribe(containerHandler::stdin);
         // Container stdout
