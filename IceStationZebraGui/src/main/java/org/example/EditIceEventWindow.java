@@ -10,7 +10,6 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -115,8 +114,7 @@ public class EditIceEventWindow extends JFrame {
                 Event.DOCKERIMAGE,
                 this.compilingTextPane.getText(),
                 this.oldEventName,
-                installationList,
-                new ArrayList<>());
+                installationList);
         this.iceHandler.modifyEvent(this.oldEventName, modifiedEvent);
         this.dispose();
     }

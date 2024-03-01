@@ -9,8 +9,7 @@ public record Event(
         String dockerImage,
         String compileCommand,
         String givenName,
-        List<String> installation,
-        List<String> executableFileNames
+        List<String> installation
 ) {
     public static final String DOCKERIMAGE = "ubuntu:latest";
 
@@ -20,7 +19,6 @@ public record Event(
         iszObject.put("givenName", givenName);
         iszObject.put("compileCommand", compileCommand);
         iszObject.put("installation", installation);
-        iszObject.put("executableFileNames", executableFileNames);
         return iszObject;
     }
 

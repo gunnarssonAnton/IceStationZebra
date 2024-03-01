@@ -45,8 +45,7 @@ public class IceHandler {
                     new Event(Event.DOCKERIMAGE,
                             iceEvent.getString("compileCommand").toString(),
                             iceEvent.getString("givenName").toString(),
-                            this.convertToObjectList(iceEvent.getJSONArray("installation").toList()),
-                            this.convertToObjectList(iceEvent.getJSONArray("executableFileNames").toList())
+                            this.convertToObjectList(iceEvent.getJSONArray("installation").toList())
                             ));
 
 
@@ -120,20 +119,7 @@ public class IceHandler {
         this.writeToIce();
     }
 
-    public void setExecutables(String eventName, List<String> executables){
-        this.config.events().forEach(event -> {
-            if (event.givenName().equals(eventName)){
-                executables.forEach(name-> event.executableFileNames().add(name));
-            }
-        });
-    }
-    public List<String> getExecutables(String eventName){
-        return this.config.events().stream()
-                .filter(event -> event.givenName().equals(eventName))
-                .findFirst()
-                .map(Event::executableFileNames)
-                .orElse(new ArrayList<>());
-    }
+
 
 
     /**
