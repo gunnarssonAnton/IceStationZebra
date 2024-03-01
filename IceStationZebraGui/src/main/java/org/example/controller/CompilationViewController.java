@@ -52,10 +52,13 @@ public class CompilationViewController {
                 System.out.println("iszTest:" + iszTest.getName());
 //            image.addRUN(iszTest.constructCompileCommand(event));
 
-                DockerContainer container = new DockerContainer(event.givenName() + "_" + iszTest.getName() + Generate.generateRandomString(4),image);
+                DockerContainer container = new DockerContainer(event.givenName() + "_" + iszTest.getName() + "_" + Generate.generateRandomString(4),image);
                 //container.addARG(iszTest.constructCompileCommand(event));
                 container.setVolume("/output","/output");
                 ProcessHandler contHandler = container.run(terminalSubject);
+                contHandler.setOnComplete(haeendle ->{
+                    // Remove container
+                });
                 try {
                     Thread.sleep(2000);
                 } catch (InterruptedException e) {
