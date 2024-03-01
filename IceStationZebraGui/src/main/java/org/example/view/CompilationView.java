@@ -96,6 +96,10 @@ public class CompilationView extends JPanel {
         return compilerNamesPanel;
     }
 
+    /**
+     * Container for all JLists containers
+     * @return a container
+     */
     private JPanel listContainer(){
         JPanel container = new JPanel();
         container.setPreferredSize(new Dimension(975, 310));
@@ -144,23 +148,22 @@ public class CompilationView extends JPanel {
         container.setBorder(new EmptyBorder(50,50,50,50));
         container.setSize(50,50);
 
-        runAllCompilersBtn.setPreferredSize(new Dimension(150,80));
-        runCompilerBtn.setPreferredSize(new Dimension(150,80));
-        toExecutionBtn.setPreferredSize(new Dimension(150,80));
+        this.runAllCompilersBtn.setPreferredSize(new Dimension(150,80));
+        this.runCompilerBtn.setPreferredSize(new Dimension(150,80));
+        this.toExecutionBtn.setPreferredSize(new Dimension(150,80));
 
-        runCompilerBtn.setText("Run Current");
-        runAllCompilersBtn.setText("Run All");
-        toExecutionBtn.setText("execution >");
+        this.runCompilerBtn.setText("Run Current");
+        this.runAllCompilersBtn.setText("Run All");
+        this.toExecutionBtn.setText("execution >");
 
-        runAllCompilersBtn.addActionListener(e->System.out.println("RUN ALL"));
-        runCompilerBtn.addActionListener(e->System.out.println("RUN SELECTED"));
-        toExecutionBtn.addActionListener(e->System.out.println("TO EXECUTION"));
-        runAllCompilersBtn.addActionListener(e->System.out.println("RUN ALL"));
+        this.runAllCompilersBtn.addActionListener(e->System.out.println("RUN ALL"));
+        this.runCompilerBtn.addActionListener(e->System.out.println("RUN SELECTED"));
+        this.toExecutionBtn.addActionListener(e->System.out.println("TO EXECUTION"));
 
 
-        container.add(runCompilerBtn);
-        container.add(runAllCompilersBtn);
-        container.add(toExecutionBtn);
+        container.add(this.runCompilerBtn);
+        container.add(this.runAllCompilersBtn);
+        container.add(this.toExecutionBtn);
 
         return container;
     }
@@ -183,7 +186,7 @@ public class CompilationView extends JPanel {
     }
 
 
-    private void updateOutputJList(){
+    public void updateOutputJList(){
         File[] outputFiles = new File(FileIO.getApplicationRootPath("output")).listFiles();
         this.outputSet.addAll(Arrays.stream(outputFiles).map(File::getName).toList());
         this.guiUtil.updateJList(this.outputList, this.outputSet);
@@ -205,7 +208,6 @@ public class CompilationView extends JPanel {
      * @param name name of event
      */
     private void removeCompiler(String name){
-        System.out.println("REMOVE: "+name);
         this.eventNamesSet.remove(name);
         this.iceHandler.removeEvent(name);
     }
@@ -233,6 +235,7 @@ public class CompilationView extends JPanel {
         });
 
         removeBtn.addActionListener(e->{
+            System.out.println(codebasesJList.getSelectedValue().toString());
             this.guiUtil.updateJList(this.eventNamesJlist, this.eventNamesSet);
         });
 

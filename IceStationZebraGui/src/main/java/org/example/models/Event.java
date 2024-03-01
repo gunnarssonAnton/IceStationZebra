@@ -9,15 +9,18 @@ public record Event(
         String dockerImage,
         String compileCommand,
         String givenName,
-        List<String> installation) {
+        List<String> installation,
+        List<String> executableFileNames
+) {
     public static final String DOCKERIMAGE = "ubuntu:latest";
 
     public JSONObject toIce(){
         JSONObject iszObject = new JSONObject();
         iszObject.put("dockerImage", dockerImage);
-        iszObject.put("givenName",givenName);
+        iszObject.put("givenName", givenName);
         iszObject.put("compileCommand", compileCommand);
-        iszObject.put("installation",installation);
+        iszObject.put("installation", installation);
+        iszObject.put("executableFileNames", executableFileNames);
         return iszObject;
     }
 

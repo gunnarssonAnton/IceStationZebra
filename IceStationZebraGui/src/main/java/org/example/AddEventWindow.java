@@ -8,6 +8,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -90,7 +91,8 @@ public class AddEventWindow extends JFrame {
                 Event.DOCKERIMAGE,
                    compileCommand,
                 this.givenName,
-                installationList
+                installationList,
+                new ArrayList<>()
             );
         this.iceHandler.addEvent(newEvent);
         this.dispose();

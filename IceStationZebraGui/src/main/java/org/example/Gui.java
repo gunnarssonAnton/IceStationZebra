@@ -1,11 +1,11 @@
 package org.example;
 
-import com.apple.eawt.ApplicationAdapter;
 import io.reactivex.rxjava3.core.Observable;
 import org.example.Utility.TerminalMessage;
 import org.example.controller.CompilationViewController;
 import org.example.controller.ExecutionViewController;
 import org.example.controller.TerminalViewController;
+import org.example.view.LoadingView;
 
 import javax.swing.*;
 import java.awt.*;
@@ -19,8 +19,10 @@ public class Gui extends JFrame {
     private final CompilationViewController compilationViewController = new CompilationViewController(this.terminalViewController.getSubject());
     private final ExecutionViewController executionViewController = new ExecutionViewController(this.terminalViewController.getSubject());
     public Gui(){
+        JPanel mainPanel = new JPanel(new BorderLayout());
+        LoadingView loadingPanel = new LoadingView();
         // Icon
-        System.out.println(Main.class.getResource("ISZ_icon.png").getPath());
+//        System.out.println(Main.class.getResource("ISZ_icon.png").getPath());
         ImageIcon imgIcon = new ImageIcon(Main.class.getResource("ISZ_icon.png"));
         //loading an image from a file
         final Toolkit defaultToolkit = Toolkit.getDefaultToolkit();
@@ -52,9 +54,19 @@ public class Gui extends JFrame {
 
         this.cards.add(compilationViewController.getView());
         this.cards.add(executionViewController.getView());
-        this.add(this.cards);
+//        this.add(this.cards);
+//
+//        this.add(this.terminalViewController.getView(),BorderLayout.SOUTH);
+        mainPanel.add(this.cards);
+        mainPanel.add(this.terminalViewController.getView(),BorderLayout.SOUTH);
+        this.add(mainPanel);
+//        loadingPanel.whenIsFilledBar(()->{
+//            this.remove(loadingPanel);
+//            this.add(mainPanel);
+//            this.revalidate();
+//            this.repaint();
+//        });
 
-        this.add(this.terminalViewController.getView(),BorderLayout.SOUTH);
         this.terminalViewController.getSubject().onNext(new TerminalMessage(new Date().toString(),Color.PINK));
         Observable<String> terminalInput = this.terminalViewController.getView().getTerminalInputFieldObservable();
         compilationViewController.setTerminalInput(terminalInput);
