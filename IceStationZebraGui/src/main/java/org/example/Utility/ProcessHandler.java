@@ -5,27 +5,85 @@ import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 import io.reactivex.rxjava3.subjects.PublishSubject;
 
+import java.awt.*;
 import java.io.*;
+import java.util.function.Consumer;
 
 public class ProcessHandler {
+    private PublishSubject<TerminalMessage> terminalSubject;
+    private int exit;
+    private Consumer<ProcessHandler> onCompleteCallback;
     private final Observable<String> stdout;
     private final Observable<String> stderr;
     private final Completable completion;
     private final PublishSubject<String> stdin;
+
     private ProcessHandler(Observable<String> stdout, Observable<String> stderr, Completable completion,PublishSubject<String> stdin) {
         this.stdout = stdout;
         this.stderr = stderr;
         this.completion = completion;
         this.stdin = stdin;
     }
+    public void setOnComplete(Consumer<ProcessHandler> onCompleteCallback) {
+        this.onCompleteCallback = onCompleteCallback;
+    }
+    public static ProcessHandler internal(String[] cmd, PublishSubject<TerminalMessage> terminal){
+        ProcessHandler handler =  ProcessHandler.construct(cmd);
+        handler.terminalSubject = terminal;
+
+        // stdout
+        handler.stdout.subscribeOn(Schedulers.io()).subscribe(out -> {
+           handler.terminalSubject.onNext(new TerminalMessage(out, Color.WHITE));
+        },throwable -> {
+            handler.terminalSubject.onNext(new TerminalMessage(throwable.getMessage(),Color.RED));
+        },() -> {
+            handler.terminalSubject.onNext(new TerminalMessage("ProcessHandler stdout exited normally",Color.green));
+        });
+
+        // stderr
+        handler.stderr.subscribeOn(Schedulers.io()).subscribe(err ->{
+            handler.terminalSubject.onNext(new TerminalMessage(err, Color.orange));
+        },throwable -> {
+            handler.terminalSubject.onNext(new TerminalMessage(throwable.getMessage(), Color.red));
+        },() -> {
+            handler.terminalSubject.onNext(new TerminalMessage("ProcessHandler stderr exited normally",Color.green));
+        });
+
+        // Completion
+        handler.completion.subscribeOn(Schedulers.io()).subscribe(() -> {
+            handler.exit = 0;
+            if (handler.onCompleteCallback != null)
+                handler.onCompleteCallback.accept(handler);
+        },throwable -> {
+            handler.exit = Integer.parseInt(throwable.getMessage().split(":")[1]);
+            if (handler.onCompleteCallback != null)
+                handler.onCompleteCallback.accept(handler);
+        });
+        return handler;
+    }
+
+
+    public Observable<String> getStdout() {
+        return this.stdout;
+    }
+
+    public Observable<String> getStderr() {
+        return this.stderr;
+    }
+
+    public Completable getCompletion() {
+        return this.completion;
+    }
+
+    public void stdin(String command) {
+        this.stdin.onNext(command);
+    }
     public static ProcessHandler construct(String[] cmd) {
         final Process process;
         try {
             process = new ProcessBuilder(cmd).start();
         } catch (IOException e) {
-            // Handle the error appropriately. For simplicity, we'll just print the stack trace here.
             e.printStackTrace();
-            // Return a default ProcessHandler instance or throw a custom exception as appropriate.
             return new ProcessHandler(Observable.empty(), Observable.empty(), Completable.complete(), PublishSubject.create());
         }
 
@@ -62,6 +120,7 @@ public class ProcessHandler {
         });
 
         PublishSubject<String> stdin = PublishSubject.create();
+
         stdin.subscribe(data -> {
             try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(process.getOutputStream()))) {
                 writer.write(data);
@@ -82,6 +141,7 @@ public class ProcessHandler {
                 int exitVal = process.waitFor();
                 if (exitVal == 0) {
                     emitter.onComplete();
+
                 } else {
                     emitter.onError(new Throwable("Process exited with error code: " + exitVal));
                 }
@@ -93,21 +153,5 @@ public class ProcessHandler {
         });
 
         return new ProcessHandler(stdout, stderr, completion, stdin);
-    }
-
-    public Observable<String> getStdout() {
-        return this.stdout;
-    }
-
-    public Observable<String> getStderr() {
-        return this.stderr;
-    }
-
-    public Completable getCompletion() {
-        return this.completion;
-    }
-
-    public void stdin(String command) {
-        this.stdin.onNext(command);
     }
 }

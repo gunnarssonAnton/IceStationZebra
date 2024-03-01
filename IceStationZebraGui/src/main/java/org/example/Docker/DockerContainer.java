@@ -1,6 +1,8 @@
 package org.example.Docker;
 
+import io.reactivex.rxjava3.subjects.PublishSubject;
 import org.example.Utility.ProcessHandler;
+import org.example.Utility.TerminalMessage;
 import org.example.files.FileIO;
 
 import java.nio.file.Path;
@@ -56,14 +58,13 @@ public class DockerContainer{
         base.addAll(this.args);
         return base.toArray(new String[0]);
     }
-    public ProcessHandler run(){
+    public ProcessHandler run(PublishSubject<TerminalMessage> terminal){
         //docker run -d --name container_name image_name
         String[] cmd = compileCMD();
         System.out.println("run:" + String.join(" ",cmd));
-        return ProcessHandler.construct(cmd);
+        return ProcessHandler.internal(cmd, terminal);
     }
     public ProcessHandler stop(){
-        //docker stop my_nginx
         String[] cmd = new String[]{"docker", "stop", this.name};
         return ProcessHandler.construct(cmd);
     }

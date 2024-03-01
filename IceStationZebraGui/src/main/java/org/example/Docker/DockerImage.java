@@ -1,7 +1,9 @@
 package org.example.Docker;
 
+import io.reactivex.rxjava3.subjects.PublishSubject;
 import org.example.Utility.Generate;
 import org.example.Utility.ProcessHandler;
+import org.example.Utility.TerminalMessage;
 import org.example.files.FileIO;
 
 import java.util.ArrayList;
@@ -51,14 +53,14 @@ public class DockerImage {
         this.fileLocation = new FileIO(FileIO.getApplicationRootPath(), "Dockerfile_" + Generate.generateRandomString(8));
         this.fileLocation.write(this.toString());
     }
-    public ProcessHandler build(){
-        return this.build(".");
+    public ProcessHandler build(PublishSubject<TerminalMessage> terminal){
+        return this.build(".", terminal);
     }
-    public ProcessHandler build(String path){
+    public ProcessHandler build(String path, PublishSubject<TerminalMessage> terminal){
         this.write();
         String[] cmd = new String[]{"docker", "build", "--no-cache", "-t", this.name, "-f",this.fileLocation.getPath().toString(), path};
         System.out.println("Build:" + String.join(" ",cmd));
-        return ProcessHandler.construct(cmd);
+        return ProcessHandler.internal(cmd, terminal);
     }
     public ProcessHandler remove(){
         String[] cmd = new String[]{"docker","rmi",this.name};
