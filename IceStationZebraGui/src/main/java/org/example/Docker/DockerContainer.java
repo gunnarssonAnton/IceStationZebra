@@ -19,7 +19,10 @@ public class DockerContainer{
         this.image = image;
     }
     public void addENV(String key, String value){
-        this.envs.put(key,value);
+        String theValue = value;
+        if (theValue.contains(" "))
+            theValue = "\"" + theValue + "\"";
+        this.envs.put(key,theValue);
     }
     public void setVolume(String key, String value){
         this.volumes.put(key,value);
@@ -34,13 +37,15 @@ public class DockerContainer{
         List<String> base = new ArrayList<>(Arrays.asList("docker", "run", "-i", "--name", this.name));
 
         this.envs.forEach((key, value) -> {
-            base.add("-e" + key + "=" + value);
+            base.add("-e");
+            base.add(key + "=" + value);
         });
         this.volumes.forEach((key, value) -> {
             if (key.startsWith("./"))
                 key = key.substring(2);
             Path path = Paths.get(FileIO.getApplicationRootPath(key)).toAbsolutePath();
-            base.add("-v" + path + ":" + value);
+            base.add("-v");
+            base.add(path + ":" + value);
         });
         if (this.entrypoint != null){
             base.add("--entrypoint");
@@ -54,7 +59,7 @@ public class DockerContainer{
     public ProcessHandler run(String[] args){
         //docker run -d --name container_name image_name
         String[] cmd = compileCMD(args);
-        System.out.println("CMD ->" + String.join(",",cmd));
+        System.out.println("run:" + String.join(" ",cmd));
         return ProcessHandler.construct(cmd);
     }
     public ProcessHandler stop(){
