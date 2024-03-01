@@ -27,7 +27,9 @@ public class CompilationViewController {
             this.compile(this.view.selectedEvent);
         });
     }
-
+    public Map<String, DockerImage> getImages(){
+        return this.images;
+    }
     public void setTerminalInput(Observable<String> terminalInput){
         this.terminalInput = terminalInput;
     }
@@ -43,7 +45,7 @@ public class CompilationViewController {
             throw new RuntimeException(e);
         }
         // Image
-        DockerImage image = new DockerImage(Event.DOCKERIMAGE, event.givenName());
+        DockerImage image = new DockerImage(Event.DOCKERIMAGE, event.givenName() + "_image");
         image.addRUN("mkdir -p /output");
 //        image.addVolume("/scripts");
         image.addVolume("/files");
@@ -54,16 +56,16 @@ public class CompilationViewController {
         //image.addRUN(event.installation().stream().skip(0).map(s -> s.contains(";") ? s : s + ";").collect(Collectors.joining()).replaceAll(" && $",""));
         //image.setEntrypoint("/compilation_entrypoint.sh");
         image.addCOPY("/codebase","/codebase");
-        image.addCOPY("/script","/script");
-        image.addRUN("chmod +x /script/pre-execution.sh");
-        image.addRUN("chmod +x /script/execution.sh");
-        image.addRUN("chmod +x /script/post-execution.sh");
-        image.addRUN("chmod +x /script/execution_entrypoint.sh");
+        image.addCOPY("/scripts","/scripts");
+        image.addRUN("chmod +x /scripts/pre-execution.sh");
+        image.addRUN("chmod +x /scripts/execution.sh");
+        image.addRUN("chmod +x /scripts/post-execution.sh");
+        image.addRUN("chmod +x /scripts/execution_entrypoint.sh");
         event.installation().forEach(image::addRUN);
 
         ProcessHandler handler = image.build(terminalSubject);
         handler.setOnComplete(handle -> {
-            this.images.put(event.givenName(),image);
+            this.images.put(image.getName(),image);
             ISZTest.getTests().forEach(iszTest -> {
                 //image.addCOPY("/codebase/" + iszTest.getName(),"/codebase/" + iszTest.getName());
                 System.out.println("iszTest:" + iszTest.getName());

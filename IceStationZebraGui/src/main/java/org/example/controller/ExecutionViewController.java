@@ -1,17 +1,41 @@
 package org.example.controller;
 
 import io.reactivex.rxjava3.subjects.PublishSubject;
+import org.example.Docker.DockerContainer;
+import org.example.Docker.DockerImage;
 import org.example.Utility.TerminalMessage;
+import org.example.models.Event;
 import org.example.view.CompilationView;
 import org.example.view.ExecutionView;
 
+import java.awt.*;
+
 public class ExecutionViewController {
     ExecutionView view = new ExecutionView();
-    PublishSubject<TerminalMessage> subject;
-    public ExecutionViewController(PublishSubject<TerminalMessage> subject){
-        this.subject = subject;
+    PublishSubject<TerminalMessage> terminalSubject;
+    CompilationViewController compilationViewController;
+    public ExecutionViewController(PublishSubject<TerminalMessage> subject, CompilationViewController compilationViewController){
+        this.terminalSubject = subject;
+        this.compilationViewController = compilationViewController;
+        this.view.setPrepOnClick(e -> {
+            this.prepare();
+        });
     }
     public ExecutionView getView(){
         return this.view;
+    }
+    public void prepare(){
+        String execName = this.view.getSelectedValue();
+        String name = this.view.getSelectedValue().split("_")[0] + "_image";
+        System.out.println("names:" + this.compilationViewController.getImages().keySet());
+        this.terminalSubject.onNext(new TerminalMessage("Preparing " + name,Color.YELLOW));
+        DockerImage image = new DockerImage(Event.DOCKERIMAGE,name);
+        DockerContainer container = new DockerContainer(name + "_execution",image);
+        container.setEntrypointOverride("/scripts/execution_entrypoint.sh");
+        container.setVolume("/output","/output");
+        container.addARG("/output/" + execName);
+        container.run(this.terminalSubject).setOnComplete((ph) -> {
+            terminalSubject.onNext(new TerminalMessage("Yaaaay", Color.pink));
+        });
     }
 }

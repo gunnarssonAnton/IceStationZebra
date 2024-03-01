@@ -1,5 +1,4 @@
-#!/bin/bash
-echo "Listening to stdin..."
+
 
 while true; do
   read line

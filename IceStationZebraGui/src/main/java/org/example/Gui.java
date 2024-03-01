@@ -17,7 +17,7 @@ public class Gui extends JFrame {
     private JPanel cards = new JPanel(cardLayout);
     private final TerminalViewController terminalViewController = new TerminalViewController();
     private final CompilationViewController compilationViewController = new CompilationViewController(this.terminalViewController.getSubject());
-    private final ExecutionViewController executionViewController = new ExecutionViewController(this.terminalViewController.getSubject());
+    private final ExecutionViewController executionViewController = new ExecutionViewController(this.terminalViewController.getSubject(), compilationViewController);
     public Gui(){
         JPanel mainPanel = new JPanel(new BorderLayout());
         LoadingView loadingPanel = new LoadingView();

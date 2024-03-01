@@ -75,6 +75,7 @@ public class DockerImage {
         StringBuilder content = new StringBuilder();
         content.append("FROM ").append(this.image).append("\n");
         content.append("\n");
+
         //
         this.volumes.forEach(volume -> content.append("VOLUME ").append(volume).append("\n"));
         content.append("\n");
@@ -82,9 +83,11 @@ public class DockerImage {
         //
         this.envs.forEach(env -> content.append("ENV ").append(env).append("unset").append("\n"));
         content.append("\n");
+
         //
-        this.copys.forEach(cpy -> content.append("COPY ").append(cpy));
+        this.copys.forEach(cpy -> content.append("COPY ").append(cpy).append("\n"));
         content.append("\n");
+
         //
         this.runs.forEach(run -> content.append("RUN ").append(run).append("\n"));
         content.append("\n");

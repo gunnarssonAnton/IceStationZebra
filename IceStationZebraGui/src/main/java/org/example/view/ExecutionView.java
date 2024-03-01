@@ -101,4 +101,10 @@ public class ExecutionView extends JPanel {
     public void setOnClick(ActionListener l){
         this.backBtn.addActionListener(l);
     }
+    public void setPrepOnClick(ActionListener l){
+        this.prepBtn.addActionListener(l);
+    }
+    public void setGoOnClick(ActionListener l){
+        this.goBtn.addActionListener(l);
+    }
 }
