@@ -44,9 +44,7 @@ public class Compilation {
 
     private void runDockerImage() {
         ProcessHandler handler = this.image.build(FileIO.getApplicationRootPath(), this.subject);
-        handler.setOnComplete((ahandler) -> {
 
-        });
 //        //ProcessHandler handler = this.image.build();
 //        // Image stdout
 //        Disposable stdoutDisposable = handler.getStdout().subscribeOn(Schedulers.io()).subscribe(out -> {

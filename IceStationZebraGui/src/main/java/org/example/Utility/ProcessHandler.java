@@ -55,7 +55,7 @@ public class ProcessHandler {
             if (handler.onCompleteCallback != null)
                 handler.onCompleteCallback.accept(handler);
         },throwable -> {
-            handler.exit = Integer.parseInt(throwable.getMessage().split(":")[1]);
+            handler.exit = Integer.parseInt((throwable.getMessage().split(":"))[1].trim());
             if (handler.onCompleteCallback != null)
                 handler.onCompleteCallback.accept(handler);
         });

@@ -7,6 +7,7 @@ import org.example.files.FileIO;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.security.PublicKey;
 import java.util.*;
 import java.util.stream.Stream;
 
@@ -72,10 +73,11 @@ public class DockerContainer{
         String[] cmd = new String[]{"docker", "rm", this.name};
         return ProcessHandler.construct(cmd);
     }
-    public void exec(String[] args){
+    public ProcessHandler exec(String[] args, PublishSubject<TerminalMessage> terminalSubject){
         String[] base = new String[]{"docker", "exec", this.name};
         String[] cmd = Stream.concat(Arrays.stream(base), Arrays.stream(args))
                 .toArray(String[]::new);
-        ProcessHandler handler = ProcessHandler.construct(cmd);
+        System.out.println("Exec:" + String.join(" ",cmd));
+        return ProcessHandler.internal(cmd, terminalSubject);
     }
 }
