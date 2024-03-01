@@ -37,18 +37,7 @@ public class Compilation {
     }
 
     public void go(){
-        // Create basic docker file
 
-//        List<String> tests = getTests();
-//        tests.forEach(test -> {
-//            String compileCommand = constructCompileCommand(test);
-//            // Create basic docker container
-//            DockerContainer container = DockerContainer.getBasic("container_" + Generate.generateRandomString(12), this.image);
-//            container.addENV("COMPILER_NAME",event.givenName());
-//            container.addENV("COMPILER_COMMAND",compileCommand);
-//            //container.setEntrypointOverride("/scripts/test_entrypoint.sh");
-//            runDockerImage(container, this.image);
-//        });
 
         this.runDockerImage();
     }
@@ -82,7 +71,7 @@ public class Compilation {
     }
 
     private void runDockerContainer(){
-        ProcessHandler containerHandler = container.run();
+        ProcessHandler containerHandler = container.run(this.subject);
         //this.terminalInput.subscribeOn(Schedulers.io()).subscribe(System.out::println);
         this.terminalInput.subscribeOn(Schedulers.io()).subscribe(containerHandler::stdin);
         // Container stdout
