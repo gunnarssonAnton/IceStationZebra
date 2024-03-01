@@ -80,7 +80,7 @@ public class CompilationView extends JPanel {
 
         removeNameBtn.addActionListener(e -> {
             String selectedValue = this.eventNamesJlist.getSelectedValue().toString();
-            this.removeCompiler(selectedValue);
+            this.guiUtil.showConfrimDialog(this,selectedValue,this::removeCompiler);
             this.guiUtil.updateJList(this.eventNamesJlist, this.eventNamesSet);
         });
 
@@ -230,12 +230,13 @@ public class CompilationView extends JPanel {
         buttonContainer.add(removeBtn);
 
         addBtn.addActionListener(e -> {
-            guiUtil.showInputDialog(this, "Enter test name:", this::addToCodebase);
-            guiUtil.updateJList(this.codebasesJList,this.codeBaseSet);
+            this.guiUtil.showInputDialog(this, "Enter test name:", this::addToCodebase);
+            this.guiUtil.updateJList(this.codebasesJList,this.codeBaseSet);
         });
 
         removeBtn.addActionListener(e->{
             System.out.println(codebasesJList.getSelectedValue().toString());
+            this.guiUtil.showConfrimDialog(this, codebasesJList.getSelectedValue().toString(),System.out::println);
             this.guiUtil.updateJList(this.eventNamesJlist, this.eventNamesSet);
         });
 
