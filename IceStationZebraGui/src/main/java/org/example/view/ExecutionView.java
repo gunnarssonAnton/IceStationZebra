@@ -17,17 +17,23 @@ import java.util.stream.Collectors;
 public class ExecutionView extends JPanel {
     private final JList executionJList = new JList();
     private final Set<String> executionSet = new HashSet<>();
-    private final JButton executeBtn = new JButton("Execute");
-    JButton tempBtn = new JButton("BACK");
+    private final JButton prepBtn = new JButton("prep");
+    private final JButton goBtn = new JButton("Go");
+
+    private final JButton backBtn = new JButton("<Go Back");
+    private String selectedValue;
 
     public ExecutionView(){
 
         this.extractSetFromFile();
-        this.setLayout(new FlowLayout(FlowLayout.CENTER));
+        this.setLayout(new FlowLayout(FlowLayout.RIGHT));
 
-        this.add(tempBtn);
-        this.add(this.getExecutionJListContainer(),BorderLayout.NORTH);
-        this.add(this.getExecutionBtnContainer(),BorderLayout.SOUTH);
+
+        this.add(this.listContainer(),BorderLayout.NORTH);
+        this.add(this.buttonContainer(),BorderLayout.CENTER);
+
+        this.executionJList.addListSelectionListener(e ->
+                selectedValue = (String)((JList<?>)e.getSource()).getSelectedValue());
     }
 
     private void extractSetFromFile(){
@@ -38,17 +44,18 @@ public class ExecutionView extends JPanel {
                                                             .collect(Collectors.toSet());
         this.executionSet.addAll(outputFileNames);
     }
-    private JPanel getExecutionBtnContainer(){
+    /**
+     * Container for all JLists containers
+     * @return a container
+     */
+    private JPanel listContainer(){
         JPanel container = new JPanel();
-        container.setLayout(new FlowLayout(FlowLayout.RIGHT));
-        container.setBorder(new EmptyBorder(50,50,50,50));
-        container.setSize(50,50);
-        this.executeBtn.setPreferredSize(new Dimension(150,80));
-        this.executeBtn.addActionListener(e-> System.out.println("Execute..."));
-        container.add(this.executeBtn);
+        container.setPreferredSize(new Dimension(975, 310));
+        container.setLayout(new FlowLayout(FlowLayout.LEFT));
+        container.add(this.getExecutionJListContainer());
+
         return container;
     }
-
     private JPanel getExecutionJListContainer(){
         JPanel container = new JPanel(new BorderLayout());
         this.executionJList.setListData(executionSet.toArray());
@@ -62,8 +69,36 @@ public class ExecutionView extends JPanel {
         return container;
     }
 
+    private JPanel buttonContainer(){
+        JPanel container = new JPanel();
+        container.setLayout(new FlowLayout(FlowLayout.RIGHT));
+        container.setBorder(new EmptyBorder(50,50,50,50));
+        container.setSize(50,50);
+
+        this.backBtn.setPreferredSize(new Dimension(150,80));
+        this.prepBtn.setPreferredSize(new Dimension(150,80));
+        this.goBtn.setPreferredSize(new Dimension(150,80));
+
+
+
+        this.backBtn.addActionListener(e->System.out.println("Execute"));
+        this.prepBtn.addActionListener(e->System.out.println("Prep"));
+        this.goBtn.addActionListener(e->System.out.println("Go"));
+
+
+        container.add(this.backBtn);
+        container.add(this.prepBtn);
+        container.add(this.goBtn);
+
+        return container;
+    }
+
+
+    public String getSelectedValue() {
+        return this.selectedValue;
+    }
 
     public void setOnClick(ActionListener l){
-        this.tempBtn.addActionListener(l);
+        this.backBtn.addActionListener(l);
     }
 }
