@@ -9,11 +9,14 @@ import org.example.models.Event;
 import org.example.view.CompilationView;
 
 import java.awt.*;
+import java.util.Hashtable;
+import java.util.Map;
 
 public class CompilationViewController {
     Observable<String> terminalInput;
     CompilationView view = new CompilationView();
     PublishSubject<TerminalMessage> terminalSubject;
+    Map<String, DockerImage> images = new Hashtable<>();
     public CompilationViewController(PublishSubject<TerminalMessage> terminalSubject){
         this.terminalSubject = terminalSubject;
         this.view.setOnCompileAllClick(e -> {
@@ -51,10 +54,16 @@ public class CompilationViewController {
         //image.addRUN(event.installation().stream().skip(0).map(s -> s.contains(";") ? s : s + ";").collect(Collectors.joining()).replaceAll(" && $",""));
         //image.setEntrypoint("/compilation_entrypoint.sh");
         image.addCOPY("/codebase","/codebase");
+        image.addCOPY("/script","/script");
+        image.addRUN("chmod +x /script/pre-execution.sh");
+        image.addRUN("chmod +x /script/execution.sh");
+        image.addRUN("chmod +x /script/post-execution.sh");
+        image.addRUN("chmod +x /script/execution_entrypoint.sh");
         event.installation().forEach(image::addRUN);
 
         ProcessHandler handler = image.build(terminalSubject);
         handler.setOnComplete(handle -> {
+            this.images.put(event.givenName(),image);
             ISZTest.getTests().forEach(iszTest -> {
                 //image.addCOPY("/codebase/" + iszTest.getName(),"/codebase/" + iszTest.getName());
                 System.out.println("iszTest:" + iszTest.getName());
