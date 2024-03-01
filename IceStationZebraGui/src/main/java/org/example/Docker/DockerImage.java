@@ -41,6 +41,8 @@ public class DockerImage {
         this.runs.add(run);
     }
     public void addCOPY(String from, String to){
+        if (from.charAt(0) == '/')
+            from = from.substring(1);
         this.copys.add(from + " " + to);
     }
     public void addCMD(String cmd){
@@ -50,7 +52,7 @@ public class DockerImage {
         this.entryPoint = entryPoint;
     }
     private void write(){
-        this.fileLocation = new FileIO(FileIO.getApplicationRootPath(), "Dockerfile_" + Generate.generateRandomString(8));
+        this.fileLocation = new FileIO(FileIO.getApplicationRootPath(), "Dockerfile_" + this.name);
         this.fileLocation.write(this.toString());
     }
     public ProcessHandler build(PublishSubject<TerminalMessage> terminal){
