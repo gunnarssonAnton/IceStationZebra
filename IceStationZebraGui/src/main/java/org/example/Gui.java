@@ -50,7 +50,10 @@ public class Gui extends JFrame {
         this.setLayout(new BorderLayout());
         this.setResizable(false);
         this.setLocationRelativeTo(null);
-        //this.setLocation(-80,-1200);
+        String osName = System.getProperty("os.name").toLowerCase();
+        System.out.println("You are on " + osName);
+        if(osName.contains("mac"))
+            this.setLocation(4250,-1200);
 
         this.cards.add(compilationViewController.getView());
         this.cards.add(executionViewController.getView());
