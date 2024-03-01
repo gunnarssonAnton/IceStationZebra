@@ -56,7 +56,7 @@ public class DockerImage {
     }
     public ProcessHandler build(String path){
         this.write();
-        String[] cmd = new String[]{"docker", "build", "-t", this.name, "-f",this.fileLocation.getPath().toString(), path};
+        String[] cmd = new String[]{"docker", "build", "--no-cache", "-t", this.name, "-f",this.fileLocation.getPath().toString(), path};
         System.out.println("Build:" + String.join(" ",cmd));
         return ProcessHandler.construct(cmd);
     }

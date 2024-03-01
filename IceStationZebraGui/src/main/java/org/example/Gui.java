@@ -47,8 +47,8 @@ public class Gui extends JFrame {
         this.setTitle("Ice Station Zebra");
         this.setLayout(new BorderLayout());
         this.setResizable(false);
-        this.setLocationRelativeTo(null);
-        //this.setLocation(-80,-1200);
+        //this.setLocationRelativeTo(null);
+        this.setLocation(4500,-1200);
 
         this.cards.add(compilationViewController.getView());
         this.cards.add(executionViewController.getView());

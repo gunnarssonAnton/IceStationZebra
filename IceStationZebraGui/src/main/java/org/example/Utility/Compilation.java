@@ -55,6 +55,7 @@ public class Compilation {
 
     private void runDockerImage() {
         ProcessHandler handler = this.image.build(FileIO.getApplicationRootPath());
+        //ProcessHandler handler = this.image.build();
         // Image stdout
         Disposable stdoutDisposable = handler.getStdout().subscribeOn(Schedulers.io()).subscribe(out -> {
                     this.subject.onNext(new TerminalMessage(out, Color.WHITE));
@@ -71,14 +72,14 @@ public class Compilation {
         Disposable completionDisposable = handler.getCompletion().subscribeOn(Schedulers.io()).subscribe(
                 () -> {
                     subject.onNext(new TerminalMessage("Image Process completed successfully",Color.GREEN));
-                    //runDockerContainer();
+                    runDockerContainer();
                 },
                 throwable -> subject.onNext(new TerminalMessage("Image Process failed: " + throwable.getMessage(),Color.RED))
         );
     }
 
     private void runDockerContainer(){
-        ProcessHandler containerHandler = container.run(new String[0]);
+        ProcessHandler containerHandler = container.run();
         //this.terminalInput.subscribeOn(Schedulers.io()).subscribe(System.out::println);
         this.terminalInput.subscribeOn(Schedulers.io()).subscribe(containerHandler::stdin);
         // Container stdout

@@ -36,9 +36,9 @@ public class CompilationViewController {
         // Image
         DockerImage image = new DockerImage(Event.DOCKERIMAGE, event.givenName() + "_" + Generate.generateRandomString(8));
         image.addRUN("mkdir -p /output");
-        image.addVolume("/scripts");
+//        image.addVolume("/scripts");
         image.addVolume("/files");
-        image.addVolume("/codebase");
+//        image.addVolume("/codebase");
         image.addVolume("/output");
         //image.addCOPY("/scripts/compilation_entrypoint.sh","/compilation_entrypoint.sh");
         //image.addRUN("chmod +x /compilation_entrypoint.sh");
@@ -47,9 +47,14 @@ public class CompilationViewController {
 
         event.installation().forEach(image::addRUN);
         ISZTest.getTests().forEach(iszTest -> {
-            image.addCOPY("codebase/" + iszTest.getName(),"/codebase/" + iszTest.getName());
-            image.addRUN(iszTest.constructCompileCommand(event));
-            Compilation compilation = new Compilation(event,subject,new DockerContainer(event.givenName() + "_" + iszTest.getName() + "_" + Generate.generateRandomString(8), image),image);
+            System.out.println("iszTest:" + iszTest.getName());
+            image.addCOPY("/codebase/" + iszTest.getName(),"/codebase/" + iszTest.getName());
+//            image.addRUN(iszTest.constructCompileCommand(event));
+
+            DockerContainer container = new DockerContainer(event.givenName() + "_" + iszTest.getName() + Generate.generateRandomString(4),image);
+            container.addARG(iszTest.constructCompileCommand(event));
+            container.setVolume("/output","/output");
+            Compilation compilation = new Compilation(event,subject,container,image);
             compilation.setTerminalInput(this.terminalInput);
             compilation.go();
         });
