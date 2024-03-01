@@ -31,6 +31,7 @@ public class FileIO {
     public void write(String data){
         try {
             Files.writeString(path, data, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+            System.out.println("wrote file:" + this.path.toString());
         } catch (IOException e) {
             e.printStackTrace();
         }
