@@ -22,6 +22,9 @@ public class DockerContainer{
         this.name = name.toLowerCase();
         this.image = image;
     }
+    public String getName(){
+        return this.name;
+    }
     public void addENV(String key, String value){
         String theValue = value;
         if (theValue.contains(" "))
@@ -65,13 +68,13 @@ public class DockerContainer{
         System.out.println("run:" + String.join(" ",cmd));
         return ProcessHandler.internal(cmd, terminal);
     }
-    public ProcessHandler stop(){
+    public ProcessHandler stop(PublishSubject<TerminalMessage> terminalSubject){
         String[] cmd = new String[]{"docker", "stop", this.name};
-        return ProcessHandler.construct(cmd);
+        return ProcessHandler.internal(cmd, terminalSubject);
     }
-    public ProcessHandler remove(){
+    public ProcessHandler remove(PublishSubject<TerminalMessage> terminalSubject){
         String[] cmd = new String[]{"docker", "rm", this.name};
-        return ProcessHandler.construct(cmd);
+        return ProcessHandler.internal(cmd,terminalSubject);
     }
     public ProcessHandler exec(String[] args, PublishSubject<TerminalMessage> terminalSubject){
         String[] base = new String[]{"docker", "exec", this.name};

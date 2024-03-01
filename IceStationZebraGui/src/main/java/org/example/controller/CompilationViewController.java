@@ -31,8 +31,16 @@ public class CompilationViewController {
 
     public void compile(Event event){
         System.out.println("Compile:" + event.givenName());
+        DockerImage.remove(event.givenName(),terminalSubject).setOnComplete(handler -> {
+
+        });
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
         // Image
-        DockerImage image = new DockerImage(Event.DOCKERIMAGE, event.givenName() + "_" + Generate.generateRandomString(8));
+        DockerImage image = new DockerImage(Event.DOCKERIMAGE, event.givenName());
         image.addRUN("mkdir -p /output");
 //        image.addVolume("/scripts");
         image.addVolume("/files");
@@ -65,6 +73,14 @@ public class CompilationViewController {
                     throw new RuntimeException(e);
                 }
                 ProcessHandler exec = container.exec(iszTest.constructCompileCommand(event).split(" "), terminalSubject);
+                exec.setOnComplete(execHandler -> {
+                    container.stop(this.terminalSubject).setOnComplete(stopHandler -> {
+                        container.remove(this.terminalSubject).setOnComplete(rmHandler -> {
+                            terminalSubject.onNext(new TerminalMessage("Removed:" + container.getName(),Color.GREEN));
+
+                        });
+                    });
+                });
             });
         });
     }

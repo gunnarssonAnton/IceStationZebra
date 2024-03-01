@@ -62,9 +62,13 @@ public class DockerImage {
         System.out.println("Build:" + String.join(" ",cmd));
         return ProcessHandler.internal(cmd, terminal);
     }
-    public ProcessHandler remove(){
+    public static ProcessHandler remove(String imageName, PublishSubject<TerminalMessage> terminalSubject){
+        String[] cmd = new String[]{"docker","rmi", imageName};
+        return ProcessHandler.internal(cmd, terminalSubject);
+    }
+    public ProcessHandler remove(PublishSubject<TerminalMessage> terminalSubject){
         String[] cmd = new String[]{"docker","rmi",this.name};
-        return ProcessHandler.construct(cmd);
+        return ProcessHandler.internal(cmd, terminalSubject);
     }
     @Override
     public String toString(){
