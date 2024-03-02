@@ -36,6 +36,11 @@ public class ExecutionViewController {
         container.addARG("/output/" + execName);
         container.run(this.terminalSubject).setOnComplete((ph) -> {
             terminalSubject.onNext(new TerminalMessage("Yaaaay", Color.pink));
+            container.stop(terminalSubject).setOnComplete(dolk -> {
+                container.remove(terminalSubject).setOnComplete(dole -> {
+                    terminalSubject.onNext(new TerminalMessage("Removed container",Color.GREEN));
+                });
+            });
         });
     }
 }
