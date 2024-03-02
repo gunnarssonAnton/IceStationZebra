@@ -36,7 +36,7 @@ public class CompilationViewController {
 
     public void compile(Event event){
         System.out.println("Compile:" + event.givenName());
-        DockerImage.remove(event.givenName(),terminalSubject).setOnComplete(handler -> {
+        DockerImage.remove(event.givenName() + "_image",terminalSubject).setOnComplete(handler -> {
 
         });
         try {

@@ -33,6 +33,7 @@ public class ExecutionViewController {
         DockerContainer container = new DockerContainer(name + "_execution",image);
         container.setEntrypointOverride("/scripts/execution_entrypoint.sh");
         container.setVolume("/output","/output");
+        container.setVolume("/files","/files");
         container.addARG("/output/" + execName);
         container.run(this.terminalSubject).setOnComplete((ph) -> {
             terminalSubject.onNext(new TerminalMessage("Yaaaay", Color.pink));
