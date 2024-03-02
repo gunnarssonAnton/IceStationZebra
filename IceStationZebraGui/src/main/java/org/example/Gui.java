@@ -52,7 +52,11 @@ public class Gui extends JFrame {
         this.setLocationRelativeTo(null);
         String osName = System.getProperty("os.name").toLowerCase();
         System.out.println("You are on " + osName);
-        if(osName.contains("mac"))
+        GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+        GraphicsDevice[] gd = ge.getScreenDevices();
+        int numberOfMonitors = gd.length;
+        System.out.println("Number of monitors detected: " + numberOfMonitors);
+        if(osName.contains("mac") && numberOfMonitors > 2)
             this.setLocation(4250,-1200);
 
         this.cards.add(compilationViewController.getView());
