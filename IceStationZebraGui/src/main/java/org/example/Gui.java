@@ -75,7 +75,10 @@ public class Gui extends JFrame {
         compilationViewController.setTerminalInput(terminalInput);
         this.compilationViewController
                 .getView()
-                .setOnClick(e-> this.slideOut());
+                .setOnClick(e-> {
+                    this.slideOut();
+                    this.executionViewController.getView().extractSetFromFile();
+                });
         this.executionViewController
                 .getView()
                 .setOnClick(e -> this.slideIn());

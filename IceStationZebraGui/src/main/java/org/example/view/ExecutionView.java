@@ -1,5 +1,6 @@
 package org.example.view;
 
+import org.example.Utility.GuiUtil;
 import org.example.Utility.IconTextListCellRenderer;
 import org.example.files.FileIO;
 
@@ -21,6 +22,7 @@ public class ExecutionView extends JPanel {
     private final JButton goBtn = new JButton("Go");
 
     private final JButton backBtn = new JButton("<Go Back");
+    private final GuiUtil guiUtil = new GuiUtil();
     private String selectedValue;
 
     public ExecutionView(){
@@ -34,15 +36,17 @@ public class ExecutionView extends JPanel {
 
         this.executionJList.addListSelectionListener(e ->
                 selectedValue = (String)((JList<?>)e.getSource()).getSelectedValue());
+
     }
 
-    private void extractSetFromFile(){
+    public void extractSetFromFile(){
         File outputDic = new File(FileIO.getApplicationRootPath("output"));
         File[] outputFiles = outputDic.listFiles();
         Set<String> outputFileNames = Arrays.stream(outputFiles).toList().stream()
                                                             .map(File::getName)
                                                             .collect(Collectors.toSet());
         this.executionSet.addAll(outputFileNames);
+        this.guiUtil.updateJList(this.executionJList, this.executionSet);
     }
     /**
      * Container for all JLists containers
@@ -62,7 +66,7 @@ public class ExecutionView extends JPanel {
         this.executionJList.setPreferredSize(new Dimension(250,250));
         this.executionJList.setBackground(Color.white);
         this.executionJList.setBorder(new LineBorder(Color.BLACK));
-        this.executionJList.setCellRenderer(new IconTextListCellRenderer(UIManager.getIcon("")));
+        this.executionJList.setCellRenderer(new IconTextListCellRenderer(UIManager.getIcon("FileView.fileIcon")));
         container.setPreferredSize(new Dimension(300,300));
         container.setBackground(Color.white);
         container.add(new JScrollPane(this.executionJList),BorderLayout.CENTER);
