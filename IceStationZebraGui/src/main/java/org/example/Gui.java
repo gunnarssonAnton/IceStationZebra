@@ -30,9 +30,9 @@ public class Gui extends JFrame {
         final Image image = defaultToolkit.getImage(imageResource);
 
         //this is new since JDK 9
-        final Taskbar taskbar = Taskbar.getTaskbar();
 
         try {
+        final Taskbar taskbar = Taskbar.getTaskbar();
             //set icon for mac os (and other systems which do support this method)
             taskbar.setIconImage(image);
         } catch (final UnsupportedOperationException e) {
