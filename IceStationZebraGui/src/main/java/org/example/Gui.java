@@ -30,9 +30,9 @@ public class Gui extends JFrame {
         final Image image = defaultToolkit.getImage(imageResource);
 
         //this is new since JDK 9
-        final Taskbar taskbar = Taskbar.getTaskbar();
 
         try {
+        final Taskbar taskbar = Taskbar.getTaskbar();
             //set icon for mac os (and other systems which do support this method)
             taskbar.setIconImage(image);
         } catch (final UnsupportedOperationException e) {
@@ -52,7 +52,11 @@ public class Gui extends JFrame {
         this.setLocationRelativeTo(null);
         String osName = System.getProperty("os.name").toLowerCase();
         System.out.println("You are on " + osName);
-        if(osName.contains("mac"))
+        GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+        GraphicsDevice[] gd = ge.getScreenDevices();
+        int numberOfMonitors = gd.length;
+        System.out.println("Number of monitors detected: " + numberOfMonitors);
+        if(osName.contains("mac") && numberOfMonitors > 2)
             this.setLocation(4250,-1200);
 
         this.cards.add(compilationViewController.getView());
