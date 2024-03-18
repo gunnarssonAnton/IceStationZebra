@@ -6,9 +6,23 @@ import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Random;
+import java.util.*;
 
 public class Generate {
+    public static List<String> standardFolders;
+    public static Map<String, String> standardFiles;
+    static {
+        standardFolders = new ArrayList<>();
+        standardFolders.add("scripts");
+        standardFolders.add("codebase");
+        standardFolders.add("output");
+        standardFolders.add("files");
+        standardFolders.add("settings");
+    }
+    static {
+        standardFiles = new Hashtable<>();
+        standardFiles.put("config.ice","settings/config.ice");
+    }
     public static String generateRandomString(int len){
         String chars = "abcdefghijklmnopqrstuvwxyz";
         StringBuilder result = new StringBuilder();
@@ -19,20 +33,22 @@ public class Generate {
     }
     public static void generateDependancies(){
         generateFolders();
-        generateScripts();
+        generateFiles();
     }
     private static void generateFolders(){
-        FileIO.createFolderIf(Paths.get(FileIO.getApplicationRootPath("scripts")));
-        FileIO.createFolderIf(Paths.get(FileIO.getApplicationRootPath("codebase")));
-        FileIO.createFolderIf(Paths.get(FileIO.getApplicationRootPath("output")));
-        FileIO.createFolderIf(Paths.get(FileIO.getApplicationRootPath("files")));
-        FileIO.createFolderIf(Paths.get(FileIO.getApplicationRootPath("settings")));
+        Generate.standardFolders.forEach(folder ->{
+            //FileIO.createFolderIf(Paths.get(FileIO.getApplicationRootPath()));
+            FileIO.createFolderIf(Paths.get(FileIO.getApplicationRootPath(folder)));
+        });
     }
-    private static void generateScripts(){
-        FileIO.createFileIf(Paths.get(FileIO.getApplicationRootPath("scripts/before.sh")));
-        FileIO.createFileIf(Paths.get(FileIO.getApplicationRootPath("scripts/after.sh")));
-        FileIO.createFileIf(Paths.get(FileIO.getApplicationRootPath("scripts/execution_entrypoint.sh")));
-        FileIO.createFileIf(Paths.get(FileIO.getApplicationRootPath("scripts/compilation_entrypoint.sh")));
-        FileIO.createFileIf(Paths.get(FileIO.getApplicationRootPath("settings/config.ice")));
+    private static void generateFiles(){
+        Generate.standardFiles.entrySet().forEach(entry -> {
+            FileIO.copyFromJar(entry.getKey(),Paths.get(FileIO.getApplicationRootPath(entry.getValue())));
+        });
+//        FileIO.createFileIf(Paths.get(FileIO.getApplicationRootPath("scripts/pre-execution.sh")));
+//        FileIO.createFileIf(Paths.get(FileIO.getApplicationRootPath("scripts/post-execution.sh")));
+//        FileIO.createFileIf(Paths.get(FileIO.getApplicationRootPath("scripts/execution_entrypoint.sh")));
+//        FileIO.createFileIf(Paths.get(FileIO.getApplicationRootPath("scripts/compilation_entrypoint.sh")));
+//        FileIO.createFileIf(Paths.get(FileIO.getApplicationRootPath("settings/config.ice")));
     }
 }
