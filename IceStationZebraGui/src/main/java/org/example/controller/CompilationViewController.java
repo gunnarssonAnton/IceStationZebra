@@ -50,6 +50,7 @@ public class CompilationViewController {
         image.addVolume("/files");
         image.addVolume("/output");
 
+        image.addCOPY("/files","/files");
         image.addCOPY("/codebase","/codebase");
         image.addCOPY("/scripts","/scripts");
         System.out.println("[toString]\n" + image.toString());

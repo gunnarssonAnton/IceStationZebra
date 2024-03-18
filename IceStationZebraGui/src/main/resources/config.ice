@@ -67,12 +67,13 @@
     {
           "dockerImage": "ubuntu:latest",
           "givenName": "janino",
-          "compileCommand": "gcc FILES -o OUTPUT",
+          "compileCommand": "javac -cp LIB_DIR/* -d /output FILES",
           "installation": [
           "ls /",
-            "cp -v /files/janino-3.1.9.jar janino-3.1.9.jar",
             "apt update && apt upgrade -y",
+            "apt install default-jdk -y",
             "mkdir LIB_DIR",
+            "cp -v /files/janino-3.1.9.jar LIB_DIR/janino-3.1.9.jar",
             "cp /files/commons-compiler-3.1.9.jar LIB_DIR/commons-compiler-3.1.9.jar"
           ]
         }
