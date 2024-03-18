@@ -25,7 +25,7 @@
     {
       "dockerImage": "ubuntu:latest",
       "givenName": "openJavac",
-      "compileCommand": "NO COMMAND",
+      "compileCommand": "javac -d OUTPUT FILES",
       "installation": [
         "apt update && apt upgrade -y",
         "apt install openjdk-17-jdk -y",
@@ -35,7 +35,7 @@
     {
       "dockerImage": "ubuntu:latest",
       "givenName": "oracleAidsJavac",
-      "compileCommand": "NO COMMAND",
+      "compileCommand": "javac -d OUTPUT FILES",
       "installation": [
         "apt update && apt upgrade -y",
         "cp /files/jdk-17_linux-aarch64_bin.tar /jdk-17_linux-aarch64_bin.tar",
@@ -47,7 +47,6 @@
         "update-alternatives --config javac",
         "echo 'export JAVA_HOME=/usr/lib/jvm/jdk-17.0.10' >> ~/.bashrc",
         "echo 'export PATH=\\$PATH:\\$JAVA_HOME/bin' >> ~/.bashrc",
-        "source ~/.bashrc",
         "java -version",
         "javac -version"
       ]
@@ -67,7 +66,7 @@
     {
           "dockerImage": "ubuntu:latest",
           "givenName": "janino",
-          "compileCommand": "javac -cp LIB_DIR/* -d /output FILES",
+          "compileCommand": "javac -cp LIB_DIR/* -d OUTPUT FILES",
           "installation": [
           "ls /",
             "apt update && apt upgrade -y",
