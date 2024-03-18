@@ -31,13 +31,20 @@ public class FileIO {
     }
     public void write(String data){
         try {
-            Files.writeString(path, data, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.TRUNCATE_EXISTING);
+            Files.writeString(path, data, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
             System.out.println("wrote file:" + this.path.toString());
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
-
+    public void writeBinary(String str){
+        try {
+            Files.write(path, str.getBytes(), StandardOpenOption.CREATE,StandardOpenOption.TRUNCATE_EXISTING);
+            System.out.println("wrote bytes file:" + this.path.toString());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
     public String read(){
         String content = "";
         try {
@@ -117,6 +124,7 @@ public class FileIO {
     }
     public static void copyFromJar(String from, Path to){
         String content = FileIO.getResource(from);
+        System.out.println("content:" + content);
         FileIO file = new FileIO(to.getParent().toString(), to.getFileName().toString());
         file.write(content);
     }
