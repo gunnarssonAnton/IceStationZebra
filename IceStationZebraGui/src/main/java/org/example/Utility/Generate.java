@@ -14,6 +14,7 @@ public class Generate {
     static {
         standardFolders = new ArrayList<>();
         standardFolders.add("scripts");
+        standardFolders.add("logs");
         standardFolders.add("codebase");
         standardFolders.add("output");
         standardFolders.add("files");
