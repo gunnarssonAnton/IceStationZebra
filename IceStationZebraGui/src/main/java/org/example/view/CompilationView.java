@@ -149,12 +149,14 @@ public class CompilationView extends JPanel {
         container.setSize(50,50);
 
         this.runAllCompilersBtn.setPreferredSize(new Dimension(150,80));
+        this.runAllCompilersBtn.setFocusPainted(false);
         this.runCompilerBtn.setPreferredSize(new Dimension(150,80));
+        this.runCompilerBtn.setFocusPainted(false);
         this.toExecutionBtn.setPreferredSize(new Dimension(150,80));
-
+        this.toExecutionBtn.setFocusPainted(false);
         this.runCompilerBtn.setText("Run Current");
         this.runAllCompilersBtn.setText("Run All");
-        this.toExecutionBtn.setText("execution >");
+        this.toExecutionBtn.setText("Execution >");
 
         this.runAllCompilersBtn.addActionListener(e->System.out.println("RUN ALL"));
         this.runCompilerBtn.addActionListener(e->System.out.println("RUN SELECTED"));
