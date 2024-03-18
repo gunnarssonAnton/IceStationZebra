@@ -18,7 +18,8 @@ public class ProcessHandler {
     private final Observable<String> stderr;
     private final Completable completion;
     private final PublishSubject<String> stdin;
-    private final StringBuilder log = new StringBuilder("");
+    private final StringBuilder stdoutLog = new StringBuilder("");
+    private final StringBuilder stderrLog = new StringBuilder("");
     private ProcessHandler(Observable<String> stdout, Observable<String> stderr, Completable completion,PublishSubject<String> stdin) {
         this.stdout = stdout;
         this.stderr = stderr;
@@ -26,8 +27,20 @@ public class ProcessHandler {
         this.stdin = stdin;
 
     }
-    private void addToLog(String line){
-        this.log.append(line + "\n");
+
+    private void addToStdoutLog(String line){
+        this.stdoutLog.append(line + "\n");
+    }
+
+    private void addToStderrLog(String line){
+        this.stderrLog.append(line + "\n");
+    }
+
+    public void printLogFiles(String prefix){
+        FileIO out = new FileIO("logs/",prefix + "_stdout.txt");
+        FileIO err = new FileIO("logs/",prefix + "_stderr.txt");
+        out.write(this.stdoutLog.toString());
+        err.write(this.stderrLog.toString());
     }
     public void setOnComplete(Consumer<ProcessHandler> onCompleteCallback) {
         this.onCompleteCallback = onCompleteCallback;
@@ -39,10 +52,10 @@ public class ProcessHandler {
         // stdout
         handler.stdout.subscribeOn(Schedulers.io()).subscribe(out -> {
             handler.terminalSubject.onNext(new TerminalMessage(out, Color.WHITE));
-            handler.addToLog(out);
+            handler.addToStdoutLog(out);
         },throwable -> {
             handler.terminalSubject.onNext(new TerminalMessage(throwable.getMessage(),Color.RED));
-            handler.addToLog(throwable.getMessage());
+            handler.addToStdoutLog(throwable.getMessage());
         },() -> {
             handler.terminalSubject.onNext(new TerminalMessage("ProcessHandler stdout exited normally",Color.green));
         });
@@ -50,10 +63,10 @@ public class ProcessHandler {
         // stderr
         handler.stderr.subscribeOn(Schedulers.io()).subscribe(err ->{
             handler.terminalSubject.onNext(new TerminalMessage(err, Color.orange));
-            handler.addToLog(err);
+            handler.addToStderrLog(err);
         },throwable -> {
             handler.terminalSubject.onNext(new TerminalMessage(throwable.getMessage(), Color.red));
-            handler.addToLog(throwable.getMessage());
+            handler.addToStderrLog(throwable.getMessage());
         },() -> {
             handler.terminalSubject.onNext(new TerminalMessage("ProcessHandler stderr exited normally",Color.green));
         });
@@ -63,12 +76,16 @@ public class ProcessHandler {
             handler.exit = 0;
             if (handler.onCompleteCallback != null)
                 handler.onCompleteCallback.accept(handler);
-            handler.addToLog("--> END <--");
-            FileIO file = new FileIO("logs/",Generate.generateRandomString(12) + ".txt");
+            handler.addToStderrLog("--> END <--");
+            handler.addToStdoutLog("--> END <--");
+            //handler.printLogFiles();
         },throwable -> {
             handler.exit = Integer.parseInt((throwable.getMessage().split(":"))[1].trim());
             if (handler.onCompleteCallback != null)
                 handler.onCompleteCallback.accept(handler);
+            handler.addToStderrLog("--> TREW <--");
+            handler.addToStdoutLog("--> TREW <--");
+            //handler.printLogFiles();
         });
         return handler;
     }

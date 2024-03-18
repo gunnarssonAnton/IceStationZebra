@@ -79,8 +79,11 @@ public class CompilationViewController {
                 }
                 ProcessHandler exec = container.exec(iszTest.constructCompileCommand(event).split(" "), terminalSubject);
                 exec.setOnComplete(execHandler -> {
+                    execHandler.printLogFiles(event.givenName() + "_" + iszTest.getName());
                     container.stop(this.terminalSubject).setOnComplete(stopHandler -> {
+                        stopHandler.printLogFiles(event.givenName() + "_" + iszTest.getName() + "_" + "stop");
                         container.remove(this.terminalSubject).setOnComplete(rmHandler -> {
+                            stopHandler.printLogFiles(event.givenName() + "_" + iszTest.getName() + "_" + "remove");
                             terminalSubject.onNext(new TerminalMessage("Removed:" + container.getName(),Color.GREEN));
 
                         });

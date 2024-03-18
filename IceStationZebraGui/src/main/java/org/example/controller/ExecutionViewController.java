@@ -38,8 +38,10 @@ public class ExecutionViewController {
         container.run(this.terminalSubject).setOnComplete((ph) -> {
             terminalSubject.onNext(new TerminalMessage("Yaaaay", Color.pink));
             container.stop(terminalSubject).setOnComplete(dolk -> {
+                dolk.printLogFiles(name);
                 container.remove(terminalSubject).setOnComplete(dole -> {
                     terminalSubject.onNext(new TerminalMessage("Removed container",Color.GREEN));
+                    dole.printLogFiles(name + "removal");
                 });
             });
         });
