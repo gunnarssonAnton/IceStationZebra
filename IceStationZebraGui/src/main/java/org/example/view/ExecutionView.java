@@ -18,10 +18,10 @@ import java.util.stream.Collectors;
 public class ExecutionView extends JPanel {
     private final JList executionJList = new JList();
     private final Set<String> executionSet = new HashSet<>();
-    private final JButton prepBtn = new JButton("prep");
+    private final JButton prepBtn = new JButton("Prep");
     private final JButton goBtn = new JButton("Go");
 
-    private final JButton backBtn = new JButton("<Go Back");
+    private final JButton backBtn = new JButton("< Go Back");
     private final GuiUtil guiUtil = new GuiUtil();
     private String selectedValue;
 
@@ -80,9 +80,11 @@ public class ExecutionView extends JPanel {
         container.setSize(50,50);
 
         this.backBtn.setPreferredSize(new Dimension(150,80));
+        this.backBtn.setFocusPainted(false);
         this.prepBtn.setPreferredSize(new Dimension(150,80));
+        this.prepBtn.setFocusPainted(false);
         this.goBtn.setPreferredSize(new Dimension(150,80));
-
+        this.goBtn.setFocusPainted(false);
 
 
         this.backBtn.addActionListener(e->System.out.println("Execute"));
