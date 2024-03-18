@@ -31,7 +31,7 @@ public class FileIO {
     }
     public void write(String data){
         try {
-            Files.writeString(path, data, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+            Files.writeString(path, data, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.TRUNCATE_EXISTING);
             System.out.println("wrote file:" + this.path.toString());
         } catch (IOException e) {
             e.printStackTrace();
@@ -48,7 +48,7 @@ public class FileIO {
         return content;
     }
     public static String getResource(String resource){
-
+        StringBuilder sb = new StringBuilder("");
         InputStream inputStream = FileIO.class.getClassLoader().getResourceAsStream(resource);
         if (inputStream != null) {
             // Wrap the InputStream with a BufferedReader to read it line by line
@@ -56,7 +56,8 @@ public class FileIO {
             String line;
             try {
                 while ((line = reader.readLine()) != null) {
-                    System.out.println(line);
+                    //System.out.println(line);
+                    sb.append(line + "\n");
                 }
             } catch (Exception e) {
                 System.err.println("Error reading the resource: " + e.getMessage());
@@ -70,7 +71,7 @@ public class FileIO {
         } else {
             System.err.println("Resource not found: " + resource);
         }
-        return "";
+        return sb.toString();
     }
     public static String getApplicationRootPath(){return getApplicationRootPath("");}
     public static String getApplicationRootPath(String uri) {
