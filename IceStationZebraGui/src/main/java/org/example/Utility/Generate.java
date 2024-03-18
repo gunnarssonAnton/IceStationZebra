@@ -20,7 +20,11 @@ public class Generate {
     static {
         standardFiles = new Hashtable<>();
         standardFiles.put("config.ice","settings/config.ice");
-        standardFiles.put("togglePin.exe","files/togglePin.exe");
+        standardFiles.put("togglePin","files/togglePin");
+        standardFiles.put("scripts/compilation_entrypoint.sh","scripts/compilation_entrypoint.sh");
+        standardFiles.put("scripts/execution_entrypoint.sh","scripts/execution_entrypoint.sh");
+        standardFiles.put("scripts/post-execution.sh","scripts/post-execution.sh");
+        standardFiles.put("scripts/pre-execution.sh","scripts/pre-execution.sh");
     }
     public static String generateRandomString(int len){
         String chars = "abcdefghijklmnopqrstuvwxyz";
