@@ -62,6 +62,19 @@
         "apt-get install --reinstall java-wrapper -y",
         "ecj --version"
       ]
-    }
+    },
+
+    {
+          "dockerImage": "ubuntu:latest",
+          "givenName": "janino",
+          "compileCommand": "gcc FILES -o OUTPUT",
+          "installation": [
+          "ls /",
+            "cp -v /files/janino-3.1.9.jar janino-3.1.9.jar",
+            "apt update && apt upgrade -y",
+            "mkdir LIB_DIR",
+            "cp /files/commons-compiler-3.1.9.jar LIB_DIR/commons-compiler-3.1.9.jar"
+          ]
+        }
   ]
 }
