@@ -4,26 +4,6 @@
   "events": [
     {
       "dockerImage": "ubuntu:latest",
-      "givenName": "gcc",
-      "compileCommand": "gcc FILES -o OUTPUT",
-      "installation": [
-        "apt update && apt upgrade -y",
-        "apt install gcc -y",
-        "gcc --version"
-      ]
-    },
-    {
-      "dockerImage": "ubuntu:latest",
-      "givenName": "clang",
-      "compileCommand": "clang FILES -o OUTPUT",
-      "installation": [
-        "apt update && apt upgrade -y",
-        "apt install clang -y",
-        "clang --version"
-      ]
-    },
-    {
-      "dockerImage": "ubuntu:latest",
       "givenName": "openJavac",
       "compileCommand": "javac -d OUTPUT FILES",
       "installation": [
@@ -54,12 +34,13 @@
     {
       "dockerImage": "ubuntu:latest",
       "givenName": "ECJ",
-      "compileCommand": "NO COMMAND",
+      "compileCommand": "java -jar /files/org.eclipse.jdt.core.compiler.batch_3.37.0.v20240215-1558.jar -source 1.8 FILES -d OUTPUT",
       "installation": [
+        "apt-get update",
+        "apt-get install -y software-properties-common",
+        "add-apt-repository ppa:openjdk-r/ppa",
         "apt-get update && apt-get upgrade -y",
-        "apt-get install ecj -y",
-        "apt-get install --reinstall java-wrapper -y",
-        "ecj --version"
+        "apt-get install openjdk-17-jdk -y"
       ]
     },
 
@@ -74,6 +55,37 @@
             "mkdir LIB_DIR",
             "cp -v /files/janino-3.1.9.jar LIB_DIR/janino-3.1.9.jar",
             "cp /files/commons-compiler-3.1.9.jar LIB_DIR/commons-compiler-3.1.9.jar"
+          ]
+        },
+    {
+          "dockerImage": "ubuntu:latest",
+          "givenName": "jbg",
+          "compileCommand": "javac -cp LIB_DIR/* -d OUTPUT FILES",
+          "installation": [
+            "apt update -y",
+            "apt upgrade -y",
+            "apt install git -y",
+            "git --version",
+            "git clone https://github.com/Elzawawy/java-bytecode-generator.git",
+            "apt-get install bison -y",
+            "apt-get install flex -y",
+            "apt install default-jdk -y",
+            "apt-get install g++ -y",
+            "cd java-bytecode-generator",
+            "ls"
+          ]
+        },
+    {
+          "dockerImage": "ubuntu:latest",
+          "givenName": "yakout",
+          "compileCommand": "javac -cp LIB_DIR/* -d OUTPUT FILES",
+          "installation": [
+            "apt update -y",
+            "apt upgrade -y",
+            "apt install git -y",
+            "git --version",
+            "git clone https://github.com/yakout/compiler.git",
+            "ls"
           ]
         }
   ]
