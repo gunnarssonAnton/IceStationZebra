@@ -1,9 +1,5 @@
 /*
  * The Computer Language Benchmarks Game
- * http://benchmarksgame.alioth.debian.org/
- *
- * modified by Mehmet D. AKIN
- * modified by Daryl Griffith
  */
 
 import java.io.IOException;
@@ -31,7 +27,7 @@ public class Fasta {
     static int last = 42;
 
     public static void main(String[] args) {
-        int n = 1000;
+        int n = 5000000;
 
         if (args.length > 0) {
             n = Integer.parseInt(args[0]);

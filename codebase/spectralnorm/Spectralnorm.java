@@ -1,10 +1,5 @@
 /*
-The Computer Language Benchmarks Game
-http://benchmarksgame.alioth.debian.org/
-
-Based on C# entry by Isaac Gouy
-contributed by Jarkko Miettinen
-Parallel by The Anh Tran
+ * The Computer Language Benchmarks Game
  */
 
 import java.text.DecimalFormat;
@@ -17,7 +12,7 @@ public class Spectralnorm
 
     public static void main (String[] args)
     {
-        int n = 1000;
+        int n = 5500;
         if (args.length > 0) n = Integer.parseInt (args[0]);
 
         System.out.println (formatter.format (spectralnormGame (n)) );

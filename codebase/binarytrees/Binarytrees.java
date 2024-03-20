@@ -1,10 +1,5 @@
 /**
  * The Computer Language Benchmarks Game
- * http://benchmarksgame.alioth.debian.org/
- *
- * based on Jarkko Miettinen's Java program
- * contributed by Tristan Dupont
- * *reset*
  */
 
 import java.util.concurrent.ExecutorService;
@@ -18,7 +13,7 @@ public class Binarytrees {
             Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 
     public static void main(final String[] args) throws Exception {
-        int n = 0;
+        int n = 21;
         if (0 < args.length) {
             n = Integer.parseInt(args[0]);
         }

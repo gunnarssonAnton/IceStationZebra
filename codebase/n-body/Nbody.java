@@ -1,15 +1,10 @@
-/* The Computer Language Benchmarks Game
-   http://benchmarksgame.alioth.debian.org/
-
-   contributed by Mark C. Lewis
-   modified slightly by Chad Whipkey
-   modified slightly by Stefan Feldbinder
-   modified slightly by Tagir Valeev
-*/
+/*
+ *The Computer Language Benchmarks Game
+ */
 
 public final class Nbody {
     public static void main(String[] args) {
-        int n = Integer.parseInt(args[0]);
+        int n = 50000000;
 
         NBodySystem bodies = new NBodySystem();
         System.out.printf("%.9f\n", bodies.energy());

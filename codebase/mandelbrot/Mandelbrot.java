@@ -1,12 +1,5 @@
-/* The Computer Language Benchmarks Game
- * http://benchmarksgame.alioth.debian.org/
- *
- * contributed by Stefan Krause
- * slightly modified by Chad Whipkey
- * parallelized by Colin D Bennett 2008-10-04
- * reduce synchronization cost by The Anh Tran
- * optimizations and refactoring by Enotus 2010-11-11
- * optimization by John Stalcup 2012-2-19
+/*
+ * The Computer Language Benchmarks Game
  */
 
 
@@ -52,7 +45,7 @@ public final class Mandelbrot {
     }
 
     public static void main(String[] args) throws Exception {
-        int N=6000;
+        int N=16000;
         if (args.length>=1) N=Integer.parseInt(args[0]);
 
         Crb=new double[N+7]; Cib=new double[N+7];
