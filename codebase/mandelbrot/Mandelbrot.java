@@ -1,15 +1,3 @@
-/* The Computer Language Benchmarks Game
- * http://benchmarksgame.alioth.debian.org/
- *
- * contributed by Stefan Krause
- * slightly modified by Chad Whipkey
- * parallelized by Colin D Bennett 2008-10-04
- * reduce synchronization cost by The Anh Tran
- * optimizations and refactoring by Enotus 2010-11-11
- * optimization by John Stalcup 2012-2-19
- */
-
-
 import java.io.*;
 import java.util.concurrent.atomic.*;
 
