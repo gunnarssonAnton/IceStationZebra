@@ -18,6 +18,7 @@ public class DockerContainer{
     private Map<String,String> envs = new Hashtable<>();
     private List<String> args = new ArrayList<>();
     private String entrypoint = null;
+    private boolean privileged = false;
     public DockerContainer(String name, DockerImage image){
         this.name = name.toLowerCase();
         this.image = image;
@@ -40,9 +41,13 @@ public class DockerContainer{
     public void setEntrypointOverride(String entrypoint){
         this.entrypoint = entrypoint;
     }
+    public void isPrivileged(boolean state){
+        this.privileged = state;
+    }
     private String[] compileCMD(){
         List<String> base = new ArrayList<>(Arrays.asList("docker", "run", "-i", "--name", this.name));
-
+        if (this.privileged)
+            base.add(1,"--privileged");
         this.envs.forEach((key, value) -> {
             base.add("-e");
             base.add(key + "=" + value);

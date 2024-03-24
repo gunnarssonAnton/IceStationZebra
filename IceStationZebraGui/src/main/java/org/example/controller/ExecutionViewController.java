@@ -34,7 +34,10 @@ public class ExecutionViewController {
         container.setEntrypointOverride("/scripts/execution_entrypoint.sh");
         container.setVolume("/output","/output");
         container.setVolume("/files","/files");
-        container.addARG("/output/" + execName);
+        //container.addENV("ROUND","0");
+        container.addARG("java -cp /output/" + execName + " " + (execName.split("_")[1].charAt(0) + "").toUpperCase() + execName.split("_")[1].substring(1));
+        container.addARG("5");
+        container.isPrivileged(true);
         container.run(this.terminalSubject).setOnComplete((ph) -> {
             terminalSubject.onNext(new TerminalMessage("Yaaaay", Color.pink));
             container.stop(terminalSubject).setOnComplete(dolk -> {

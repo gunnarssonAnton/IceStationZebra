@@ -49,7 +49,7 @@ public class CompilationViewController {
         image.addRUN("mkdir -p /output");
         image.addVolume("/files");
         image.addVolume("/output");
-
+        image.addENV("ROUND","0");
         image.addCOPY("/files","/files");
         image.addCOPY("/codebase","/codebase");
         image.addCOPY("/scripts","/scripts");
