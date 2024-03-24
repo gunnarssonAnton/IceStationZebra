@@ -124,6 +124,13 @@
             "apt install gcc -y",
             "apt install build-essential -y"
           ]
+        },
+    {
+          "dockerImage": "ubuntu:latest",
+          "givenName": "togglepin",
+          "compileCommand": "pwd",
+          "installation": [
+          ]
         }
   ]
 }
