@@ -3,6 +3,7 @@ package org.example.controller;
 import io.reactivex.rxjava3.subjects.PublishSubject;
 import org.example.Docker.DockerContainer;
 import org.example.Docker.DockerImage;
+import org.example.Utility.ProcessHandler;
 import org.example.Utility.TerminalMessage;
 import org.example.models.Event;
 import org.example.view.CompilationView;
@@ -33,23 +34,27 @@ public class ExecutionViewController {
         DockerImage image = new DockerImage("arm32v7/openjdk:11",name);
         image.addRUN("apt update && apt upgrade -y");
         image.addRUN("apt install gpiod -y");
-        DockerContainer container = new DockerContainer(name + "_execution",image);
-        container.setEntrypointOverride("/scripts/execution_entrypoint.sh");
-        container.setVolume("/output","/output");
-        container.setVolume("/files","/files");
-        //container.addENV("ROUND","0");
-        container.addARG("java -cp /output/" + execName + " " + (execName.split("_")[1].charAt(0) + "").toUpperCase() + execName.split("_")[1].substring(1));
-        container.addARG("5");
-        container.isPrivileged(true);
-        container.run(this.terminalSubject).setOnComplete((ph) -> {
-            terminalSubject.onNext(new TerminalMessage("Yaaaay", Color.pink));
-            container.stop(terminalSubject).setOnComplete(dolk -> {
-                dolk.printLogFiles(name);
-                container.remove(terminalSubject).setOnComplete(dole -> {
-                    terminalSubject.onNext(new TerminalMessage("Removed container",Color.GREEN));
-                    dole.printLogFiles(name + "removal");
+        ProcessHandler imageHandler = image.build(terminalSubject);
+        imageHandler.setOnComplete(handle -> {
+            DockerContainer container = new DockerContainer(name + "_execution",image);
+            container.setEntrypointOverride("/scripts/execution_entrypoint.sh");
+            container.setVolume("/output","/output");
+            container.setVolume("/files","/files");
+            //container.addENV("ROUND","0");
+            container.addARG("java -cp /output/" + execName + " " + (execName.split("_")[1].charAt(0) + "").toUpperCase() + execName.split("_")[1].substring(1));
+            container.addARG("5");
+            container.isPrivileged(true);
+            container.run(this.terminalSubject).setOnComplete((ph) -> {
+                terminalSubject.onNext(new TerminalMessage("Yaaaay", Color.pink));
+                container.stop(terminalSubject).setOnComplete(dolk -> {
+                    dolk.printLogFiles(name);
+                    container.remove(terminalSubject).setOnComplete(dole -> {
+                        terminalSubject.onNext(new TerminalMessage("Removed container",Color.GREEN));
+                        dole.printLogFiles(name + "removal");
+                    });
                 });
             });
         });
+
     }
 }
