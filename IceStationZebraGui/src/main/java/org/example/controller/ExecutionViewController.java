@@ -32,6 +32,18 @@ public class ExecutionViewController {
         this.terminalSubject.onNext(new TerminalMessage("Preparing " + name,Color.YELLOW));
         //
         DockerImage image = new DockerImage(Event.DOCKERIMAGE, name);
+        image.addRUN("mkdir -p /output");
+        image.addVolume("/files");
+        image.addVolume("/output");
+        image.addENV("ROUND","0");
+        image.addCOPY("/files","/files");
+        image.addCOPY("/codebase","/codebase");
+        image.addCOPY("/scripts","/scripts");
+        System.out.println("[toString]\n" + image.toString());
+        image.addRUN("chmod +x /scripts/pre-execution.sh");
+        image.addRUN("chmod +x /scripts/execution.sh");
+        image.addRUN("chmod +x /scripts/post-execution.sh");
+        image.addRUN("chmod +x /scripts/execution_entrypoint.sh");
         image.addRUN("apt-get update");
         image.addRUN("apt-get install -y software-properties-common");
         image.addRUN("add-apt-repository ppa:openjdk-r/ppa");
