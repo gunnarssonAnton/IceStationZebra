@@ -30,7 +30,7 @@ public class ExecutionViewController {
         System.out.println("names:" + this.compilationViewController.getImages().keySet());
         this.terminalSubject.onNext(new TerminalMessage("Preparing " + name,Color.YELLOW));
         //
-        DockerImage image = new DockerImage("openjdk:11",name);
+        DockerImage image = new DockerImage("arm32v7/openjdk:11",name);
         DockerContainer container = new DockerContainer(name + "_execution",image);
         container.setEntrypointOverride("/scripts/execution_entrypoint.sh");
         container.setVolume("/output","/output");
