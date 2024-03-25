@@ -44,12 +44,16 @@ public class ExecutionViewController {
         image.addRUN("chmod +x /scripts/execution.sh");
         image.addRUN("chmod +x /scripts/post-execution.sh");
         image.addRUN("chmod +x /scripts/execution_entrypoint.sh");
+        image.addRUN("chmod +x /scripts/install_gpiod.sh");
         image.addRUN("apt-get update");
         image.addRUN("apt-get install -y software-properties-common");
         image.addRUN("add-apt-repository ppa:openjdk-r/ppa");
         image.addRUN("apt-get update && apt-get upgrade -y");
         image.addRUN("apt-get install openjdk-17-jdk -y");
-        image.addRUN("apt install gpiod -y");
+        image.addRUN("/scripts/install_gpiod.sh 1.6.3 /usr/");
+        image.addRUN("apt install gcc -y");
+        image.addRUN("gcc /files/togglePin.c -lgpiod -o /files/togglePin");
+        image.addRUN("chmod +x /files/togglePin");
         ProcessHandler imageHandler = image.build(terminalSubject);
         imageHandler.setOnComplete(handle -> {
             DockerContainer container = new DockerContainer(name + "_execution",image);
