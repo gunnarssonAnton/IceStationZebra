@@ -83,7 +83,7 @@ public class DockerImage {
         content.append("\n");
 
         //
-        this.envs.forEach(env -> content.append("ENV ").append(env).append("unset").append("\n"));
+        this.envs.forEach(env -> content.append("ENV ").append(env).append("\n"));
         content.append("\n");
 
         //

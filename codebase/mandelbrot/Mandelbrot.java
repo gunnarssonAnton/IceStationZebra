@@ -45,7 +45,7 @@ public final class Mandelbrot {
     }
 
     public static void main(String[] args) throws Exception {
-        int N=16000;
+        int N=6000;
         if (args.length>=1) N=Integer.parseInt(args[0]);
 
         Crb=new double[N+7]; Cib=new double[N+7];

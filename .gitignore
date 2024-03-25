@@ -1,5 +1,5 @@
 files/jdk-17_linux-aarch64_bin.tar
-output/
+#output/
 .DS_Store
 .idea/
 target/

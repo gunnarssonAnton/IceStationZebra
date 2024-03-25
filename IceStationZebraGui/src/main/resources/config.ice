@@ -64,12 +64,15 @@
           "installation": [
             "apt update -y",
             "apt upgrade -y",
+            "apt-get update -y",
+            "apt-get upgrade -y",
+            "apt-get install openjdk-17-jdk -y",
             "apt install git -y",
             "git --version",
             "git clone https://github.com/Elzawawy/java-bytecode-generator.git",
+            "apt install make -y",
             "apt-get install bison -y",
             "apt-get install flex -y",
-            "apt install default-jdk -y",
             "apt-get install g++ -y",
             "cd java-bytecode-generator",
             "ls"
@@ -86,6 +89,47 @@
             "git --version",
             "git clone https://github.com/yakout/compiler.git",
             "ls"
+          ]
+        },
+    {
+          "dockerImage": "ubuntu:latest",
+          "givenName": "hoc",
+          "compileCommand": "java -jar /files/HouseOfCompiler.jar -jar FILES [out-dir=OUTPUT]",
+          "installation": [
+            "apt-get update -y",
+            "apt-get upgrade -y",
+            "apt-get install openjdk-17-jdk -y",
+            "apt install nano -y"
+          ]
+        },
+    {
+          "dockerImage": "ubuntu:latest",
+          "givenName": "jcc",
+          "compileCommand": "mvn exec:java -Dexec.mainClass=com.sky.jcc.compiler.CodeGenerationMain -Dexec.args=RecursiveSum.java",
+          "installation": [
+            "apt-get update -y",
+            "apt-get upgrade -y",
+            "apt-get install openjdk-17-jdk -y",
+            "apt install maven -y",
+            "apt install nano -y"
+          ]
+        },
+    {
+          "dockerImage": "ubuntu:latest",
+          "givenName": "gcj",
+          "compileCommand": "",
+          "installation": [
+            "apt update -y",
+            "apt upgrade -y",
+            "apt install gcc -y",
+            "apt install build-essential -y"
+          ]
+        },
+    {
+          "dockerImage": "ubuntu:latest",
+          "givenName": "togglepin",
+          "compileCommand": "pwd",
+          "installation": [
           ]
         }
   ]
