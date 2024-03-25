@@ -47,7 +47,7 @@ public class DockerContainer{
     private String[] compileCMD(){
         List<String> base = new ArrayList<>(Arrays.asList("docker", "run", "-i", "--name", this.name));
         if (this.privileged)
-            base.add(1,"--privileged");
+            base.add(2,"--privileged");
         this.envs.forEach((key, value) -> {
             base.add("-e");
             base.add(key + "=" + value);
