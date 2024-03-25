@@ -3,6 +3,7 @@ package org.example.controller;
 import io.reactivex.rxjava3.subjects.PublishSubject;
 import org.example.Docker.DockerContainer;
 import org.example.Docker.DockerImage;
+import org.example.Utility.IceHandler;
 import org.example.Utility.ProcessHandler;
 import org.example.Utility.TerminalMessage;
 import org.example.models.Event;
@@ -30,8 +31,12 @@ public class ExecutionViewController {
         System.out.println("names:" + this.compilationViewController.getImages().keySet());
         this.terminalSubject.onNext(new TerminalMessage("Preparing " + name,Color.YELLOW));
         //
-        DockerImage image = new DockerImage("arm32v7/openjdk:11",name);
-        image.addRUN("apt update && apt upgrade -y");
+        DockerImage image = new DockerImage(Event.DOCKERIMAGE, name);
+        image.addRUN("apt-get update");
+        image.addRUN("apt-get install -y software-properties-common");
+        image.addRUN("add-apt-repository ppa:openjdk-r/ppa");
+        image.addRUN("apt-get update && apt-get upgrade -y");
+        image.addRUN("apt-get install openjdk-17-jdk -y");
         image.addRUN("apt install gpiod -y");
         ProcessHandler imageHandler = image.build(terminalSubject);
         imageHandler.setOnComplete(handle -> {
