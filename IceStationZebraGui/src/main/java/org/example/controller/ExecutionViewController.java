@@ -5,7 +5,6 @@ import org.example.Docker.DockerContainer;
 import org.example.Docker.DockerImage;
 import org.example.Utility.TerminalMessage;
 import org.example.models.Event;
-import org.example.view.CompilationView;
 import org.example.view.ExecutionView;
 
 import java.awt.*;
@@ -36,7 +35,7 @@ public class ExecutionViewController {
         container.setVolume("/files","/files");
         //container.addENV("ROUND","0");
         container.addARG("java -cp /output/" + execName + " " + (execName.split("_")[1].charAt(0) + "").toUpperCase() + execName.split("_")[1].substring(1));
-        container.addARG("5");
+        container.addARG(this.view.getAmountOfRounds());
         container.isPrivileged(true);
         container.run(this.terminalSubject).setOnComplete((ph) -> {
             terminalSubject.onNext(new TerminalMessage("Yaaaay", Color.pink));
