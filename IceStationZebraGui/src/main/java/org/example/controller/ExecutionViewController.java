@@ -31,6 +31,8 @@ public class ExecutionViewController {
         this.terminalSubject.onNext(new TerminalMessage("Preparing " + name,Color.YELLOW));
         //
         DockerImage image = new DockerImage("arm32v7/openjdk:11",name);
+        image.addRUN("apt update && apt upgrade -y");
+        image.addRUN("apt install gpiod -y");
         DockerContainer container = new DockerContainer(name + "_execution",image);
         container.setEntrypointOverride("/scripts/execution_entrypoint.sh");
         container.setVolume("/output","/output");
