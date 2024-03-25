@@ -20,10 +20,11 @@ public class ExecutionView extends JPanel {
     private final Set<String> executionSet = new HashSet<>();
     private final JButton prepBtn = new JButton("Prep");
     private final JButton goBtn = new JButton("Go");
-
     private final JButton backBtn = new JButton("< Go Back");
     private final GuiUtil guiUtil = new GuiUtil();
     private String selectedValue;
+
+    private final JTextField amountOfRoundInput = new JTextField();
 
     public ExecutionView(){
 
@@ -57,19 +58,23 @@ public class ExecutionView extends JPanel {
         container.setPreferredSize(new Dimension(975, 310));
         container.setLayout(new FlowLayout(FlowLayout.LEFT));
         container.add(this.getExecutionJListContainer());
-
+        container.add(this.getAmountOfRoundsInputContainer());
         return container;
     }
     private JPanel getExecutionJListContainer(){
         JPanel container = new JPanel(new BorderLayout());
         this.executionJList.setListData(executionSet.toArray());
-        this.executionJList.setPreferredSize(new Dimension(250,250));
+//        this.executionJList.setPreferredSize(new Dimension(250,500));
         this.executionJList.setBackground(Color.white);
         this.executionJList.setBorder(new LineBorder(Color.BLACK));
         this.executionJList.setCellRenderer(new IconTextListCellRenderer(UIManager.getIcon("FileView.fileIcon")));
+        JScrollPane scrollPane = new JScrollPane();
+        scrollPane.setViewportView(this.executionJList);
+        executionJList.setLayoutOrientation(JList.VERTICAL);
+
         container.setPreferredSize(new Dimension(300,300));
         container.setBackground(Color.white);
-        container.add(new JScrollPane(this.executionJList),BorderLayout.CENTER);
+        container.add(scrollPane,BorderLayout.CENTER);
         return container;
     }
 
@@ -99,6 +104,15 @@ public class ExecutionView extends JPanel {
         return container;
     }
 
+    private JPanel getAmountOfRoundsInputContainer(){
+        JPanel container = new JPanel();
+        this.amountOfRoundInput.setPreferredSize(new Dimension(50,20));
+        container.setLayout(new BorderLayout());
+        container.add(new JLabel("Enter amount of rounds"),BorderLayout.NORTH);
+        container.add(this.amountOfRoundInput, BorderLayout.SOUTH);
+
+        return container;
+    }
 
     public String getSelectedValue() {
         return this.selectedValue;
@@ -110,7 +124,19 @@ public class ExecutionView extends JPanel {
     public void setPrepOnClick(ActionListener l){
         this.prepBtn.addActionListener(l);
     }
+
     public void setGoOnClick(ActionListener l){
         this.goBtn.addActionListener(l);
+    }
+
+    public String getAmountOfRounds(){
+        var amountOfRound = this.amountOfRoundInput.getText();
+        if (amountOfRound.length() == 0){
+            JOptionPane.showMessageDialog(this,"NO amounts of round entered", "Error", JOptionPane.ERROR_MESSAGE);
+            return "5";
+        }
+        else {
+            return amountOfRound;
+        }
     }
 }
