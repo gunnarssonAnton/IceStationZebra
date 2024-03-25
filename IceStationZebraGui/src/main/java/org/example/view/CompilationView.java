@@ -84,7 +84,7 @@ public class CompilationView extends JPanel {
             this.guiUtil.updateJList(this.eventNamesJlist, this.eventNamesSet);
         });
 
-        this.eventNamesJlist.setPreferredSize(new Dimension(250,250));
+//        this.eventNamesJlist.setPreferredSize(new Dimension(250,250));
         this.eventNamesJlist.setBorder(new LineBorder(Color.BLACK));
 
         compilerNamesPanel.setPreferredSize(new Dimension(300,300));
@@ -130,13 +130,18 @@ public class CompilationView extends JPanel {
 
         updateBtn.addActionListener(e-> this.updateOutputJList());
 
-        this.outputList.setPreferredSize(new Dimension(250,250));
+//        this.outputList.setPreferredSize(new Dimension(250,250));
         this.outputList.setBackground(Color.white);
         this.outputList.setBorder(new LineBorder(Color.BLACK));
 
         container.setPreferredSize(new Dimension(300,300));
         container.setBackground(Color.white);
-        container.add(new JScrollPane(outputList),BorderLayout.CENTER);
+
+        JScrollPane scrollPane = new JScrollPane();
+        scrollPane.setViewportView(this.outputList);
+        this.outputList.setLayoutOrientation(JList.VERTICAL);
+
+        container.add(scrollPane,BorderLayout.CENTER);
         container.add(buttonContainer, BorderLayout.SOUTH);
 
         return container;
@@ -244,13 +249,13 @@ public class CompilationView extends JPanel {
 
 
         this.codebasesJList.setCellRenderer(new IconTextListCellRenderer(UIManager.getIcon("FileView.directoryIcon")));
-        this.codebasesJList.setPreferredSize(new Dimension(300,300));
+//        this.codebasesJList.setPreferredSize(new Dimension(300,300));
         container.setPreferredSize(new Dimension(300,300));
 
         this.guiUtil.setDoubleClickOnJListItem(this.codebasesJList, this::openFileChooser);
         this.codebasesJList.setBorder(new LineBorder(Color.BLACK));
         container.setBackground(Color.white);
-        cardContainer.add(this.codebasesJList);
+        cardContainer.add(new JScrollPane(this.codebasesJList));
 
         container.add(cardContainer,BorderLayout.CENTER);
         container.add(buttonContainer, BorderLayout.SOUTH);
