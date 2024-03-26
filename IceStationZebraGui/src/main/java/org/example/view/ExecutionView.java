@@ -21,6 +21,7 @@ public class ExecutionView extends JPanel {
     private final JButton prepBtn = new JButton("Prep");
     private final JButton goBtn = new JButton("Go");
     private final JButton backBtn = new JButton("< Go Back");
+    private final JButton generateBaseExecutionImageBtn = new JButton("Generate Base Execution Image");
     private final JButton generateExecutionImageBtn = new JButton("Generate Execution Image");
 
     private final GuiUtil guiUtil = new GuiUtil();
@@ -59,6 +60,7 @@ public class ExecutionView extends JPanel {
         JPanel addOns = new JPanel();
         addOns.setLayout(new BoxLayout(addOns, BoxLayout.Y_AXIS));
         addOns.add(this.getAmountOfRoundsInputContainer());
+        addOns.add(this.getGenerateBaseExecutionImageContainer());
         addOns.add(this.getGenerateExecutionImageContainer());
         container.add(addOns);
         return container;
@@ -113,6 +115,16 @@ public class ExecutionView extends JPanel {
 
         return container;
     }
+    private JPanel getGenerateBaseExecutionImageContainer(){
+        JPanel container = new JPanel();
+
+        this.generateBaseExecutionImageBtn.setPreferredSize(new Dimension(250,40));
+        container.setLayout(new BorderLayout());
+        container.add(new JLabel("Generate Base Execution Image"),BorderLayout.NORTH);
+        container.add(generateBaseExecutionImageBtn, BorderLayout.SOUTH);
+
+        return container;
+    }
     private JPanel getGenerateExecutionImageContainer(){
         JPanel container = new JPanel();
 
@@ -139,6 +151,9 @@ public class ExecutionView extends JPanel {
     }
     public void setGenerateExecutionImageOnClick(ActionListener l){
         this.generateExecutionImageBtn.addActionListener(l);
+    }
+    public void setGenerateBaseExecutionImageOnClick(ActionListener l){
+        this.generateBaseExecutionImageBtn.addActionListener(l);
     }
     public String getAmountOfRounds(){
         var amountOfRound = this.amountOfRoundInput.getText();

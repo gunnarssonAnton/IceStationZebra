@@ -16,6 +16,7 @@ public class ExecutionViewController {
     PublishSubject<TerminalMessage> terminalSubject;
     CompilationViewController compilationViewController;
     DockerImage executionImage = null;
+    DockerImage baseExecutionImage = null;
     public ExecutionViewController(PublishSubject<TerminalMessage> subject, CompilationViewController compilationViewController){
         this.terminalSubject = subject;
         this.compilationViewController = compilationViewController;
@@ -25,9 +26,38 @@ public class ExecutionViewController {
         this.view.setGenerateExecutionImageOnClick(e -> {
             this.generateExecutionImage();
         });
+        this.view.setGenerateBaseExecutionImageOnClick(e -> {
+            this.generateBaseExecutionImage();
+        });
     }
     public ExecutionView getView(){
         return this.view;
+    }
+    public void generateBaseExecutionImage(){
+        String name = "base_execution_image";
+        this.terminalSubject.onNext(new TerminalMessage("Preparing " + name,Color.GREEN));
+        //
+        DockerImage image = new DockerImage(Event.DOCKERIMAGE, name);
+        this.baseExecutionImage = image;
+        image.addCOPY("/files","/files");
+        image.addCOPY("/scripts","/scripts");
+        System.out.println("[toString]\n" + image.toString());
+        image.addRUN("chmod +x /scripts/pre-execution.sh");
+        image.addRUN("chmod +x /scripts/execution.sh");
+        image.addRUN("chmod +x /scripts/post-execution.sh");
+        image.addRUN("chmod +x /scripts/execution_entrypoint.sh");
+        image.addRUN("chmod +x /scripts/install_gpiod.sh");
+        // Installs
+        image.addRUN("apt-get update && apt-get upgrade -y");
+        image.addRUN("apt-get install -y software-properties-common");
+        image.addRUN("apt install gcc -y");
+        image.addRUN("add-apt-repository ppa:openjdk-r/ppa");
+        image.addRUN("apt-get install openjdk-17-jdk -y");
+//        image.addRUN("/scripts/install_gpiod.sh 1.6.3 /usr/");
+        ProcessHandler imageHandler = image.build(terminalSubject);
+        imageHandler.setOnComplete(handle -> {
+            terminalSubject.onNext(new TerminalMessage("Execution image ready",Color.green));
+        });
     }
     public void generateExecutionImage(){
 //        String execName = this.view.getSelectedValue();
@@ -36,26 +66,26 @@ public class ExecutionViewController {
         System.out.println("names:" + this.compilationViewController.getImages().keySet());
         this.terminalSubject.onNext(new TerminalMessage("Preparing " + name,Color.YELLOW));
         //
-        DockerImage image = new DockerImage(Event.DOCKERIMAGE, name);
+        DockerImage image = new DockerImage(this.baseExecutionImage.getName(), name);
         this.executionImage = image;
         image.addRUN("mkdir -p /output");
         image.addVolume("/files");
         image.addVolume("/output");
         image.addENV("ROUND","0");
-        image.addCOPY("/files","/files");
-        image.addCOPY("/codebase","/codebase");
-        image.addCOPY("/scripts","/scripts");
+//        image.addCOPY("/files","/files");
+//        image.addCOPY("/codebase","/codebase");
+//        image.addCOPY("/scripts","/scripts");
         System.out.println("[toString]\n" + image.toString());
         image.addRUN("chmod +x /scripts/pre-execution.sh");
         image.addRUN("chmod +x /scripts/execution.sh");
         image.addRUN("chmod +x /scripts/post-execution.sh");
         image.addRUN("chmod +x /scripts/execution_entrypoint.sh");
         image.addRUN("chmod +x /scripts/install_gpiod.sh");
-        image.addRUN("apt-get update && apt-get upgrade -y");
-        image.addRUN("apt-get install -y software-properties-common");
-        image.addRUN("apt install gcc -y");
-        image.addRUN("add-apt-repository ppa:openjdk-r/ppa");
-        image.addRUN("apt-get install openjdk-17-jdk -y");
+//        image.addRUN("apt-get update && apt-get upgrade -y");
+//        image.addRUN("apt-get install -y software-properties-common");
+//        image.addRUN("apt install gcc -y");
+//        image.addRUN("add-apt-repository ppa:openjdk-r/ppa");
+//        image.addRUN("apt-get install openjdk-17-jdk -y");
         image.addRUN("/scripts/install_gpiod.sh 1.6.3 /usr/");
 //        image.addRUN("gcc /files/togglePin.c -lgpiod -o /files/togglePin");
 //        image.addRUN("chmod +x /files/togglePin");
