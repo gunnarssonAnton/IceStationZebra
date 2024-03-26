@@ -66,7 +66,7 @@ public class ExecutionViewController {
         System.out.println("names:" + this.compilationViewController.getImages().keySet());
         this.terminalSubject.onNext(new TerminalMessage("Preparing " + name,Color.YELLOW));
         //
-        DockerImage image = new DockerImage(this.baseExecutionImage.getName(), name);
+        DockerImage image = new DockerImage("base_execution_image", name);
         this.executionImage = image;
         image.addRUN("mkdir -p /output");
         image.addVolume("/files");
@@ -97,7 +97,7 @@ public class ExecutionViewController {
     public void prepare(){
         String execName = this.view.getSelectedValue();
         String name = "execution_image";
-        DockerContainer container = new DockerContainer("execution_container",new DockerImage("","base_execution_image"));
+        DockerContainer container = new DockerContainer("execution_container",new DockerImage("","execution_image"));
         container.setEntrypointOverride("/scripts/execution_entrypoint.sh");
         container.setVolume("/output","/output");
         container.setVolume("/files","/files");
