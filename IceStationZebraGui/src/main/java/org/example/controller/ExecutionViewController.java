@@ -86,7 +86,8 @@ public class ExecutionViewController {
 //        image.addRUN("apt install gcc -y");
 //        image.addRUN("add-apt-repository ppa:openjdk-r/ppa");
 //        image.addRUN("apt-get install openjdk-17-jdk -y");
-        image.addRUN("/scripts/install_gpiod.sh 1.6.3 /usr/");
+        //image.addRUN("/scripts/install_gpiod.sh 1.6.3 /usr/");
+        image.addRUN("apt install libgpiod-dev -y");
 //        image.addRUN("gcc /files/togglePin.c -lgpiod -o /files/togglePin");
 //        image.addRUN("chmod +x /files/togglePin");
         ProcessHandler imageHandler = image.build(terminalSubject);
