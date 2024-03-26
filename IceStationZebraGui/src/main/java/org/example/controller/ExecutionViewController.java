@@ -97,7 +97,7 @@ public class ExecutionViewController {
     public void prepare(){
         String execName = this.view.getSelectedValue();
         String name = "execution_image";
-        DockerContainer container = new DockerContainer("execution_container",this.executionImage);
+        DockerContainer container = new DockerContainer("execution_container",new DockerImage("","base_execution_image"));
         container.setEntrypointOverride("/scripts/execution_entrypoint.sh");
         container.setVolume("/output","/output");
         container.setVolume("/files","/files");
