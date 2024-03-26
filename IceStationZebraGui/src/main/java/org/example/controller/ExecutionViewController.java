@@ -36,24 +36,20 @@ public class ExecutionViewController {
     public void generateBaseExecutionImage(){
         String name = "base_execution_image";
         this.terminalSubject.onNext(new TerminalMessage("Preparing " + name,Color.GREEN));
+
         //
         DockerImage image = new DockerImage(Event.DOCKERIMAGE, name);
         this.baseExecutionImage = image;
-        image.addCOPY("/files","/files");
-        image.addCOPY("/scripts","/scripts");
         System.out.println("[toString]\n" + image.toString());
-        image.addRUN("chmod +x /scripts/pre-execution.sh");
-        image.addRUN("chmod +x /scripts/execution.sh");
-        image.addRUN("chmod +x /scripts/post-execution.sh");
-        image.addRUN("chmod +x /scripts/execution_entrypoint.sh");
-        image.addRUN("chmod +x /scripts/install_gpiod.sh");
+
         // Installs
         image.addRUN("apt-get update && apt-get upgrade -y");
         image.addRUN("apt-get install -y software-properties-common");
         image.addRUN("apt install gcc -y");
         image.addRUN("add-apt-repository ppa:openjdk-r/ppa");
         image.addRUN("apt-get install openjdk-17-jdk -y");
-//        image.addRUN("/scripts/install_gpiod.sh 1.6.3 /usr/");
+        image.addRUN("apt install libgpiod-dev -y");
+
         ProcessHandler imageHandler = image.build(terminalSubject);
         imageHandler.setOnComplete(handle -> {
             terminalSubject.onNext(new TerminalMessage("Execution image ready",Color.green));
@@ -68,28 +64,20 @@ public class ExecutionViewController {
         //
         DockerImage image = new DockerImage("base_execution_image", name);
         this.executionImage = image;
-        image.addRUN("mkdir -p /output");
-        image.addVolume("/files");
+
+        image.addCOPY("/files","/files");
         image.addVolume("/output");
-        image.addENV("ROUND","0");
-//        image.addCOPY("/files","/files");
-//        image.addCOPY("/codebase","/codebase");
-//        image.addCOPY("/scripts","/scripts");
+        image.addVolume("/codebase");
+        image.addCOPY("/scripts","/scripts");
+
         System.out.println("[toString]\n" + image.toString());
         image.addRUN("chmod +x /scripts/pre-execution.sh");
         image.addRUN("chmod +x /scripts/execution.sh");
         image.addRUN("chmod +x /scripts/post-execution.sh");
         image.addRUN("chmod +x /scripts/execution_entrypoint.sh");
-        image.addRUN("chmod +x /scripts/install_gpiod.sh");
-//        image.addRUN("apt-get update && apt-get upgrade -y");
-//        image.addRUN("apt-get install -y software-properties-common");
-//        image.addRUN("apt install gcc -y");
-//        image.addRUN("add-apt-repository ppa:openjdk-r/ppa");
-//        image.addRUN("apt-get install openjdk-17-jdk -y");
-        //image.addRUN("/scripts/install_gpiod.sh 1.6.3 /usr/");
-        image.addRUN("apt install libgpiod-dev -y");
         image.addRUN("gcc /files/togglePin.c -lgpiod -o /files/togglePin");
         image.addRUN("chmod +x /files/togglePin");
+
         ProcessHandler imageHandler = image.build(terminalSubject);
         imageHandler.setOnComplete(handle -> {
             terminalSubject.onNext(new TerminalMessage("Execution image ready",Color.green));
@@ -99,13 +87,15 @@ public class ExecutionViewController {
         String execName = this.view.getSelectedValue();
         String name = "execution_image";
         DockerContainer container = new DockerContainer("execution_container",new DockerImage("","execution_image"));
+        container.addENV("ROUND","0");
+        container.isPrivileged(true);
         container.setEntrypointOverride("/scripts/execution_entrypoint.sh");
         container.setVolume("/output","/output");
-        container.setVolume("/files","/files");
-        //container.addENV("ROUND","0");
+        //container.setVolume("/files","/files");
+        container.setVolume("/codebase","/codebase");
+        //container.setVolume("/scripts","/scripts");
         container.addARG("java -cp /output/" + execName + " " + (execName.split("_")[1].charAt(0) + "").toUpperCase() + execName.split("_")[1].substring(1));
         container.addARG(this.view.getAmountOfRounds());
-        container.isPrivileged(true);
         container.run(this.terminalSubject).setOnComplete((ph) -> {
             terminalSubject.onNext(new TerminalMessage("Container " + container.getName() +  " is open", Color.pink));
             container.stop(terminalSubject).setOnComplete(dolk -> {
