@@ -6,10 +6,15 @@ if ! [[ "$2" =~ ^[0-9]+$ ]]; then
     exit 1
 fi
 
+    # Compile togglePin
+    gcc /files/togglePin.c -lgpiod -o /files/togglePin
+    chmod +x /files/togglePin
 
 while [ "$ROUND" -lt "$2" ]
 do
     echo "ROUND is currently at $ROUND. Target is $2."
+
+
 
     # Execute scripts
     /scripts/pre-execution.sh

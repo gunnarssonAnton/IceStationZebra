@@ -52,8 +52,8 @@ public class ExecutionViewController {
         image.addRUN("apt-get install openjdk-17-jdk -y");
         image.addRUN("/scripts/install_gpiod.sh 1.6.3 /usr/");
         image.addRUN("apt install gcc -y");
-        image.addRUN("gcc /files/togglePin.c -lgpiod -o /files/togglePin");
-        image.addRUN("chmod +x /files/togglePin");
+//        image.addRUN("gcc /files/togglePin.c -lgpiod -o /files/togglePin");
+//        image.addRUN("chmod +x /files/togglePin");
         ProcessHandler imageHandler = image.build(terminalSubject);
         imageHandler.setOnComplete(handle -> {
             DockerContainer container = new DockerContainer(name + "_execution",image);
@@ -65,7 +65,7 @@ public class ExecutionViewController {
             container.addARG(this.view.getAmountOfRounds());
             container.isPrivileged(true);
             container.run(this.terminalSubject).setOnComplete((ph) -> {
-                terminalSubject.onNext(new TerminalMessage("Yaaaay", Color.pink));
+                terminalSubject.onNext(new TerminalMessage("Container " + container.getName() +  " is open", Color.pink));
                 container.stop(terminalSubject).setOnComplete(dolk -> {
                     dolk.printLogFiles(name);
                     container.remove(terminalSubject).setOnComplete(dole -> {
