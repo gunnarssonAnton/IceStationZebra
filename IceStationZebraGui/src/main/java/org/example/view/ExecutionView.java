@@ -21,23 +21,21 @@ public class ExecutionView extends JPanel {
     private final JButton prepBtn = new JButton("Prep");
     private final JButton goBtn = new JButton("Go");
     private final JButton backBtn = new JButton("< Go Back");
+    private final JButton generateExecutionImageBtn = new JButton("Generate Execution Image");
+
     private final GuiUtil guiUtil = new GuiUtil();
     private String selectedValue;
 
     private final JTextField amountOfRoundInput = new JTextField();
 
     public ExecutionView(){
-
         this.extractSetFromFile();
         this.setLayout(new FlowLayout(FlowLayout.RIGHT));
-
-
         this.add(this.listContainer(),BorderLayout.NORTH);
         this.add(this.buttonContainer(),BorderLayout.CENTER);
 
         this.executionJList.addListSelectionListener(e ->
                 selectedValue = (String)((JList<?>)e.getSource()).getSelectedValue());
-
     }
 
     public void extractSetFromFile(){
@@ -58,7 +56,11 @@ public class ExecutionView extends JPanel {
         container.setPreferredSize(new Dimension(975, 310));
         container.setLayout(new FlowLayout(FlowLayout.LEFT));
         container.add(this.getExecutionJListContainer());
-        container.add(this.getAmountOfRoundsInputContainer());
+        JPanel addOns = new JPanel();
+        addOns.setLayout(new BoxLayout(addOns, BoxLayout.Y_AXIS));
+        addOns.add(this.getAmountOfRoundsInputContainer());
+        addOns.add(this.getGenerateExecutionImageContainer());
+        container.add(addOns);
         return container;
     }
     private JPanel getExecutionJListContainer(){
@@ -91,11 +93,9 @@ public class ExecutionView extends JPanel {
         this.goBtn.setPreferredSize(new Dimension(150,80));
         this.goBtn.setFocusPainted(false);
 
-
         this.backBtn.addActionListener(e->System.out.println("Execute"));
         this.prepBtn.addActionListener(e->System.out.println("Prep"));
         this.goBtn.addActionListener(e->System.out.println("Go"));
-
 
         container.add(this.backBtn);
         container.add(this.prepBtn);
@@ -113,7 +113,16 @@ public class ExecutionView extends JPanel {
 
         return container;
     }
+    private JPanel getGenerateExecutionImageContainer(){
+        JPanel container = new JPanel();
 
+        this.generateExecutionImageBtn.setPreferredSize(new Dimension(250,40));
+        container.setLayout(new BorderLayout());
+        container.add(new JLabel("Generate Execution Image"),BorderLayout.NORTH);
+        container.add(generateExecutionImageBtn, BorderLayout.SOUTH);
+
+        return container;
+    }
     public String getSelectedValue() {
         return this.selectedValue;
     }
@@ -128,7 +137,9 @@ public class ExecutionView extends JPanel {
     public void setGoOnClick(ActionListener l){
         this.goBtn.addActionListener(l);
     }
-
+    public void setGenerateExecutionImageOnClick(ActionListener l){
+        this.generateExecutionImageBtn.addActionListener(l);
+    }
     public String getAmountOfRounds(){
         var amountOfRound = this.amountOfRoundInput.getText();
         if (amountOfRound.length() == 0){
