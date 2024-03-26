@@ -19,7 +19,7 @@ do
     # Execute scripts
     /scripts/pre-execution.sh
     /scripts/execution.sh "$@"
-    /scripts/post-execution.sh
+    /scripts/post-execution.sh "$@"
 
     # Increment ROUND
     ROUND=$((ROUND + 1))

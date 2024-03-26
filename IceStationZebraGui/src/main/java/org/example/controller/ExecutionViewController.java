@@ -88,8 +88,8 @@ public class ExecutionViewController {
 //        image.addRUN("apt-get install openjdk-17-jdk -y");
         //image.addRUN("/scripts/install_gpiod.sh 1.6.3 /usr/");
         image.addRUN("apt install libgpiod-dev -y");
-//        image.addRUN("gcc /files/togglePin.c -lgpiod -o /files/togglePin");
-//        image.addRUN("chmod +x /files/togglePin");
+        image.addRUN("gcc /files/togglePin.c -lgpiod -o /files/togglePin");
+        image.addRUN("chmod +x /files/togglePin");
         ProcessHandler imageHandler = image.build(terminalSubject);
         imageHandler.setOnComplete(handle -> {
             terminalSubject.onNext(new TerminalMessage("Execution image ready",Color.green));
