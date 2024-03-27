@@ -8,6 +8,7 @@ import org.example.files.FileIO;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Stream;
 
 public class DockerContainer{
@@ -86,5 +87,14 @@ public class DockerContainer{
                 .toArray(String[]::new);
         System.out.println("Exec:" + String.join(" ",cmd));
         return ProcessHandler.internal(cmd, terminalSubject);
+    }
+    public boolean isRunning(){
+        AtomicBoolean status = new AtomicBoolean(false);
+        ProcessHandler handler = ProcessHandler.construct(new String[]{"docker", "inspect", "--format={{.State.Running}}", this.getName()});
+        handler.getStdout().subscribe(string -> {
+            status.set("true".equals(string));
+        });
+
+        return status.get();
     }
 }

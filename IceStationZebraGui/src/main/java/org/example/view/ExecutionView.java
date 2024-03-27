@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 public class ExecutionView extends JPanel {
     private final JList executionJList = new JList();
     private final Set<String> executionSet = new HashSet<>();
-    private final JButton prepBtn = new JButton("Prep");
+    private final JButton prepBtn = new JButton("Open Container");
     private final JButton goBtn = new JButton("Go");
     private final JButton backBtn = new JButton("< Go Back");
     private final JButton generateBaseExecutionImageBtn = new JButton("Generate Base Execution Image");
@@ -86,7 +86,7 @@ public class ExecutionView extends JPanel {
         JPanel container = new JPanel();
         container.setLayout(new FlowLayout(FlowLayout.RIGHT));
         container.setBorder(new EmptyBorder(50,50,50,50));
-        container.setSize(50,50);
+        container.setSize(50,25);
 
         this.backBtn.setPreferredSize(new Dimension(150,80));
         this.backBtn.setFocusPainted(false);
@@ -96,7 +96,7 @@ public class ExecutionView extends JPanel {
         this.goBtn.setFocusPainted(false);
 
         this.backBtn.addActionListener(e->System.out.println("Execute"));
-        this.prepBtn.addActionListener(e->System.out.println("Prep"));
+        this.prepBtn.addActionListener(e->System.out.println("Open Container"));
         this.goBtn.addActionListener(e->System.out.println("Go"));
 
         container.add(this.backBtn);

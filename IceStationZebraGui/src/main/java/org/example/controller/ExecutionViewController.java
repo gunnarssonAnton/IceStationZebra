@@ -3,6 +3,7 @@ package org.example.controller;
 import io.reactivex.rxjava3.subjects.PublishSubject;
 import org.example.Docker.DockerContainer;
 import org.example.Docker.DockerImage;
+import org.example.Utility.ISZTest;
 import org.example.Utility.IceHandler;
 import org.example.Utility.ProcessHandler;
 import org.example.Utility.TerminalMessage;
@@ -28,6 +29,9 @@ public class ExecutionViewController {
         });
         this.view.setGenerateBaseExecutionImageOnClick(e -> {
             this.generateBaseExecutionImage();
+        });
+        this.view.setGoOnClick(e -> {
+            this.go();
         });
     }
     public ExecutionView getView(){
@@ -84,27 +88,54 @@ public class ExecutionViewController {
         });
     }
     public void prepare(){
-        String execName = this.view.getSelectedValue();
+        //String execName = this.view.getSelectedValue();
         String name = "execution_image";
         DockerContainer container = new DockerContainer("execution_container",new DockerImage("","execution_image"));
         container.addENV("ROUND","0");
         container.isPrivileged(true);
-        container.setEntrypointOverride("/scripts/execution_entrypoint.sh");
+        //container.setEntrypointOverride("/scripts/execution_entrypoint.sh");
         container.setVolume("/output","/output");
         //container.setVolume("/files","/files");
         container.setVolume("/codebase","/codebase");
         //container.setVolume("/scripts","/scripts");
-        container.addARG("java -cp /output/" + execName + " " + (execName.split("_")[1].charAt(0) + "").toUpperCase() + execName.split("_")[1].substring(1));
-        container.addARG(this.view.getAmountOfRounds());
-        container.run(this.terminalSubject).setOnComplete((ph) -> {
-            terminalSubject.onNext(new TerminalMessage("Container " + container.getName() +  " is open", Color.pink));
-            container.stop(terminalSubject).setOnComplete(dolk -> {
-                dolk.printLogFiles(name);
-                container.remove(terminalSubject).setOnComplete(dole -> {
-                    terminalSubject.onNext(new TerminalMessage("Removed container",Color.GREEN));
-                    dole.printLogFiles(name + "removal");
+        //container.addARG("java -cp /output/" + execName + " " + (execName.split("_")[1].charAt(0) + "").toUpperCase() + execName.split("_")[1].substring(1));
+        //container.addARG(this.view.getAmountOfRounds());
+        if (!container.isRunning()) {
+            container.run(this.terminalSubject).setOnComplete((ph) -> {
+                terminalSubject.onNext(new TerminalMessage("Container " + container.getName() + " is open", Color.pink));
+                container.stop(terminalSubject).setOnComplete(dolk -> {
+                    dolk.printLogFiles(name);
+                    container.remove(terminalSubject).setOnComplete(dole -> {
+                        terminalSubject.onNext(new TerminalMessage("Removed container", Color.GREEN));
+                        dole.printLogFiles(name + "removal");
+                    });
                 });
             });
-        });
+        }
+        else {
+            System.out.println("Execution container already up");;
+        }
+    }
+    public void go(){
+        DockerContainer container = new DockerContainer("execution_container",new DockerImage("base_execution_image","execution_image"));
+        container.addENV("ROUNDS",this.getView().getAmountOfRounds() + "");
+//        container.exec(new String[]{"-e","ROUNDS",this.getView().getAmountOfRounds() + ""},terminalSubject).setOnComplete(processHandler -> {
+//            terminalSubject.onNext(new TerminalMessage("execution container updated",Color.GREEN));
+
+            // Run executable in container
+            String execName = this.view.getSelectedValue();
+//            "java -cp /output/" + execName + " " + (execName.split("_")[1].charAt(0) + "").toUpperCase() + execName.split("_")[1].substring(1)
+            String[] cmd = new String[]{"/scripts/execution_entrypoint.sh", this.getView().getAmountOfRounds() + "", "java", "-cp", "/output/" + execName + "/" , (execName.split("_")[1].charAt(0) + "").toUpperCase() + execName.split("_")[1].substring(1)};
+            container.exec(cmd,terminalSubject);
+//        });
+
+
+
+//        DockerContainer container = new DockerContainer("execution_container",new DockerImage("base_execution_image","execution_image"));
+//            Event event = IceHandler.getInstance().getSpecificEvent(this.getView().getSelectedValue());
+//            String compileCommand = iszTest.constructCompileCommand(event);
+//            ProcessHandler handler = container.exec(compileCommand.split(" "), this.terminalSubject); // container.setEntrypointOverride("/scripts/execution_entrypoint.sh");
+
+        // docker exec -it my_container bash
     }
 }
