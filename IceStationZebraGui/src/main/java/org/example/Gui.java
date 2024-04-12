@@ -85,7 +85,7 @@ public class Gui extends JFrame {
                 });
         this.executionViewController
                 .getView()
-                .setOnClick(e -> this.slideIn());
+                .setBackOnClick(e -> this.slideIn());
     }
 
     private void slideIn() {
@@ -120,5 +120,9 @@ public class Gui extends JFrame {
             }
         });
         timer.start();
+    }
+
+    public void initView(){
+        this.setVisible(true);
     }
 }

@@ -52,7 +52,7 @@ public class GuiUtil {
         }
     }
 
-    public void showConfrimDialog(JComponent parentComponent, String selectedValue, Consumer<String> removeMethod){
+    public void showConfirmDialog(JComponent parentComponent, String selectedValue, Consumer<String> removeMethod){
        int confirm = JOptionPane.showConfirmDialog(parentComponent, String.format("Are you sure you want to remove %s",selectedValue),"Confirm",JOptionPane.YES_NO_OPTION,JOptionPane.ERROR_MESSAGE);
        if (confirm == JOptionPane.YES_OPTION){
            removeMethod.accept(selectedValue);
