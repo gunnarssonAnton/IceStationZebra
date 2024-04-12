@@ -119,7 +119,7 @@ public class FileIO {
     }
     public static void copyFromJar(String from, Path to){
         String content = FileIO.getResource(from);
-        System.out.println("content:" + content);
+        //System.out.println("content:" + content);
         FileIO file = new FileIO(to.getParent().toString(), to.getFileName().toString());
         file.write(content);
     }

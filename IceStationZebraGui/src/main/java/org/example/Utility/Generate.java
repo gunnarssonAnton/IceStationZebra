@@ -26,6 +26,7 @@ public class Generate {
         standardFiles.put("scripts/execution_entrypoint.sh","scripts/execution_entrypoint.sh");
         standardFiles.put("scripts/post-execution.sh","scripts/post-execution.sh");
         standardFiles.put("scripts/pre-execution.sh","scripts/pre-execution.sh");
+        standardFiles.put("scripts/install_gpiod.sh","scripts/install_gpiod.sh");
     }
     public static String generateRandomString(int len){
         String chars = "abcdefghijklmnopqrstuvwxyz";
