@@ -47,12 +47,21 @@ public class ExecutionViewController {
         System.out.println("[toString]\n" + image.toString());
 
         // Installs
+        image.addRUN("apt update");
         image.addRUN("apt-get update && apt-get upgrade -y");
         image.addRUN("apt-get install -y software-properties-common");
         image.addRUN("apt install gcc -y");
         image.addRUN("add-apt-repository ppa:openjdk-r/ppa");
         image.addRUN("apt-get install openjdk-17-jdk -y");
         image.addRUN("apt install libgpiod-dev -y");
+        image.addRUN("apt install python3-pip -y");
+        image.addRUN("pip install zeroconf");
+        image.addRUN("pip install psutil");
+        image.addRUN("pip install pyvisa-py");
+        image.addRUN("pip install pyvisa");
+        image.addRUN("pip install matplotlib");
+        image.addRUN("apt-get install libusb-1.0-0-dev -y");
+        image.addRUN("pip install pyusb");
 
         ProcessHandler imageHandler = image.build(terminalSubject);
         imageHandler.setOnComplete(handle -> {
@@ -79,8 +88,8 @@ public class ExecutionViewController {
         image.addRUN("chmod +x /scripts/execution.sh");
         image.addRUN("chmod +x /scripts/post-execution.sh");
         image.addRUN("chmod +x /scripts/execution_entrypoint.sh");
-        image.addRUN("gcc /files/togglePin.c -lgpiod -o /files/togglePin");
-        image.addRUN("chmod +x /files/togglePin");
+//        image.addRUN("gcc /files/togglePin.c -lgpiod -o /files/togglePin");
+//        image.addRUN("chmod +x /files/togglePin");
 
         ProcessHandler imageHandler = image.build(terminalSubject);
         imageHandler.setOnComplete(handle -> {
