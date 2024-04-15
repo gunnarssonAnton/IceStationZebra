@@ -7,7 +7,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class ISZTest {
@@ -21,15 +20,10 @@ public class ISZTest {
         return this.name;
     }
     private String getFilenamesForCompileCommand(){
-        File sub;
-        if(this.getName().equals("Janino"))
-            sub = new File(Objects.requireNonNull(FileIO.getApplicationRootPath("codebase/" + this.name)));
-        else
-            sub = new File(Objects.requireNonNull(FileIO.getApplicationRootPath("codebase2/" + this.name)));
-
+        File sub = new File(FileIO.getApplicationRootPath("codebase/" + this.name));
         return Arrays.stream(sub.listFiles()).toList().stream()
-            .filter(File::isFile).map(file ->"/codebase/" + this.name + "/" + file.getName()) // Convert File to its name
-            .collect(Collectors.joining(" "));
+                .filter(File::isFile).map(file ->"/codebase/" + this.name + "/" + file.getName()) // Convert File to its name
+                .collect(Collectors.joining(" "));
     }
 
     public String constructCompileCommand(Event event){
