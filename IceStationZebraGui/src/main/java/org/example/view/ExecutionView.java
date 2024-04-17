@@ -139,7 +139,7 @@ public class ExecutionView extends JPanel {
         return this.selectedValue;
     }
 
-    public void setOnClick(ActionListener l){
+    public void setBackOnClick(ActionListener l){
         this.backBtn.addActionListener(l);
     }
     public void setPrepOnClick(ActionListener l){
