@@ -62,6 +62,11 @@ public class CompilationViewController {
 
         ProcessHandler handler = image.build(terminalSubject);
         handler.setOnComplete(handle -> {
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
             this.images.put(image.getName(),image);
             ISZTest.getTests().forEach(iszTest -> {
                 System.out.println("iszTest:" + iszTest.getName());
@@ -74,7 +79,7 @@ public class CompilationViewController {
                     // Remove container
                 });
                 try {
-                    Thread.sleep(6 * 1000);
+                    Thread.sleep(10 * 1000);
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }
