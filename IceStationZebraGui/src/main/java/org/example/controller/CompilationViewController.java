@@ -79,7 +79,7 @@ public class CompilationViewController {
                     // Remove container
                 });
                 try {
-                    Thread.sleep(10 * 1000);
+                    Thread.sleep(60 * 1000);
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }
