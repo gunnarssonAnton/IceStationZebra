@@ -60,6 +60,7 @@ public class ExecutionViewController {
         image.addRUN("pip install pyvisa-py");
         image.addRUN("pip install pyvisa");
         image.addRUN("pip install matplotlib");
+        image.addRUN("pip install pyRAPL");
         image.addRUN("apt-get install libusb-1.0-0-dev -y");
         image.addRUN("pip install pyusb");
 
@@ -82,12 +83,14 @@ public class ExecutionViewController {
         image.addVolume("/output");
         image.addVolume("/codebase");
         image.addCOPY("/scripts","/scripts");
+        image.addVolume("/RAPL");
 
         System.out.println("[toString]\n" + image.toString());
         image.addRUN("chmod +x /scripts/pre-execution.sh");
         image.addRUN("chmod +x /scripts/execution.sh");
         image.addRUN("chmod +x /scripts/post-execution.sh");
         image.addRUN("chmod +x /scripts/execution_entrypoint.sh");
+        image.addCMD("make -C /RAPL/ Makefile");
 //        image.addRUN("gcc /files/togglePin.c -lgpiod -o /files/togglePin");
 //        image.addRUN("chmod +x /files/togglePin");
 
@@ -104,11 +107,13 @@ public class ExecutionViewController {
         container.isPrivileged(true);
         //container.setEntrypointOverride("/scripts/execution_entrypoint.sh");
         container.setVolume("/output","/output");
+        container.setVolume("/RAPL","/RAPL");
         //container.setVolume("/files","/files");
         container.setVolume("/codebase","/codebase");
         //container.setVolume("/scripts","/scripts");
         //container.addARG("java -cp /output/" + execName + " " + (execName.split("_")[1].charAt(0) + "").toUpperCase() + execName.split("_")[1].substring(1));
         //container.addARG(this.view.getAmountOfRounds());
+
         if (!container.isRunning()) {
             container.run(this.terminalSubject).setOnComplete((ph) -> {
                 terminalSubject.onNext(new TerminalMessage("Container " + container.getName() + " is open", Color.pink));
@@ -135,6 +140,7 @@ public class ExecutionViewController {
             String execName = this.view.getSelectedValue();
 //            "java -cp /output/" + execName + " " + (execName.split("_")[1].charAt(0) + "").toUpperCase() + execName.split("_")[1].substring(1)
             String[] cmd = new String[]{"/scripts/execution_entrypoint.sh", this.getView().getAmountOfRounds() + "", "java", "-cp", "/output/" + execName + "/" , (execName.split("_")[1].charAt(0) + "").toUpperCase() + execName.split("_")[1].substring(1)};
+
             container.exec(cmd,terminalSubject);
 //        });
 

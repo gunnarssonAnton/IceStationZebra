@@ -16,6 +16,7 @@ public class Generate {
         standardFolders.add("output");
         standardFolders.add("files");
         standardFolders.add("settings");
+        standardFolders.add("RAPL");
     }
     static {
         standardFiles = new Hashtable<>();
@@ -27,6 +28,10 @@ public class Generate {
         standardFiles.put("scripts/post-execution.sh","scripts/post-execution.sh");
         standardFiles.put("scripts/pre-execution.sh","scripts/pre-execution.sh");
         standardFiles.put("scripts/install_gpiod.sh","scripts/install_gpiod.sh");
+        standardFiles.put("RAPL/main.c","RAPL/main.c");
+        standardFiles.put("RAPL/Makefile","RAPL/Makefile");
+        standardFiles.put("RAPL/rapl.h","RAPL/rapl.h");
+        standardFiles.put("RAPL/rapl.c","RAPL/rapl.c");
     }
     public static String generateRandomString(int len){
         String chars = "abcdefghijklmnopqrstuvwxyz";
