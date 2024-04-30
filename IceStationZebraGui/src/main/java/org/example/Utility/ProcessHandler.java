@@ -29,18 +29,18 @@ public class ProcessHandler {
     }
 
     private void addToStdoutLog(String line){
-        this.stdoutLog.append(line + "\n");
+//        this.stdoutLog.append(line + "\n");
     }
 
     private void addToStderrLog(String line){
-        this.stderrLog.append(line + "\n");
+//        this.stderrLog.append(line + "\n");
     }
 
     public void printLogFiles(String prefix){
-        FileIO out = new FileIO("logs/",prefix + "_stdout.txt");
-        FileIO err = new FileIO("logs/",prefix + "_stderr.txt");
-        out.write(this.stdoutLog.toString());
-        err.write(this.stderrLog.toString());
+//        FileIO out = new FileIO("logs/",prefix + "_stdout.txt");
+//        FileIO err = new FileIO("logs/",prefix + "_stderr.txt");
+//        out.write(this.stdoutLog.toString());
+//        err.write(this.stderrLog.toString());
     }
     public void setOnComplete(Consumer<ProcessHandler> onCompleteCallback) {
         this.onCompleteCallback = onCompleteCallback;
