@@ -1,4 +1,3 @@
-package org.example;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -19,7 +18,7 @@ public class TextUnFuckifier {
         return lines;
     }
     public static String unFuckify(String text){
-        List<String> prof = readLinesFromFile("./prof.txt");
+        List<String> prof = readLinesFromFile("/files/prof.txt");
         StringBuilder unfucked = new StringBuilder();
         Arrays.stream(text.split("\n")).toList().forEach(line -> {
             Arrays.stream(text.split(" ")).toList().forEach(word ->{

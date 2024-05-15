@@ -1,4 +1,3 @@
-package org.example;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -8,9 +7,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 
-import static org.example.TextUnFuckifier.readLinesFromFile;
-
-public class Main {
+public class Instarape {
     public static void main(String[] args) throws InterruptedException, IOException {
         System.setProperty("java.net.preferIPv4Stack", "true");
         SendNowhere sn = new SendNowhere();
@@ -26,11 +23,12 @@ public class Main {
         // Open image
 //        BufferedImage image = ImageIO.read(new URL(args[1]));
 
-        BufferedImage image = ImageIO.read(new File("/Users/rubenmadsen/Desktop/remove/image4k.jpg"));
+//        BufferedImage image = ImageIO.read(new File("/Users/rubenmadsen/Desktop/remove/image4k.jpg"));
+        BufferedImage image = ImageIO.read(new File("/files/image4k.jpg"));
         //        processImage("http://example.com/image.png", "output.png", 0.5, 1.1f);
         System.out.println("Image width = " + image.getWidth());
         // Open textfile
-        String text = TextUnFuckifier.readLinesFromFile("/Users/rubenmadsen/Desktop/remove/text.txt").toString();
+        String text = TextUnFuckifier.readLinesFromFile("/files/text.txt").toString();
 
         Packet packet = new Packet(image,text);
         sn.send(packet);
@@ -46,7 +44,7 @@ public class Main {
         Runnable imageProcessorRunnable = new Runnable() {
             @Override
             public void run() {
-                ImageProcessor.processImage(image,"/Users/rubenmadsen/Desktop/remove/image_processes4k.jpg",0.8,1.5f);
+                ImageProcessor.processImage(image,"/output/image_processes4k.jpg",0.8,1.5f);
             }
         };
         // Create a new thread and start it
