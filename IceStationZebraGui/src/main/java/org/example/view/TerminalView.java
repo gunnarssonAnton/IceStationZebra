@@ -57,9 +57,9 @@ public class TerminalView extends JPanel {
     }
 
     public void addLine(TerminalMessage tm) {
-        StyleConstants.setForeground(style, tm.color);
+        StyleConstants.setForeground(style, tm.getColor());
         try {
-            this.doc.insertString(doc.getLength(), "ISZ › " + tm.message+"\n", style);
+            this.doc.insertString(doc.getLength(), "ISZ › " + tm.getMessage()+"\n", style);
             this.textPane.setCaretPosition(doc.getLength());
         } catch (BadLocationException e) {
             throw new RuntimeException(e);

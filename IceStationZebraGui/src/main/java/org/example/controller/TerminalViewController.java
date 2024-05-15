@@ -13,11 +13,15 @@ public class TerminalViewController {
     TerminalView view = new TerminalView();
 
     public TerminalViewController(){
-        Disposable disposable = subject
-                .throttleFirst(500, TimeUnit.MILLISECONDS).subscribeOn(Schedulers.computation()).subscribe(tm -> {
+//        Disposable disposable = subject
+//                .throttleFirst(500, TimeUnit.MILLISECONDS).subscribeOn(Schedulers.computation()).subscribe(tm -> {
+//            this.view.addLine(tm);
+//        });
+        Disposable disposable = subject.subscribe(tm -> {
             this.view.addLine(tm);
         });
     }
+
 
     public TerminalView getView() {
         return this.view;
